@@ -1,0 +1,26 @@
+
+.container {
+    display: flex;
+    width: 100px;
+    height: 100px;
+    color: #6accf8;
+    cursor: pointer;
+    border-radius: 5px;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    flex-flow: row wrap;
+    -webkit-user-select: none;
+}
+
+.container:hover {
+    background-color: rgba(223, 223, 223, 0.3);
+}
+
+.text {
+    width: 90px;
+    font-size: 12px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+}

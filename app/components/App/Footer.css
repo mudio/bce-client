@@ -1,0 +1,35 @@
+
+.container {
+    color: #fff;
+    display: flex;
+    flex-shrink: 0;
+    font-size: 12px;
+    align-items: center;
+    background-color: rgb(26, 138, 255);
+}
+
+.up, .down {
+    margin-left: 10px;
+}
+
+.content {
+    flex: auto;
+    display: flex;
+    line-height: 14px;
+    justify-content: center;
+}
+
+.right {
+    margin-right: 10px;
+}
+
+.signout{
+    display: flex;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+.signout a {
+    text-decoration: none;
+    color: #fff;
+}

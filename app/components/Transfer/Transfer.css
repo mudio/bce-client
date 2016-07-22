@@ -1,0 +1,30 @@
+
+.container {
+    display: flex;
+    flex: auto;
+    flex-flow: column nowrap;
+}
+
+.content {
+    display: flex;
+    flex: auto;
+    overflow-y: auto;
+    flex-direction: column;
+}
+
+.nocontent {
+    color: #ddd;
+    width: 200px;
+    height: 120px;
+    top: calc(50% - 100px);
+    left: calc(50% - 50px);
+    display: flex;
+    position: absolute;
+    align-items: center;
+    flex-flow: column nowrap;
+}
+
+.nocontent::before {
+    font-size: 6em;
+    text-align: center;
+}

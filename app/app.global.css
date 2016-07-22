@@ -1,0 +1,26 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    position: relative;
+    height: 100vh;
+    font-family: Arial, Helvetica, Helvetica Neue;
+    overflow-y: hidden;
+}
+
+#main {
+    display: flex;
+    flex: auto;
+}
+
+.layout {
+    flex: auto;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.layout .layout-content {
+    display: flex;
+    flex: auto;
+}

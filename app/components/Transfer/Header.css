@@ -1,0 +1,23 @@
+
+.container {
+    display: flex;
+    flex-shrink: 0;
+    height: 30px;
+    align-items: center;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.container i {
+    color: #666;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.new {
+    padding: 0 30px;
+    border-right: 1px dotted #ccc;
+}
+
+.start, .pause, .close {
+    padding: 0 15px;
+}

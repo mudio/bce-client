@@ -1,0 +1,36 @@
+
+.container {
+    display: flex;
+    width: 120px;
+    position: absolute;
+    background: #fff;
+    visibility: hidden;
+    flex-flow: column nowrap;
+    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+}
+
+.menuItem {
+    font-size: 12px;
+    cursor: pointer;
+    line-height: 30px;
+    padding-left: 10px;
+    color: rgb(88, 102, 110);
+}
+
+.menuItem:hover {
+    background: #efefef;
+}
+
+.menuItem.trash {
+    border-top: 1px solid #efefef;
+}
+
+.menuItem.trash:hover {
+    background: #f06a6a;
+    color: #FFF;
+    border-top-color: #FFF;
+}
+
+.menuItem i {
+    margin-right: 10px;
+}
