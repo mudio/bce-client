@@ -8,30 +8,23 @@
 
 ![](./bce-logo.png)
 
-## Install
-
-First, clone the repo via git:
+## 安装
 
 ```bash
 git clone https://github.com/mudio/bos.git bos-client
-```
-
-And then install dependencies.
-
-```bash
 $ cd bos-client && npm install
 ```
 
-## Run
+## 运行
 
-Run this two commands __simultaneously__ in different console tabs.
+你必须在两个`Shell`窗口运行如下命令
 
 ```bash
 $ npm run hot-server
 $ npm run start-hot
 ```
 
-or run two servers with one command
+或者运行单一命令
 
 ```bash
 $ npm run dev
@@ -39,31 +32,31 @@ $ npm run dev
 
 *Note: requires a node version >= 4 and an npm version >= 2.*
 
-## Package
+## 打包
 
 ```bash
 $ npm run package
 ```
 
-To package apps for all platforms:
+打包所有平台，目前支持：`MaxOS`、`Linux`、`Windows`
 
 ```bash
 $ npm run package-all
 ```
 
-#### Options
+*Note: OSX 系统需要`Wine`, `XQuartz`支持*
 
-- --name, -n: Application name (default: ElectronReact)
+#### 配置参数
+
+- --name, -n: Application name (default: BOS)
 - --version, -v: Electron version (default: latest version)
 - --asar, -a: [asar](https://github.com/atom/asar) support (default: false)
 - --icon, -i: Application icon
 - --all: pack for all platforms
 
-Use `electron-packager` to pack your app with `--all` options for darwin (osx), linux and win32 (windows) platform. After build, you will find them in `release` folder. Otherwise, you will only find one for your os.
+我们使用 `electron-packager` 去打包应用程序，如果指定`--all`参数我们会打包所有平台，运行命令后你会找到你的二进制程序在`release`文件夹,具体打包参数参考`package.js`
 
-`test`, `release` folder and devDependencies in `package.json` will be ignored by default.
-
-## DevTools
+## 开发者工具
 
 #### Toggle Chrome DevTools
 
@@ -77,31 +70,23 @@ Use `electron-packager` to pack your app with `--all` options for darwin (osx), 
 
 We used [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension), you can find the `Redux` tab on Chrome DevTools.
 
-## CSS Modules
+## CSS 模块处理
 
-This client out of the box is configured to use [css-modules](https://github.com/css-modules/css-modules).
+我们处理所有`.css`文件，使用[css-modules](https://github.com/css-modules/css-modules)，详见`Webpack Config`,如果扩展名为`.global.css`我们不会进行转化，自行注意命名冲突问题。
 
-All `.css` file extensions will use css-modules unless it has `.global.css`.
+## Image 模块处理
 
-If you need global styles, stylesheets with `.global.css` will not go through the
-css-modules loader. e.g. `app.global.css`
+我们会把所有`.png`文件,使用[url-loader](https://github.com/webpack/url-loader)转换成`Base64`编码的`Url`
 
-## Image Modules
+## 一起意外的情况
 
-All `.png` file extensions will use [url-loader](https://github.com/webpack/url-loader) convert to a Data Url.
-
-## Externals
-
-If you use any 3rd party libraries which can't be built with webpack, you must list them in your `webpack.config.base.js`：
+如果不想使用`Webpack`打包的模块，参考如下配置：`webpack.config.base.js`：
 
 ```javascript
 externals: [
   // put your node 3rd party libraries which can't be built with webpack here (mysql, mongodb, and so on..)
 ]
 ```
-
-You can find those lines in the file.
-
 
 ## Maintainers
 
