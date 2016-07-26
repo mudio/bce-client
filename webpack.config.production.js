@@ -5,7 +5,7 @@ import baseConfig from './webpack.config.base';
 const config = {
     ...baseConfig,
 
-    // devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
 
     entry: './app/index',
 
