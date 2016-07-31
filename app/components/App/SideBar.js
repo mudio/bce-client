@@ -53,10 +53,6 @@ class SideBar extends Component {
                             uploadCount > 0 ? <span className={styles.badge}>{uploadCount}</span> : ''
                         }
                     </Link>
-                    <Link to="/log" className={styles.item} activeClassName={styles.active}>
-                        <i className="fa fa-book" />
-                        操作日志
-                    </Link>
                 </div>
             </div>
         );

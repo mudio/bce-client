@@ -1,9 +1,16 @@
-import {app, BrowserWindow, Menu, shell} from 'electron';
+/**
+ * Main Process - bos client entry
+ *
+ * @file main.development.js
+ * @author mudio(job.mudio@gmail.com)
+ */
+
+import {app, BrowserWindow, Menu, shell, autoUpdater} from 'electron';
+import os from 'os';
 
 let menu;
 let template;
 let mainWindow = null;
-
 
 if (process.env.NODE_ENV === 'development') {
     require('electron-debug')(); // eslint-disable-line global-require
@@ -278,4 +285,13 @@ app.on('ready', async () => {
         menu = Menu.buildFromTemplate(template);
         mainWindow.setMenu(menu);
     }
+
+    // auto update
+    console.log('autoUpdater');
+    autoUpdater.setFeedUrl(`http://mudio.net/update/${os.platform()}_${os.arch()}/${app.getVersion()}`);
+    autoUpdater.on('checking-for-update', evt => console.log(evt));
+    autoUpdater.on('update-available', evt => console.log(evt));
+    autoUpdater.on('update-downloaded', evt => console.log(evt));
+    autoUpdater.on('error', evt => console.log(evt));
+    autoUpdater.checkForUpdates();
 });
