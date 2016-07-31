@@ -11,7 +11,7 @@
 ## 安装
 
 ```bash
-git clone https://github.com/mudio/bos.git bos-client
+$ git clone https://github.com/mudio/bos.git bos-client
 $ cd bos-client && npm install
 ```
 
@@ -29,8 +29,6 @@ $ npm run start-hot
 ```bash
 $ npm run dev
 ```
-
-*Note: requires a node version >= 4 and an npm version >= 2.*
 
 ## 打包
 
@@ -58,17 +56,9 @@ $ npm run package-all
 
 ## 开发者工具
 
-#### Toggle Chrome DevTools
-
-- OS X: <kbd>Cmd</kbd> <kbd>Alt</kbd> <kbd>I</kbd> or <kbd>F12</kbd>
-- Linux: <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>I</kbd> or <kbd>F12</kbd>
-- Windows: <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>I</kbd> or <kbd>F12</kbd>
-
-*See [electron-debug](https://github.com/sindresorhus/electron-debug) for more information.*
-
-#### Redux DevTools
-
-We used [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension), you can find the `Redux` tab on Chrome DevTools.
+- Chrome DevTools: <kbd>Cmd</kbd> <kbd>Alt</kbd> <kbd>I</kbd> or <kbd>F12</kbd>
+- [Electron-Debug](https://github.com/sindresorhus/electron-debug)
+- [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
 
 ## CSS 模块处理
 
@@ -77,20 +67,6 @@ We used [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-
 ## Image 模块处理
 
 我们会把所有`.png`文件,使用[url-loader](https://github.com/webpack/url-loader)转换成`Base64`编码的`Url`
-
-## 一起意外的情况
-
-如果不想使用`Webpack`打包的模块，参考如下配置：`webpack.config.base.js`：
-
-```javascript
-externals: [
-  // put your node 3rd party libraries which can't be built with webpack here (mysql, mongodb, and so on..)
-]
-```
-
-## Maintainers
-
-- [木休大人](https://github.com/mudio)
 
 ## Thanks
 - [Electron](http://electron.atom.io/)
