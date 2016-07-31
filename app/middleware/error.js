@@ -14,7 +14,7 @@ export default {
     EntityTooSmall: '上传的数据小于限制',
     InappropriateJSON: '请求中的JSON格式正确，但语义上不符合要求。如缺少某个必需项，或者值类型不匹配等。',
     InappropriateXML: '适用场景同InappropriateJSON',
-    InternalError: '所有未定义的其他错误。在有明确对应的其他类型的错误时（包括通用的和服务自定义的）不应该使用。',
+    InternalError: '服务器错误',
     InvalidAccessKeyId: 'Access Key ID不存在',
     InvalidArgument: '无效参数',
     InvalidBucketName: 'BucketName不合法',

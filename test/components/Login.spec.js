@@ -8,7 +8,7 @@ import {
     findRenderedDOMComponentWithClass,
     Simulate
 } from 'react-addons-test-utils';
-import Counter from '../../app/components/Counter';
+import Login from '../../app/components/Login';
 
 
 function setup() {
@@ -18,7 +18,7 @@ function setup() {
         incrementAsync: spy(),
         decrement: spy()
     };
-    const component = renderIntoDocument(<Counter counter={1} {...actions} />);
+    const component = renderIntoDocument(<Login counter={1} {...actions} />);
     return {
         component,
         actions,
@@ -28,7 +28,7 @@ function setup() {
 }
 
 
-describe('Counter component', () => {
+describe('Login component', () => {
     it('should display count', () => {
         const {p} = setup();
         expect(p.textContent).to.match(/^1$/);

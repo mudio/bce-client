@@ -7,7 +7,7 @@ import {
     Simulate
 } from 'react-addons-test-utils';
 import {Provider} from 'react-redux';
-import CounterPage from '../../app/containers/CounterPage';
+import LoginPage from '../../app/containers/LoginPage';
 import configureStore from '../../app/store/configureStore';
 
 
@@ -15,7 +15,7 @@ function setup(initialState) {
     const store = configureStore(initialState);
     const app = renderIntoDocument(
         <Provider store={store}>
-            <CounterPage />
+            <LoginPage />
         </Provider>
     );
     return {

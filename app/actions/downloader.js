@@ -5,94 +5,77 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {remote} from 'electron';
 import {getRegionClient} from '../api/client';
 import {
-    UPLOAD_TYPE,
-    UPLOAD_COMMAND_START,
-    UPLOAD_COMMAND_CANCEL,
-    UPLOAD_COMMAND_SUSPEND
-} from '../middleware/uploader';
+    DOWNLOAD_TYPE,
+    DOWNLOAD_COMMAND_START,
+    DOWNLOAD_COMMAND_CANCEL,
+    DOWNLOAD_COMMAND_SUSPEND
+} from '../middleware/downloader';
 
-export const TRANS_UPLOAD_REMOVE = 'TRANS_UPLOAD_REMOVE';
-export const TRANS_UPLOAD_FINISH = 'TRANS_UPLOAD_FINISH';
-export const TRANS_UPLOAD_PROGRESS = 'TRANS_UPLOAD_PROGRESS';
-export const TRANS_UPLOAD_NEW = 'TRANS_UPLOAD_NEW';
-export const TRANS_UPLOAD_ERROR = 'TRANS_UPLOAD_ERROR';
-export const TRANS_UPLOAD_PREPARE = 'TRANS_UPLOAD_PREPARE';
+export const TRANS_DOWNLOAD_REMOVE = 'TRANS_DOWNLOAD_REMOVE';
+export const TRANS_DOWNLOAD_FINISH = 'TRANS_DOWNLOAD_FINISH';
+export const TRANS_DOWNLOAD_PROGRESS = 'TRANS_DOWNLOAD_PROGRESS';
+export const TRANS_DOWNLOAD_NEW = 'TRANS_DOWNLOAD_NEW';
+export const TRANS_DOWNLOAD_ERROR = 'TRANS_DOWNLOAD_ERROR';
 
-export function uploadStart(uploadIds = []) {
+export function downloadStart(keys = []) {
     return {
-        [UPLOAD_TYPE]: {
-            command: UPLOAD_COMMAND_START,  // 开始任务
-            uploadIds                       // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+        [DOWNLOAD_TYPE]: {
+            command: DOWNLOAD_COMMAND_START,    // 开始任务
+            keys                                // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function uploadSuspend(uploadIds = []) {
+export function downloadSuspend(keys = []) {
     return {
-        [UPLOAD_TYPE]: {
-            command: UPLOAD_COMMAND_SUSPEND,  // 暂停任务
-            uploadIds                       // 如果为空，全部挂起， 不为空，挂起指定任务
+        [DOWNLOAD_TYPE]: {
+            command: DOWNLOAD_COMMAND_SUSPEND,  // 暂停任务
+            keys                                // 如果为空，全部挂起， 不为空，挂起指定任务
         }
     };
 }
 
-export function uploadCancel(uploadIds = []) {
+export function downloadCancel(keys = []) {
     return {
-        [UPLOAD_TYPE]: {
-            command: UPLOAD_COMMAND_CANCEL,  // 取消任务
-            uploadIds                       // 不为空，取消指定任务
+        [DOWNLOAD_TYPE]: {
+            command: DOWNLOAD_COMMAND_CANCEL,   // 取消任务
+            keys                                // 不为空，取消指定任务
         }
     };
 }
 
-export function prepareUploadTask(filePath, fileSize, region, bucket, key) {
+export function createDownloadTask(key) {
+    // 选择文件夹
+    let path = remote.dialog.showOpenDialog({properties: ['openDirectory']});
+    if (Array.isArray(path)) {
+        path = path[0];
+    }
+
     return (dispatch, getState) => {
-        const {auth} = getState();
+        const {auth, navigator} = getState();
+        const {region, bucket, folder} = navigator;
         const client = getRegionClient(region, auth);
-        // 准备上传
-        dispatch({type: TRANS_UPLOAD_PREPARE, key, region, bucket, filePath, fileSize});
 
-        client.initiateMultipartUpload(bucket, key).then(
+        client.listRawObjects(bucket, {prefix: key}).then(
             response => {
-                const uploadId = response.body.uploadId;
-
-                dispatch({
-                    type: TRANS_UPLOAD_NEW,
-                    key, region, bucket, filePath, fileSize, uploadId
+                const {contents} = response.body;
+                const keys = contents.map(item => {
+                    dispatch({
+                        type: TRANS_DOWNLOAD_NEW,
+                        item: Object.assign({region, bucket, path: `${path}/${item.key.replace(folder, '')}`}, item)
+                    });
+                    return item.key;
                 });
-                dispatch(uploadStart([uploadId]));
+
+                dispatch(downloadStart(keys));
             },
             response => dispatch({
-                type: TRANS_UPLOAD_ERROR,
+                type: TRANS_DOWNLOAD_ERROR,
                 error: response.body
             })
         );
-    };
-}
-
-export function createUploadTask(dataTransferItem = [], region, bucket, key) {
-    return dispatch => {
-        function entryHandle(entry, relativePath = '') {
-            if (entry.isFile) {
-                entry.file(
-                    file => dispatch(
-                        prepareUploadTask(file.path, file.size, region, bucket, relativePath + file.name)
-                    )
-                );
-            } else if (entry.isDirectory) {
-                const dirReader = entry.createReader();
-                dirReader.readEntries(
-                    entries => entries.forEach(item => entryHandle(item, `${relativePath}${entry.name}/`))
-                );
-            }
-        }
-
-        for (let index = 0; index < dataTransferItem.length; index++) {
-            const item = dataTransferItem[index];
-            const entry = item.webkitGetAsEntry();
-            entryHandle(entry, key);
-        }
     };
 }

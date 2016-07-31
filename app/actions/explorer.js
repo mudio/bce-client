@@ -6,9 +6,9 @@
  */
 
 import URL from '../utils/URL';
-import {listBuckets, listObjects} from './window';
 import {createUploadTask} from './uploader';
 import {createDownloadTask} from './downloader';
+import {listBuckets, listObjects} from './window';
 
 export const UPDATE_NAV = 'UPDATE_NAV';
 
@@ -33,10 +33,6 @@ export function uploadFile(...args) {
     return createUploadTask(...args);
 }
 
-export function downloadFile(...args) {
-    return createDownloadTask(...args);
-}
-
 export const MENU_COPY_TYPE = Symbol('COPY');
 export const MENU_MOVE_TYPE = Symbol('MOVE');
 export const MENU_VIEW_TYPE = Symbol('VIEW');
@@ -44,30 +40,30 @@ export const MENU_SHARE_TYPE = Symbol('SHARE');
 export const MENU_RENAME_TYPE = Symbol('RENAME');
 export const MENU_DOWNLOAD_TYPE = Symbol('DOWNLOAD');
 
-export function copy(data) {
+export function copy() {
 
 }
 
-export function move(data) {
+export function move() {
 
 }
 
-export function view(data) {
+export function view() {
 
 }
 
-export function share(data) {
+export function share() {
 
 }
 
-export function rename(data) {
+export function rename() {
 
 }
 
 export function download(data) {
-
+    return createDownloadTask(data.key);
 }
 
-export function trash(data) {
+export function trash() {
 
 }

@@ -1,0 +1,60 @@
+
+.container {
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    position: relative;
+    margin: 5px 10px 0 10px;
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    cursor: pointer;
+    background: #eee;
+    box-shadow: 0 0 5px #eee;
+}
+
+.loader {
+    top: 0;
+    left: 0;
+    z-index: 0;
+    height: 100%;
+    display: flex;
+    position: absolute;
+    transition: width 1s;
+    -webkit-filter: blur(2px);
+    background-image: linear-gradient(90deg, rgb(34, 219, 255) 80%, rgb(34, 214, 255));
+}
+
+.content {
+    display: flex;
+    flex: auto;
+    z-index: 1;
+    align-items: center;
+    padding: 10px;
+    color: #666;
+    -webkit-user-select: none;
+}
+
+.container:hover {
+    border: 2px dashed #ccc;
+}
+
+.summary {
+    flex: auto;
+}
+
+.summary div {
+    display: flex;
+    line-height: 18px;
+}
+
+.icon {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seperation {
+    padding: 0 10px;
+    color: #ccc;
+}

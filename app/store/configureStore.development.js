@@ -1,11 +1,14 @@
-import {createStore, applyMiddleware, compose} from 'redux';
+
+
 import thunk from 'redux-thunk';
+import api from '../middleware/api';
+import rootReducer from '../reducers';
 import createLogger from 'redux-logger';
 import {hashHistory} from 'react-router';
-import {routerMiddleware} from 'react-router-redux';
-import rootReducer from '../reducers';
-import api from '../middleware/api';
 import {upload} from '../middleware/uploader';
+import {download} from '../middleware/downloader';
+import {routerMiddleware} from 'react-router-redux';
+import {createStore, applyMiddleware, compose} from 'redux';
 
 const logger = createLogger({
     level: 'info',
@@ -15,7 +18,7 @@ const logger = createLogger({
 const router = routerMiddleware(hashHistory);
 
 const enhancer = compose(
-    applyMiddleware(thunk, router, api, upload, logger),
+    applyMiddleware(thunk, router, api, upload, download, logger),
     window.devToolsExtension ? window.devToolsExtension() : noop => noop
 );
 

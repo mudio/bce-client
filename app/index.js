@@ -6,13 +6,13 @@
  */
 
 import React from 'react';
+import './app.global.css';
+import routes from './routes';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 import {Router, hashHistory} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
-import routes from './routes';
 import configureStore from './store/configureStore';
-import './app.global.css';
+import {syncHistoryWithStore} from 'react-router-redux';
 
 const auth = JSON.parse(localStorage.getItem('auth')) || {isAuth: false, isLoading: false};
 const store = configureStore({auth});

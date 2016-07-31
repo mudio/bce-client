@@ -10,7 +10,7 @@ import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import React, {Component, PropTypes} from 'react';
 import {TRANS_FINISH} from '../../utils/TransferStatus';
-import {regions, getLocalText} from '../../utils/region';
+import {regions, getLocalText} from '../../utils/Region';
 import {TransUploadType, TransDownloadType} from '../../utils/BosType';
 
 class SideBar extends Component {
@@ -62,8 +62,6 @@ class SideBar extends Component {
         );
     }
 }
-
-
 
 function mapStateToProps(state) {
     const uploadCount = state.uploads.filter(item => item.status !== TRANS_FINISH).length;

@@ -45,7 +45,7 @@ class Window extends Component {
         this.refs._contextMenu.popup( // eslint-disable-line no-underscore-dangle
             context,
             x - rect.left,
-            y - rect.top
+            y - rect.top + this.refs.main.scrollTop
         );
     }
 
@@ -105,7 +105,11 @@ class Window extends Component {
                 {
                     !isFetching
                     && buckets.map((item, index) => (
-                        <Bucket key={index} item={item} onDoubleClick={bucket => this.redirect(bucket)} />
+                        <Bucket
+                          key={index}
+                          item={item}
+                          onDoubleClick={bucket => this.redirect(bucket)}
+                        />
                     ))
                 }
                 {
@@ -114,7 +118,6 @@ class Window extends Component {
                         <Folder
                           key={index}
                           item={item}
-                          {...ExplorerActions}
                           onContextMenu={(...args) => this.onContextMenu(...args)}
                           onDoubleClick={folder => this.redirect(nav.bucket, folder)}
                         />
@@ -126,7 +129,6 @@ class Window extends Component {
                         <File
                           key={index}
                           item={item}
-                          {...ExplorerActions}
                           onContextMenu={(...args) => this.onContextMenu(...args)}
                         />
                     ))

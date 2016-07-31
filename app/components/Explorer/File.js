@@ -5,8 +5,12 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import React, {Component, PropTypes} from 'react';
 import styles from './File.css';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {ObjectType} from '../../utils/BosType';
+import React, {Component, PropTypes} from 'react';
+import * as ExplorerActons from '../../actions/explorer';
 
 let extMap = {normal: 'fa-file-text'};
 const imgIcon = 'fa-file-image-o';
@@ -18,7 +22,7 @@ const zipTag = ['rar', 'zip', '7z', 'tar', 'bz'];
 extMap = imgTag.reduce((context, tag) => Object.assign(context, {[tag]: imgIcon}), extMap);
 extMap = zipTag.reduce((context, tag) => Object.assign(context, {[tag]: zipIcon}), extMap);
 
-export default class File extends Component {
+class File extends Component {
     static propTypes = {
         item: PropTypes.shape({
             key: PropTypes.string.isRequired,
@@ -45,13 +49,13 @@ export default class File extends Component {
         } = this.props;
 
         onContextMenu([
-            {name: '查看', icon: 'low-vision', click: () => view(item)},
-            {name: '重命名', icon: 'pencil', click: () => rename(item)},
-            {name: '分享', icon: 'chain', click: () => share(item)},
+            {name: '查看', icon: 'low-vision', click: () => view(item, ObjectType)},
+            {name: '重命名', icon: 'pencil', click: () => rename(item, ObjectType)},
+            {name: '分享', icon: 'chain', click: () => share(item, ObjectType)},
             {name: '下载', icon: 'cloud-download', click: () => download(item)},
-            {name: '复制', icon: 'copy', click: () => copy(item)},
-            {name: '移动到', icon: 'arrows', click: () => move(item)},
-            {name: '删除', icon: 'trash', click: () => trash(item)}
+            {name: '复制', icon: 'copy', click: () => copy(item, ObjectType)},
+            {name: '移动到', icon: 'arrows', click: () => move(item, ObjectType)},
+            {name: '删除', icon: 'trash', click: () => trash(item, ObjectType)}
         ], evt.clientX, evt.clientY);
     }
 
@@ -71,3 +75,13 @@ export default class File extends Component {
         );
     }
 }
+
+function mapStateToProps() {
+    return {};
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ExplorerActons, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(File);

@@ -6,12 +6,16 @@
  */
 
 import styles from './Folder.css';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {FolderType} from '../../utils/BosType';
 import React, {Component, PropTypes} from 'react';
+import * as ExplorerActons from '../../actions/explorer';
 
-export default class Folder extends Component {
+class Folder extends Component {
     static propTypes = {
         item: PropTypes.shape({
-            name: PropTypes.string.isRequired
+            key: PropTypes.string.isRequired
         }),
         onDoubleClick: PropTypes.func.isRequired,
         onContextMenu: PropTypes.func.isRequired,
@@ -32,12 +36,12 @@ export default class Folder extends Component {
         } = this.props;
 
         onContextMenu([
-            {name: '查看', icon: 'low-vision', click: () => view(item)},
-            {name: '重命名', icon: 'pencil', click: () => rename(item)},
+            {name: '查看', icon: 'low-vision', click: () => view(item, FolderType)},
+            {name: '重命名', icon: 'pencil', click: () => rename(item, FolderType)},
             {name: '下载', icon: 'cloud-download', click: () => download(item)},
-            {name: '复制', icon: 'copy', click: () => copy(item)},
-            {name: '移动到', icon: 'arrows', click: () => move(item)},
-            {name: '删除', icon: 'trash', click: () => trash(item)}
+            {name: '复制', icon: 'copy', click: () => copy(item, FolderType)},
+            {name: '移动到', icon: 'arrows', click: () => move(item, FolderType)},
+            {name: '删除', icon: 'trash', click: () => trash(item, FolderType)}
         ], evt.clientX, evt.clientY);
     }
 
@@ -48,11 +52,24 @@ export default class Folder extends Component {
             <div
               className={styles.container}
               onContextMenu={evt => this._onContextMenu(evt)} // eslint-disable-line no-underscore-dangle
-              onDoubleClick={() => onDoubleClick(item.name)}
+              onDoubleClick={() => onDoubleClick(item.key)}
             >
                 <i className={`fa fa-4x fa-folder ${styles.folder}`}></i>
-                <span className={styles.text}>{item.name.replace(/(.*\/)?(.*)\/$/, '$2')}</span>
+                <span className={styles.text} title={item.key.replace(/(.*\/)?(.*)\/$/, '$2')}>
+                    {item.key.replace(/(.*\/)?(.*)\/$/, '$2')}
+                </span>
             </div>
         );
     }
 }
+
+function mapStateToProps() {
+    return {};
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ExplorerActons, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Folder);
+

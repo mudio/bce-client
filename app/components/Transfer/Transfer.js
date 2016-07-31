@@ -5,10 +5,11 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import styles from './Transfer.css';
 import Header from './Header';
-import React, {Component, PropTypes} from 'react';
+import styles from './Transfer.css';
 import UploadItem from './UploadItem';
+import DownloadItem from './DownloadItem';
+import React, {Component, PropTypes} from 'react';
 import {TransUploadType, TransDownloadType} from '../../utils/BosType';
 
 export default class Transfer extends Component {
@@ -45,15 +46,17 @@ export default class Transfer extends Component {
             return (
                 <div className={styles.container}>
                     <Header />
+                    <div className={styles.content}>
                     {
                         downloads.map(item => (
-                            <span key={item.key}>{item.bucket}/{item.key}</span>
+                            <DownloadItem key={item.path} item={item} />
                         ))
                     }
                     {
                         downloads.length === 0
                         && <span className={`fa fa-cloud-download ${styles.nocontent}`}>没有下载任务~(&gt;_&lt;)!!!</span>
                     }
+                    </div>
                 </div>
             );
         }

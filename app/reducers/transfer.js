@@ -11,14 +11,23 @@ import {
     TRANS_FINISH
 } from '../utils/TransferStatus';
 import {
-    TRANS_UPLOAD_NEW,
-    TRANS_UPLOAD_REMOVE
+    TRANS_UPLOAD_NEW
 } from '../actions/uploader';
 
 import {
     UPLOAD_NOTIFY_PROGRESS,
     UPLOAD_NOTIFY_FINISH
 } from '../middleware/uploader';
+
+import {
+    TRANS_DOWNLOAD_NEW
+} from '../actions/downloader';
+
+import {
+    DOWNLOAD_NOTIFY_FINISH,
+    DOWNLOAD_NOTIFY_PROGRESS
+} from '../middleware/downloader';
+
 
 export function uploads(state = [], action) {
     switch (action.type) {
@@ -50,6 +59,28 @@ export function uploads(state = [], action) {
 
 export function downloads(state = [], action) {
     switch (action.type) {
+    case TRANS_DOWNLOAD_NEW: {
+        const task = Object.assign({status: TRANS_WATING, loaded: 0}, action.item);
+        return state.concat([task]);
+    }
+    case DOWNLOAD_NOTIFY_PROGRESS: {
+        return state.map(item => {
+            const {loaded, path} = action;
+            if (item.path === path) {
+                return Object.assign({}, item, {loaded, status: TRANS_RUNNING});
+            }
+            return Object.assign({}, item);
+        });
+    }
+    case DOWNLOAD_NOTIFY_FINISH: {
+        return state.map(item => {
+            const {path} = action;
+            if (item.path === path) {
+                return Object.assign({}, item, {status: TRANS_FINISH, loaded: item.size});
+            }
+            return Object.assign({}, item);
+        });
+    }
     default:
         return state;
     }

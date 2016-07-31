@@ -9,7 +9,6 @@ import React from 'react';
 import {Route, IndexRoute} from 'react-router';
 import App from './containers/App';
 import ExplorerPage from './containers/ExplorerPage';
-import CounterPage from './containers/CounterPage';
 import LoginPage from './containers/LoginPage';
 import TransferPage from './containers/TransferPage';
 
@@ -18,7 +17,6 @@ export default (
         <IndexRoute component={LoginPage} />
         <Route path="/region/:region" component={ExplorerPage} />
         <Route path="/transfer/:transType" component={TransferPage} />
-        <Route path="/log" component={CounterPage} />
         <Route path="/login" component={LoginPage} />
     </Route>
 );

@@ -1,16 +1,15 @@
-import {combineReducers} from 'redux';
-import {routerReducer as routing} from 'react-router-redux';
-import counter from './counter';
+
+import auth from './login';
 import explorer from './explorer';
 import navigator from './navigator';
-import auth from './login';
+import {combineReducers} from 'redux';
 import {downloads, uploads} from './transfer';
+import {routerReducer as routing} from 'react-router-redux';
 
 const rootReducer = combineReducers({
     auth,
     uploads,
     routing,
-    counter,
     explorer,
     navigator,
     downloads

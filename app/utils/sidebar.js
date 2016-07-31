@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {regions, getLocalText} from './region';
+import {regions, getLocalText} from './Region';
 import {TransUploadType, TransDownloadType} from './BosType';
 
 const regionItems = regions.map(r => ({
@@ -24,11 +24,5 @@ export default regionItems.concat([
         text: '上传队列',
         hash: `/transfer/${TransUploadType}`,
         className: 'fa fa-upload'
-    },
-    {
-        text: '操作日志',
-        hash: '/log',
-        className: 'fa fa-book'
     }
 ]);
-

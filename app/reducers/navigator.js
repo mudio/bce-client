@@ -6,9 +6,9 @@
  */
 
 import {UPDATE_NAV} from '../actions/explorer';
-import {REGION_BJ} from '../utils/region';
+import {REGION_BJ} from '../utils/Region';
 
-const defalutState = {region: REGION_BJ, bucket: '', prefix: ''};
+const defalutState = {region: REGION_BJ, bucket: '', folder: ''};
 
 export default function region(state = defalutState, action) {
     switch (action.type) {

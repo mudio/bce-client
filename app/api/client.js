@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {REGION_BJ, REGION_GZ} from '../utils/region';
+import {REGION_BJ, REGION_GZ} from '../utils/Region';
 import {BosClient} from 'bce-sdk-js';
 
 const endpoint = {
@@ -29,7 +29,7 @@ class Client extends BosClient {
 
     listObjects(...args) {
         return super.listObjects(...args).then(res => {
-            const folders = res.body.commonPrefixes.map(item => Object.assign({}, {name: item.prefix}));
+            const folders = res.body.commonPrefixes.map(item => Object.assign({}, {key: item.prefix}));
             const objects = res.body.contents.filter(item => item.key !== res.body.prefix);
 
             delete res.body.commonPrefixes; // eslint-disable-line no-param-reassign
@@ -42,6 +42,10 @@ class Client extends BosClient {
                 objects,
             };
         });
+    }
+
+    listRawObjects(...args) {
+        return super.listObjects(...args);
     }
 }
 

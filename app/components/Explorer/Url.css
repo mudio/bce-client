@@ -34,6 +34,7 @@
     font-size: 12px;
     padding-left: 10px;
     align-items: center;
+    white-space: nowrap;
     background-color: rgba(16, 140, 238, 0.15);
 }
 
