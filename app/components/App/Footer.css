@@ -5,6 +5,7 @@
     flex-shrink: 0;
     font-size: 12px;
     align-items: center;
+    justify-content: flex-end;
     background-color: rgb(26, 138, 255);
 }
 
@@ -12,9 +13,13 @@
     margin-left: 10px;
 }
 
+.left {
+    display: none;
+}
+
 .content {
     flex: auto;
-    display: flex;
+    display: none;
     line-height: 14px;
     justify-content: center;
 }

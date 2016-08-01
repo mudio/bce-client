@@ -5,7 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {remote} from 'electron';
 import {getRegionClient} from '../api/client';
 import {
     DOWNLOAD_TYPE,
@@ -47,13 +46,7 @@ export function downloadCancel(keys = []) {
     };
 }
 
-export function createDownloadTask(key) {
-    // 选择文件夹
-    let path = remote.dialog.showOpenDialog({properties: ['openDirectory']});
-    if (Array.isArray(path)) {
-        path = path[0];
-    }
-
+export function createDownloadTask(key, path) {
     return (dispatch, getState) => {
         const {auth, navigator} = getState();
         const {region, bucket, folder} = navigator;

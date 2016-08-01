@@ -1,6 +1,6 @@
 
 .container {
-    display: flex;
+    display: none;
     flex-shrink: 0;
     height: 30px;
     align-items: center;

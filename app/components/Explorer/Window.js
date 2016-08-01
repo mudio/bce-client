@@ -118,6 +118,7 @@ class Window extends Component {
                         <Folder
                           key={index}
                           item={item}
+                          onDownload={(...args) => this.onDownload(...args)}
                           onContextMenu={(...args) => this.onContextMenu(...args)}
                           onDoubleClick={folder => this.redirect(nav.bucket, folder)}
                         />
@@ -129,6 +130,7 @@ class Window extends Component {
                         <File
                           key={index}
                           item={item}
+                          onDownload={(...args) => this.onDownload(...args)}
                           onContextMenu={(...args) => this.onContextMenu(...args)}
                         />
                     ))

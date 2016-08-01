@@ -5,12 +5,14 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {remote} from 'electron';
 import styles from './File.css';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {ObjectType} from '../../utils/BosType';
 import React, {Component, PropTypes} from 'react';
 import * as ExplorerActons from '../../actions/explorer';
+
+/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
 
 let extMap = {normal: 'fa-file-text'};
 const imgIcon = 'fa-file-image-o';
@@ -40,22 +42,34 @@ class File extends Component {
         trash: PropTypes.func.isRequired
     };
 
+    _onDownload() {
+        // 选择文件夹
+        const {download, item} = this.props;
+        const path = remote.dialog.showOpenDialog({properties: ['openDirectory']});
+        // 用户取消了
+        if (path === undefined) {
+            return;
+        }
+        // 不支持选择多个文件夹，所以只取第一个
+        download(item.key, path[0]);
+    }
+
     _onContextMenu(evt) {
         evt.preventDefault();
         const {
-            item, onContextMenu,
-            view, rename, share,
-            download, copy, move, trash
+            onContextMenu
+            // view, rename, share,
+            // item, copy, move, trash
         } = this.props;
 
         onContextMenu([
-            {name: '查看', icon: 'low-vision', click: () => view(item, ObjectType)},
-            {name: '重命名', icon: 'pencil', click: () => rename(item, ObjectType)},
-            {name: '分享', icon: 'chain', click: () => share(item, ObjectType)},
-            {name: '下载', icon: 'cloud-download', click: () => download(item)},
-            {name: '复制', icon: 'copy', click: () => copy(item, ObjectType)},
-            {name: '移动到', icon: 'arrows', click: () => move(item, ObjectType)},
-            {name: '删除', icon: 'trash', click: () => trash(item, ObjectType)}
+            // {name: '查看', icon: 'low-vision', click: () => view(item, ObjectType)},
+            // {name: '重命名', icon: 'pencil', click: () => rename(item, ObjectType)},
+            // {name: '分享', icon: 'chain', click: () => share(item, ObjectType)},
+            {name: '下载', icon: 'cloud-download', click: () => this._onDownload()}
+            // {name: '复制', icon: 'copy', click: () => copy(item, ObjectType)},
+            // {name: '移动到', icon: 'arrows', click: () => move(item, ObjectType)},
+            // {name: '删除', icon: 'trash', click: () => trash(item, ObjectType)}
         ], evt.clientX, evt.clientY);
     }
 

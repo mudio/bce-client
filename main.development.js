@@ -5,22 +5,18 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {app, BrowserWindow, Menu, shell, autoUpdater} from 'electron';
-import os from 'os';
+import {app, BrowserWindow, Menu, shell} from 'electron';
 
 let menu;
-let template;
 let mainWindow = null;
 
 if (process.env.NODE_ENV === 'development') {
     require('electron-debug')(); // eslint-disable-line global-require
 }
 
-
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
-
 
 const installExtensions = async () => {
     if (process.env.NODE_ENV === 'development') {
@@ -52,6 +48,15 @@ app.on('ready', async () => {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
         mainWindow.focus();
+
+        // auto update
+        // const updateUrl = `http://127.0.0.1:5000/update/osx_${os.arch()}/0.0.1-alpha.1`;
+        // autoUpdater.setFeedURL(updateUrl);
+        // autoUpdater.on('checking-for-update', evt => console.log("===================", evt));
+        // autoUpdater.on('update-available', evt => console.log("===================", evt));
+        // autoUpdater.on('update-downloaded', evt => console.log("===================", evt));
+        // autoUpdater.on('error', evt => console.log("===================", evt));
+        // autoUpdater.checkForUpdates();
     });
 
     mainWindow.on('closed', () => {
@@ -73,225 +78,44 @@ app.on('ready', async () => {
         });
     }
 
-    if (process.platform === 'darwin') {
-        template = [
-            {
-                label: 'Electron',
-                submenu: [
-                    {
-                        label: 'About ElectronReact',
-                        selector: 'orderFrontStandardAboutPanel:'
-                    }, {
-                        type: 'separator'
-                    }, {
-                        label: 'Services',
-                        submenu: []
-                    }, {
-                        type: 'separator'
-                    }, {
-                        label: 'Hide ElectronReact',
-                        accelerator: 'Command+H',
-                        selector: 'hide:'
-                    }, {
-                        label: 'Hide Others',
-                        accelerator: 'Command+Shift+H',
-                        selector: 'hideOtherApplications:'
-                    }, {
-                        label: 'Show All',
-                        selector: 'unhideAllApplications:'
-                    }, {
-                        type: 'separator'
-                    }, {
-                        label: 'Quit',
-                        accelerator: 'Command+Q',
-                        click() {
-                            app.quit();
-                        }
+    const template = [
+        {
+            label: '帮助',
+            submenu: [
+                {
+                    label: '学习更多',
+                    click() {
+                        shell.openExternal('https://mudio.github.com/bos');
                     }
-                ]
-            }, {
-                label: 'Edit',
-                submenu: [
-                    {
-                        label: 'Undo',
-                        accelerator: 'Command+Z',
-                        selector: 'undo:'
-                    }, {
-                        label: 'Redo',
-                        accelerator: 'Shift+Command+Z',
-                        selector: 'redo:'
-                    }, {
-                        type: 'separator'
-                    }, {
-                        label: 'Cut',
-                        accelerator: 'Command+X',
-                        selector: 'cut:'
-                    }, {
-                        label: 'Copy',
-                        accelerator: 'Command+C',
-                        selector: 'copy:'
-                    }, {
-                        label: 'Paste',
-                        accelerator: 'Command+V',
-                        selector: 'paste:'
-                    }, {
-                        label: 'Select All',
-                        accelerator: 'Command+A',
-                        selector: 'selectAll:'
-                    }]
-            }, {
-                label: 'View',
-                submenu: (process.env.NODE_ENV === 'development') ? [
-                    {
-                        label: 'Reload',
-                        accelerator: 'Command+R',
-                        click() {
-                            mainWindow.webContents.reload();
-                        }
-                    }, {
-                        label: 'Toggle Full Screen',
-                        accelerator: 'Ctrl+Command+F',
-                        click() {
-                            mainWindow.setFullScreen(!mainWindow.isFullScreen());
-                        }
-                    }, {
-                        label: 'Toggle Developer Tools',
-                        accelerator: 'Alt+Command+I',
-                        click() {
-                            mainWindow.toggleDevTools();
-                        }
-                    }] : [
-                        {
-                            label: 'Toggle Full Screen',
-                            accelerator: 'Ctrl+Command+F',
-                            click() {
-                                mainWindow.setFullScreen(!mainWindow.isFullScreen());
-                            }
-                        }]
-            }, {
-                label: 'Window',
-                submenu: [
-                    {
-                        label: 'Minimize',
-                        accelerator: 'Command+M',
-                        selector: 'performMiniaturize:'
-                    }, {
-                        label: 'Close',
-                        accelerator: 'Command+W',
-                        selector: 'performClose:'
-                    }, {
-                        type: 'separator'
-                    }, {
-                        label: 'Bring All to Front',
-                        selector: 'arrangeInFront:'
-                    }]
-            }, {
-                label: 'Help',
-                submenu: [
-                    {
-                        label: 'Learn More',
-                        click() {
-                            shell.openExternal('http://electron.atom.io');
-                        }
-                    }, {
-                        label: 'Documentation',
-                        click() {
-                            shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-                        }
-                    }, {
-                        label: 'Community Discussions',
-                        click() {
-                            shell.openExternal('https://discuss.atom.io/c/electron');
-                        }
-                    }, {
-                        label: 'Search Issues',
-                        click() {
-                            shell.openExternal('https://github.com/atom/electron/issues');
-                        }
-                    }]
-            }];
+                },
+                {
+                    label: '开发者文档',
+                    click() {
+                        shell.openExternal('https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0');
+                    }
+                },
+                {
+                    label: 'BCE-SDK-JS',
+                    click() {
+                        shell.openExternal('https://baidubce.github.io/bce-sdk-js/');
+                    }
+                },
+                {
+                    label: '浏览器上传',
+                    click() {
+                        shell.openExternal('http://leeight.github.io/bce-bos-uploader/');
+                    }
+                },
+                {
+                    label: '功能建议',
+                    click() {
+                        shell.openExternal('https://github.com/mudio/bos/issues');
+                    }
+                }
+            ]
+        }
+    ];
 
-        menu = Menu.buildFromTemplate(template);
-        Menu.setApplicationMenu(menu);
-    } else {
-        template = [
-            {
-                label: '&File',
-                submenu: [
-                    {
-                        label: '&Open',
-                        accelerator: 'Ctrl+O'
-                    }, {
-                        label: '&Close',
-                        accelerator: 'Ctrl+W',
-                        click() {
-                            mainWindow.close();
-                        }
-                    }]
-            }, {
-                label: '&View',
-                submenu: (process.env.NODE_ENV === 'development') ? [
-                    {
-                        label: '&Reload',
-                        accelerator: 'Ctrl+R',
-                        click() {
-                            mainWindow.webContents.reload();
-                        }
-                    }, {
-                        label: 'Toggle &Full Screen',
-                        accelerator: 'F11',
-                        click() {
-                            mainWindow.setFullScreen(!mainWindow.isFullScreen());
-                        }
-                    }, {
-                        label: 'Toggle &Developer Tools',
-                        accelerator: 'Alt+Ctrl+I',
-                        click() {
-                            mainWindow.toggleDevTools();
-                        }
-                    }] : [
-                        {
-                            label: 'Toggle &Full Screen',
-                            accelerator: 'F11',
-                            click() {
-                                mainWindow.setFullScreen(!mainWindow.isFullScreen());
-                            }
-                        }]
-            }, {
-                label: 'Help',
-                submenu: [
-                    {
-                        label: 'Learn More',
-                        click() {
-                            shell.openExternal('http://electron.atom.io');
-                        }
-                    }, {
-                        label: 'Documentation',
-                        click() {
-                            shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-                        }
-                    }, {
-                        label: 'Community Discussions',
-                        click() {
-                            shell.openExternal('https://discuss.atom.io/c/electron');
-                        }
-                    }, {
-                        label: 'Search Issues',
-                        click() {
-                            shell.openExternal('https://github.com/atom/electron/issues');
-                        }
-                    }]
-            }];
-        menu = Menu.buildFromTemplate(template);
-        mainWindow.setMenu(menu);
-    }
-
-    // auto update
-    console.log('autoUpdater');
-    autoUpdater.setFeedUrl(`http://mudio.net/update/${os.platform()}_${os.arch()}/${app.getVersion()}`);
-    autoUpdater.on('checking-for-update', evt => console.log(evt));
-    autoUpdater.on('update-available', evt => console.log(evt));
-    autoUpdater.on('update-downloaded', evt => console.log(evt));
-    autoUpdater.on('error', evt => console.log(evt));
-    autoUpdater.checkForUpdates();
+    menu = Menu.buildFromTemplate(template);
+    mainWindow.setMenu(menu);
 });

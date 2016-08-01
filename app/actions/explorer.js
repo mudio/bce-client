@@ -60,8 +60,8 @@ export function rename() {
 
 }
 
-export function download(data) {
-    return createDownloadTask(data.key);
+export function download(...args) {
+    return createDownloadTask(...args);
 }
 
 export function trash() {
