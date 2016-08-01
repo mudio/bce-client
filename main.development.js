@@ -95,13 +95,13 @@ app.on('ready', async () => {
                     }
                 },
                 {
-                    label: 'BCE-SDK-JS',
+                    label: 'JavaScript SDK',
                     click() {
                         shell.openExternal('https://baidubce.github.io/bce-sdk-js/');
                     }
                 },
                 {
-                    label: '浏览器上传',
+                    label: 'Web Uploader',
                     click() {
                         shell.openExternal('http://leeight.github.io/bce-bos-uploader/');
                     }

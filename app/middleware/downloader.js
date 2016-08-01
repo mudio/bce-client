@@ -6,10 +6,10 @@
  */
 
 import fs from 'fs';
-import {dirname} from 'path';
 import async from 'async';
-import {TRANS_WATING} from '../utils/TransferStatus';
+import P from 'path';
 import {getRegionClient} from '../api/client';
+import {TRANS_WATING} from '../utils/TransferStatus';
 
 export const DOWNLOAD_TYPE = Symbol('Download File');
 export const DOWNLOAD_TASK_LIMIT = 5; // 最多跑五个任务
@@ -66,8 +66,17 @@ function fetchFileFromServer(task, done) {
     const {bucket, key, region, path} = task;
     const client = getRegionClient(region, credentials);
 
-    if (!fs.existsSync(dirname(path))) {
-        fs.mkdirSync(dirname(path));
+    const pathInfo = P.parse(path);
+    if (!fs.existsSync(pathInfo.dir)) {
+        const dir = pathInfo.dir.substr(pathInfo.root.length);
+        const dirParts = dir.split(P.sep);
+        for (let index = 0; index < dirParts.length; index++) {
+            const relativeDir = dirParts.slice(0, index + 1).join(P.sep);
+            const absoluteDir = pathInfo.root + relativeDir;
+            if (!fs.existsSync(absoluteDir)) {
+                fs.mkdirSync(absoluteDir);
+            }
+        }
     }
 
     const outputStream = fs.createWriteStream(path);
