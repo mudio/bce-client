@@ -21,6 +21,7 @@ app.on('window-all-closed', () => {
 const installExtensions = async () => {
     if (process.env.NODE_ENV === 'development') {
         const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+
         const extensions = [
             'REACT_DEVELOPER_TOOLS',
             'REDUX_DEVTOOLS'
@@ -78,44 +79,110 @@ app.on('ready', async () => {
         });
     }
 
-    const template = [
-        {
-            label: '帮助',
-            submenu: [
-                {
-                    label: '学习更多',
-                    click() {
-                        shell.openExternal('https://mudio.github.com/bos');
+    if (process.platform === 'darwin') {
+        const template = [
+            {
+                label: 'BOS',
+                submenu: [
+                    {
+                        label: '关于',
+                        selector: 'orderFrontStandardAboutPanel:'
+                    },
+                    {
+                        label: '退出',
+                        accelerator: 'Command+Q',
+                        click() {
+                            app.quit();
+                        }
                     }
-                },
-                {
-                    label: '开发者文档',
-                    click() {
-                        shell.openExternal('https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0');
+                ]
+            },
+            {
+                label: '帮助',
+                submenu: [
+                    {
+                        label: '学习更多',
+                        click() {
+                            shell.openExternal('https://mudio.github.com/bos');
+                        }
+                    },
+                    {
+                        label: '功能建议',
+                        click() {
+                            shell.openExternal('https://github.com/mudio/bos/issues');
+                        }
+                    },
+                    {
+                        label: '开发者文档',
+                        click() {
+                            shell.openExternal(
+                                'https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0'
+                            );
+                        }
+                    },
+                    {
+                        type: 'separator'
+                    },
+                    {
+                        label: 'JavaScript SDK',
+                        click() {
+                            shell.openExternal('https://baidubce.github.io/bce-sdk-js/');
+                        }
+                    },
+                    {
+                        label: 'Web Uploader',
+                        click() {
+                            shell.openExternal('http://leeight.github.io/bce-bos-uploader/');
+                        }
                     }
-                },
-                {
-                    label: 'JavaScript SDK',
-                    click() {
-                        shell.openExternal('https://baidubce.github.io/bce-sdk-js/');
-                    }
-                },
-                {
-                    label: 'Web Uploader',
-                    click() {
-                        shell.openExternal('http://leeight.github.io/bce-bos-uploader/');
-                    }
-                },
-                {
-                    label: '功能建议',
-                    click() {
-                        shell.openExternal('https://github.com/mudio/bos/issues');
-                    }
-                }
-            ]
-        }
-    ];
+                ]
+            }
+        ];
 
-    menu = Menu.buildFromTemplate(template);
-    mainWindow.setMenu(menu);
+        menu = Menu.buildFromTemplate(template);
+        Menu.setApplicationMenu(menu);
+    } else {
+        const template = [
+            {
+                label: '帮助',
+                submenu: [
+                    {
+                        label: '学习更多',
+                        click() {
+                            shell.openExternal('https://mudio.github.com/bos');
+                        }
+                    },
+                    {
+                        label: '开发者文档',
+                        click() {
+                            shell.openExternal(
+                                'https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0'
+                            );
+                        }
+                    },
+                    {
+                        label: 'JavaScript SDK',
+                        click() {
+                            shell.openExternal('https://baidubce.github.io/bce-sdk-js/');
+                        }
+                    },
+                    {
+                        label: 'Web Uploader',
+                        click() {
+                            shell.openExternal('http://leeight.github.io/bce-bos-uploader/');
+                        }
+                    },
+                    {
+                        label: '功能建议',
+                        click() {
+                            shell.openExternal('https://github.com/mudio/bos/issues');
+                        }
+                    }
+                ]
+            }
+        ];
+
+        menu = Menu.buildFromTemplate(template);
+        mainWindow.setMenu(menu);
+    }
 });
