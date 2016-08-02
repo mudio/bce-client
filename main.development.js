@@ -141,48 +141,5 @@ app.on('ready', async () => {
 
         menu = Menu.buildFromTemplate(template);
         Menu.setApplicationMenu(menu);
-    } else {
-        const template = [
-            {
-                label: '帮助',
-                submenu: [
-                    {
-                        label: '学习更多',
-                        click() {
-                            shell.openExternal('https://mudio.github.com/bos');
-                        }
-                    },
-                    {
-                        label: '开发者文档',
-                        click() {
-                            shell.openExternal(
-                                'https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0'
-                            );
-                        }
-                    },
-                    {
-                        label: 'JavaScript SDK',
-                        click() {
-                            shell.openExternal('https://baidubce.github.io/bce-sdk-js/');
-                        }
-                    },
-                    {
-                        label: 'Web Uploader',
-                        click() {
-                            shell.openExternal('http://leeight.github.io/bce-bos-uploader/');
-                        }
-                    },
-                    {
-                        label: '功能建议',
-                        click() {
-                            shell.openExternal('https://github.com/mudio/bos/issues');
-                        }
-                    }
-                ]
-            }
-        ];
-
-        menu = Menu.buildFromTemplate(template);
-        mainWindow.setMenu(menu);
     }
 });
