@@ -16,15 +16,19 @@ export default class ContextMenu extends Component {
     constructor(...args) {
         super(...args);
         this.state = {
-            positionX: 0, positionY: 0,
-            datasource: [], visibility: 'hidden'
+            positionX: 0,
+            positionY: 0,
+            datasource: [],
+            visibility: 'hidden'
         };
     }
 
     popup(datasource, positionX, positionY) {
         this.setState({
-            positionX, positionY,
-            datasource, visibility: 'visible'
+            positionX,
+            positionY,
+            datasource,
+            visibility: 'visible'
         });
     }
 

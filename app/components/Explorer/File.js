@@ -5,14 +5,15 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {remote} from 'electron';
-import styles from './File.css';
+/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
+
+import {remote} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import React, {Component, PropTypes} from 'react';
-import * as ExplorerActons from '../../actions/explorer';
 
-/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
+import styles from './File.css';
+import * as ExplorerActons from '../../actions/explorer';
 
 let extMap = {normal: 'fa-file-text'};
 const imgIcon = 'fa-file-image-o';
@@ -83,7 +84,7 @@ class File extends Component {
               className={styles.container}
               onContextMenu={evt => this._onContextMenu(evt)} // eslint-disable-line no-underscore-dangle
             >
-                <i className={`fa fa-4x ${extMap[ext] || extMap.normal}`}></i>
+                <i className={`fa fa-4x ${extMap[ext] || extMap.normal}`} />
                 <span className={styles.text} title={fileName}>{fileName}</span>
             </div>
         );

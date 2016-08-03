@@ -5,11 +5,11 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import Footer from '../components/App/Footer';
-import SideBar from '../components/App/SideBar';
-
 import {hashHistory} from 'react-router';
 import React, {Component, PropTypes} from 'react';
+
+import Footer from '../components/App/Footer';
+import SideBar from '../components/App/SideBar';
 
 export default class App extends Component {
     static propTypes = {

@@ -5,11 +5,12 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import React, {Component, PropTypes} from 'react';
+
 import Header from './Header';
 import styles from './Transfer.css';
 import UploadItem from './UploadItem';
 import DownloadItem from './DownloadItem';
-import React, {Component, PropTypes} from 'react';
 import {TransUploadType, TransDownloadType} from '../../utils/BosType';
 
 export default class Transfer extends Component {

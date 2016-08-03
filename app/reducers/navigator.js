@@ -1,7 +1,7 @@
 /**
- * Action - Region Reducer
+ * Action - Navigator Reducer
  *
- * @file region.js
+ * @file navigator.js
  * @author mudio(job.mudio@gmail.com)
  */
 

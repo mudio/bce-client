@@ -1,3 +1,4 @@
+/* eslint import/no-extraneous-dependencies: 0 */
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 import baseConfig from './webpack.config.base';

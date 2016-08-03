@@ -1,4 +1,4 @@
-/* eslint max-len: 0 */
+/* eslint max-len: 0, import/no-extraneous-dependencies: 0 */
 import webpack from 'webpack';
 import baseConfig from './webpack.config.base';
 

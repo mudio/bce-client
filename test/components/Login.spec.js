@@ -1,4 +1,4 @@
-/* eslint no-unused-expressions: 0 */
+/* eslint no-unused-expressions: 0, import/no-extraneous-dependencies: 0 */
 import {expect} from 'chai';
 import {spy} from 'sinon';
 import React from 'react';

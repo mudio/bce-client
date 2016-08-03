@@ -5,8 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {REGION_BJ, REGION_GZ} from '../utils/Region';
 import {BosClient} from 'bce-sdk-js';
+import {REGION_BJ, REGION_GZ} from '../utils/Region';
 
 const endpoint = {
     [REGION_BJ]: 'http://bos.qasandbox.bcetest.baidu.com',
@@ -49,7 +49,7 @@ class Client extends BosClient {
     }
 }
 
-export function getRegionClient(region, auth) {
+export default function getRegionClient(region, auth) {
     if (region) {
         return new Client(region, auth);
     }

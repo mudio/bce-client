@@ -1,10 +1,17 @@
+/**
+ * Action - Index Reducer
+ *
+ * @file index.js
+ * @author mudio(job.mudio@gmail.com)
+ */
+
+import {combineReducers} from 'redux';
+import {routerReducer as routing} from 'react-router-redux';
 
 import auth from './login';
 import explorer from './explorer';
 import navigator from './navigator';
-import {combineReducers} from 'redux';
 import {downloads, uploads} from './transfer';
-import {routerReducer as routing} from 'react-router-redux';
 
 const rootReducer = combineReducers({
     auth,

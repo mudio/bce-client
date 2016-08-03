@@ -5,9 +5,10 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import React, {Component, PropTypes} from 'react';
+
 import styles from './UploadItem.css';
 import {getText} from '../../utils/TransferStatus';
-import React, {Component, PropTypes} from 'react';
 
 export default class UploadItem extends Component {
     static propTypes = {
@@ -56,7 +57,7 @@ export default class UploadItem extends Component {
                     item.loaded
                     && <span
                       className={styles.loader}
-                      style={{width: `${100 * item.loaded / item.fileSize}%`}}
+                      style={{width: `${100 * item.loaded / item.fileSize}%`}} // eslint-disable-line no-mixed-operators
                     />
                 }
             </div>

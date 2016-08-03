@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint import/no-extraneous-dependencies: 0 */
 import {app, BrowserWindow, Menu, shell} from 'electron';
 
 let menu;

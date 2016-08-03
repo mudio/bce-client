@@ -1,14 +1,20 @@
-
+/**
+ * Store - dev Store
+ *
+ * @file configureStore.development.js
+ * @author mudio(job.mudio@gmail.com)
+ */
 
 import thunk from 'redux-thunk';
-import api from '../middleware/api';
-import rootReducer from '../reducers';
-import createLogger from 'redux-logger';
+import createLogger from 'redux-logger'; // eslint-disable-line import/no-extraneous-dependencies
 import {hashHistory} from 'react-router';
-import {upload} from '../middleware/uploader';
-import {download} from '../middleware/downloader';
 import {routerMiddleware} from 'react-router-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
+
+import api from '../middleware/api';
+import rootReducer from '../reducers';
+import {upload} from '../middleware/uploader';
+import {download} from '../middleware/downloader';
 
 const logger = createLogger({
     level: 'info',

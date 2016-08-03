@@ -5,8 +5,9 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint react/no-string-refs: 0 */
+
 import {connect} from 'react-redux';
-import ContextMenu from './ContextMenu';
 import {bindActionCreators} from 'redux';
 import React, {Component, PropTypes} from 'react';
 
@@ -14,6 +15,7 @@ import File from './File';
 import Bucket from './Bucket';
 import Folder from './Folder';
 import styles from './Window.css';
+import ContextMenu from './ContextMenu';
 import * as ExplorerActions from '../../actions/explorer';
 
 class Window extends Component {
@@ -45,7 +47,7 @@ class Window extends Component {
         this.refs._contextMenu.popup( // eslint-disable-line no-underscore-dangle
             context,
             x - rect.left,
-            y - rect.top + this.refs.main.scrollTop
+            (y - rect.top) + this.refs.main.scrollTop
         );
     }
 

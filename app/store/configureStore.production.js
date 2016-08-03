@@ -1,3 +1,10 @@
+/**
+ * Store - Product Store
+ *
+ * @file configureStore.production.js
+ * @author mudio(job.mudio@gmail.com)
+ */
+
 import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import {hashHistory} from 'react-router';

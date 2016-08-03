@@ -5,9 +5,10 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import styles from './Footer.css';
 import {Link} from 'react-router';
 import React, {Component} from 'react';
+
+import styles from './Footer.css';
 
 export default class Footer extends Component {
     render() {

@@ -1,3 +1,5 @@
+/* eslint import/no-extraneous-dependencies: 0 */
+
 import {expect} from 'chai';
 import counter from '../../app/reducers/login';
 import {INCREMENT_COUNTER, DECREMENT_COUNTER} from '../../app/actions/login';

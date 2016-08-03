@@ -1,16 +1,19 @@
-/* eslint strict: 0, no-shadow: 0, no-unused-vars: 0, no-console: 0 */
+/* eslint strict: 0, no-shadow: 0, no-unused-vars: 0, no-console: 0, import/no-extraneous-dependencies: 0 */
 'use strict';
 
-require('babel-polyfill');
-const os = require('os');
-const webpack = require('webpack');
-const electronCfg = require('./webpack.config.electron.js');
-const cfg = require('./webpack.config.production.js');
-const packager = require('electron-packager');
-const del = require('del');
-const exec = require('child_process').exec;
-const argv = require('minimist')(process.argv.slice(2));
-const pkg = require('./package.json');
+import os from 'os';
+import del from 'del';
+import 'babel-polyfill';
+import webpack from 'webpack';
+import minimist from 'minimist';
+import {exec} from 'child_process';
+import packager from 'electron-packager';
+
+import pkg from './package.json';
+import cfg from './webpack.config.production';
+import electronCfg from './webpack.config.electron';
+
+const argv = minimist(process.argv.slice(2));
 const deps = Object.keys(pkg.dependencies);
 const devDeps = Object.keys(pkg.devDependencies);
 

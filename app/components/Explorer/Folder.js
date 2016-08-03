@@ -5,14 +5,15 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {remote} from 'electron';
-import styles from './Folder.css';
+/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
+
+import {remote} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import React, {Component, PropTypes} from 'react';
-import * as ExplorerActons from '../../actions/explorer';
 
-/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
+import styles from './Folder.css';
+import * as ExplorerActons from '../../actions/explorer';
 
 class Folder extends Component {
     static propTypes = {
@@ -68,7 +69,7 @@ class Folder extends Component {
               onContextMenu={evt => this._onContextMenu(evt)} // eslint-disable-line no-underscore-dangle
               onDoubleClick={() => onDoubleClick(item.key)}
             >
-                <i className={`fa fa-4x fa-folder ${styles.folder}`}></i>
+                <i className={`fa fa-4x fa-folder ${styles.folder}`} />
                 <span className={styles.text} title={item.key.replace(/(.*\/)?(.*)\/$/, '$2')}>
                     {item.key.replace(/(.*\/)?(.*)\/$/, '$2')}
                 </span>

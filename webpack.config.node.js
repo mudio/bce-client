@@ -1,4 +1,4 @@
-// for babel-plugin-webpack-loaders
+/* eslint import/no-extraneous-dependencies: 0 */
 require('babel-register');
 const devConfigs = require('./webpack.config.development');
 

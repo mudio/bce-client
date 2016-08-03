@@ -105,10 +105,14 @@ function decompose(task) {
     while (leftSize > 0) {
         const partSize = Math.min(leftSize, UPLOAD_PART_SIZE);
         tasks.push({
-            file: filePath, uploadId,
-            bucketName: bucket, key,
-            partNumber, partSize,
-            start: offset, stop: offset + partSize - 1
+            key,
+            uploadId,
+            partSize,
+            partNumber,
+            start: offset,
+            file: filePath,
+            bucketName: bucket,
+            stop: offset + partSize - 1 // eslint-disable-line no-mixed-operators
         });
 
         leftSize -= partSize;

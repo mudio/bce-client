@@ -59,8 +59,13 @@ export function prepareUploadTask(filePath, fileSize, region, bucket, key) {
                 const uploadId = response.body.uploadId;
 
                 dispatch({
-                    type: TRANS_UPLOAD_NEW,
-                    key, region, bucket, filePath, fileSize, uploadId
+                    key,
+                    region,
+                    bucket,
+                    filePath,
+                    fileSize,
+                    uploadId,
+                    type: TRANS_UPLOAD_NEW
                 });
                 dispatch(uploadStart([uploadId]));
             },

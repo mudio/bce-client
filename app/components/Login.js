@@ -5,11 +5,13 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint react/no-string-refs: 0 */
+
+import {hashHistory} from 'react-router';
+import React, {Component, PropTypes} from 'react';
 
 import styles from './Login.css';
-import {hashHistory} from 'react-router';
 import {REGION_BJ} from '../utils/Region';
-import React, {Component, PropTypes} from 'react';
 
 export default class Login extends Component {
     static propTypes = {

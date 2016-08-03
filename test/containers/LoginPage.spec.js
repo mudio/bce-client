@@ -1,3 +1,5 @@
+/* eslint import/no-extraneous-dependencies: 0 */
+
 import {expect} from 'chai';
 import React from 'react';
 import {

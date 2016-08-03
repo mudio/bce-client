@@ -5,9 +5,10 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import React, {Component, PropTypes} from 'react';
+
 import styles from './DownloadItem.css';
 import {getText} from '../../utils/TransferStatus';
-import React, {Component, PropTypes} from 'react';
 
 export default class DownloadItem extends Component {
     static propTypes = {
@@ -60,7 +61,7 @@ export default class DownloadItem extends Component {
                     loaded
                     && <span
                       className={styles.loader}
-                      style={{width: `${100 * loaded / size}%`}}
+                      style={{width: `${100 * loaded / size}%`}} // eslint-disable-line no-mixed-operators
                     />
                 }
             </div>

@@ -26,7 +26,7 @@ export default class Bucket extends Component {
               className={styles.container}
               onDoubleClick={() => onDoubleClick(item.name)}
             >
-                <i className="fa fa-database fa-4x"></i>
+                <i className="fa fa-database fa-4x" />
                 <span className={styles.text} alt={item.creationDate}>{item.name}</span>
             </div>
         );

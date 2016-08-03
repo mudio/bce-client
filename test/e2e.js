@@ -1,3 +1,5 @@
+/* eslint import/no-extraneous-dependencies: 0 */
+
 import {Application} from 'spectron';
 import {expect} from 'chai';
 import electronPath from 'electron-prebuilt';

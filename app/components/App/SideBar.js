@@ -5,10 +5,11 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import styles from './SideBar.css';
 import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import React, {Component, PropTypes} from 'react';
+
+import styles from './SideBar.css';
 import {TRANS_FINISH} from '../../utils/TransferStatus';
 import {regions, getLocalText} from '../../utils/Region';
 import {TransUploadType, TransDownloadType} from '../../utils/BosType';
