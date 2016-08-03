@@ -19,10 +19,11 @@
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
     "dist": "build",
     "compile": "npm run build-main && npm run build-renderer",
+    "publish": "build --publish onTagOrDraft",
     "build": "npm run compile && npm run dist",
-    "build:win": "npm run compile && build --win --x64",
+    "build:win": "npm run compile && build --win --x64 --ia32",
     "build:linux": "npm run compile && build --linux",
-    "build:all": "npm run compile && build -mwl"
+    "build:osx": "npm run compile && build --mac"
   },
   "build": {
     "appId": "org.develar.bos",

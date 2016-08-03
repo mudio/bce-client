@@ -27,7 +27,8 @@ before_script:
 script:
 - npm run pretest
 - npm run lint
-- npm run build
+- npm run compile
+- npm run publish
 
 after_script:
 - npm run coverage
