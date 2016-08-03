@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <title>BOS</title>
+        <script>
+            (function() {
+                const base = (process.env.HOT ? '../' : './');
+                const font = document.createElement('link');
+                font.rel = 'stylesheet';
+                font.href = base + 'node_modules/font-awesome/css/font-awesome.min.css';
+                document.write(font.outerHTML);
 
-<head>
-    <meta charset="utf-8">
-    <title>BOS</title>
-    <link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css" />
-    <script>
-        (function() {
-            if (!process.env.HOT) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = '../dist/style.css';
-            document.write(link.outerHTML);
-            }
-        }());
-    </script>
-</head>
-
-<body>
-    <div id="main"></div>
-    <script>
-        (function() {
-            const script = document.createElement('script');
-            script.src = (process.env.HOT) ? 'http://localhost:3000/dist/bundle.js' : '../dist/bundle.js';
-            document.write(script.outerHTML);
-        }());
-    </script>
-</body>
-
+                if (!process.env.HOT) {
+                    const style = document.createElement('link');
+                    style.rel = 'stylesheet';
+                    style.href = './style.css';
+                    document.write(style.outerHTML);
+                }
+            }());
+        </script>
+    </head>
+    <body>
+        <div id="main"></div>
+        <script>
+            (function() {
+                const script = document.createElement('script');
+                script.src = (process.env.HOT) ? 'http://localhost:3000/static/bundle.js' : './bundle.js';
+                document.write(script.outerHTML);
+            }());
+        </script>
+    </body>
 </html>

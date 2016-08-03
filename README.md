@@ -6,7 +6,7 @@
 [![Dependency Status][david_img]][david_site]
 [![devDependency Status][david_dev_img]][david_dev_site]
 
-![](./bce-logo.png)
+![](./build/bce-logo.png)
 
 ## 安装
 
@@ -17,42 +17,17 @@ $ cd bos-client && npm install
 
 ## 运行
 
-你必须在两个`Shell`窗口运行如下命令
-
-```bash
-$ npm run hot-server
-$ npm run start-hot
-```
-
-或者运行单一命令
-
 ```bash
 $ npm run dev
 ```
 
-## 打包
+## 多平台打包
 
-```bash
-$ npm run package
-```
+- MaxOS: `npm run build`
+- Windows: `npm run build:win`
+- Linux: `npm run build:linux`
 
-打包所有平台，目前支持：`MaxOS`、`Linux`、`Windows`
-
-```bash
-$ npm run package-all
-```
-
-*Note: OSX 系统需要`Wine`, `XQuartz`支持*
-
-#### 配置参数
-
-- --name, -n: Application name (default: BOS)
-- --version, -v: Electron version (default: latest version)
-- --asar, -a: [asar](https://github.com/atom/asar) support (default: false)
-- --icon, -i: Application icon
-- --all: pack for all platforms
-
-我们使用 `electron-packager` 去打包应用程序，如果指定`--all`参数我们会打包所有平台，运行命令后你会找到你的二进制程序在`release`文件夹,具体打包参数参考`package.js`
+*备注: OSX 系统需要`Wine`, `XQuartz`支持, 更多参数配置参考[electron-builder](https://github.com/electron-userland/electron-builder/wiki)*
 
 ## 开发者工具
 
@@ -68,7 +43,7 @@ $ npm run package-all
 
 我们会把所有`.png`文件,使用[url-loader](https://github.com/webpack/url-loader)转换成`Base64`编码的`Url`
 
-## Thanks
+## 致谢
 - [Electron](http://electron.atom.io/)
 - [React](https://facebook.github.io/react/)
 - [Redux](https://github.com/reactjs/redux)

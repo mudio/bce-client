@@ -1,0 +1,32 @@
+{
+  "name": "bce-bos-client",
+  "productName": "BOS",
+  "version": "0.0.1-alpha.1",
+  "description": "百度开放云-对象存储BOS-客户端",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mudio/bos"
+  },
+  "author": {
+    "name": "木休大人",
+    "email": "job.zhanghao@gmail.com",
+    "url": "https://github.com/mudio"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mudio/bos/issues"
+  },
+  "keywords": [
+    "bce",
+    "bos"
+  ],
+  "homepage": "https://github.com/mudio/bos#readme",
+  "dependencies": {
+    "font-awesome": "^4.6.3"
+  },
+  "devEngines": {
+    "node": "4.x || 5.x || 6.x",
+    "npm": "2.x || 3.x"
+  }
+}

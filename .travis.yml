@@ -17,6 +17,7 @@ cache:
 install:
 - npm install
 - npm install coveralls
+- npm run postinstall
 
 before_script:
 - "export DISPLAY=:99.0"
@@ -24,6 +25,7 @@ before_script:
 - sleep 3
 
 script:
+- npm run pretest
 - npm run lint
 - npm run build
 
