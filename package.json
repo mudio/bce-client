@@ -1,7 +1,7 @@
 {
   "name": "bce-bos-client",
   "productName": "BOS",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "百度开放云-对象存储BOS-客户端",
   "main": "main.js",
   "scripts": {
@@ -19,9 +19,9 @@
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
     "dist": "build",
     "compile": "npm run build-main && npm run build-renderer",
-    "publish": "build --publish onTagOrDraft",
+    "publish": "build --x64 --publish onTagOrDraft",
     "build": "npm run compile && npm run dist",
-    "build:win": "npm run compile && build --win --x64 --ia32",
+    "build:win": "npm run compile && build --win",
     "build:linux": "npm run compile && build --linux",
     "build:osx": "npm run compile && build --mac"
   },
@@ -44,8 +44,7 @@
       ]
     },
     "win": {
-      "iconUrl": "https://bce.bdstatic.com/portal/product/bos/bos-banner_94db6ad3.png",
-      "remoteReleases": true
+      "iconUrl": "https://bce.bdstatic.com/portal/product/bos/bos-banner_94db6ad3.png"
     },
     "linux": {
       "target": [
