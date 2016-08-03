@@ -13,7 +13,7 @@ const endpoint = {
     [REGION_GZ]: 'http://bos.gz.qasandbox.bcetest.baidu.com'
 };
 
-class Client extends BosClient {
+export class Client extends BosClient {
     constructor(region, auth) {
         super({credentials: auth, endpoint: endpoint[region]});
         this.region = region;
@@ -49,7 +49,7 @@ class Client extends BosClient {
     }
 }
 
-export default function getRegionClient(region, auth) {
+export function getRegionClient(region, auth) {
     if (region) {
         return new Client(region, auth);
     }

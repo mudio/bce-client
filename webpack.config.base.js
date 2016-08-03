@@ -13,7 +13,7 @@ export default {
             }]
     },
     output: {
-        path: path.join(__dirname, 'dist'),
+        path: path.join(__dirname, 'static'),
         filename: 'bundle.js',
         libraryTarget: 'commonjs2'
     },

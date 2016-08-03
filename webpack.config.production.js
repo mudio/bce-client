@@ -1,7 +1,10 @@
 /* eslint import/no-extraneous-dependencies: 0 */
 import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
+
 import baseConfig from './webpack.config.base';
+
 
 const config = {
     ...baseConfig,
@@ -13,7 +16,7 @@ const config = {
     output: {
         ...baseConfig.output,
 
-        publicPath: '../dist/'
+        publicPath: '../static/'
     },
 
     module: {
@@ -59,7 +62,12 @@ const config = {
                 warnings: false
             }
         }),
-        new ExtractTextPlugin('style.css', {allChunks: true})
+        new ExtractTextPlugin('style.css', {allChunks: true}),
+        new HtmlWebpackPlugin({
+            filename: 'app.html',
+            template: 'app/app.html',
+            inject: false
+        })
     ],
 
     target: 'electron-renderer'

@@ -6,7 +6,7 @@
 [![Dependency Status][david_img]][david_site]
 [![devDependency Status][david_dev_img]][david_dev_site]
 
-![](./bce-logo.png)
+![](./build/bce-logo.png)
 
 ## 安装
 

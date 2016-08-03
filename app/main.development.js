@@ -13,6 +13,10 @@ let mainWindow = null;
 
 if (process.env.NODE_ENV === 'development') {
     require('electron-debug')(); // eslint-disable-line global-require
+} else if (process.env.NODE_ENV === 'production') {
+    const sourceMapSupport = require('source-map-support'); // eslint-disable-line global-require
+
+    sourceMapSupport.install();
 }
 
 app.on('window-all-closed', () => {
@@ -45,7 +49,7 @@ app.on('ready', async () => {
         height: 720
     });
 
-    mainWindow.loadURL(`file://${__dirname}/app/app.html`);
+    mainWindow.loadURL(`file://${__dirname}/app.html`);
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
