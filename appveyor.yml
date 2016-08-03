@@ -38,8 +38,7 @@ test_script:
   - npm --version
   - npm run pretest
   - npm run lint
-  - npm run compile
-  - npm run publish
+  - npm run build:win
 
 # Don't actually build.
 build: off
