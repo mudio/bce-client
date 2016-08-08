@@ -81,7 +81,7 @@
   "homepage": "https://github.com/mudio/bos#readme",
   "devDependencies": {
     "asar": "^0.12.1",
-    "babel-core": "^6.11.4",
+    "babel-core": "^6.13.2",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.4",
     "babel-plugin-add-module-exports": "^0.2.1",
@@ -152,7 +152,7 @@
     "source-map-support": "^0.4.2"
   },
   "devEngines": {
-    "node": "4.x || 5.x || 6.x",
-    "npm": "2.x || 3.x"
+    "node": "5.x || 6.x",
+    "npm": "3.x"
   }
 }
