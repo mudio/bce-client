@@ -1,7 +1,7 @@
 /* eslint no-unused-expressions: 0, import/no-extraneous-dependencies: 0 */
 import {expect} from 'chai';
 import {spy} from 'sinon';
-import * as actions from '../../app/actions/login';
+import * as actions from '../../app/bce/actions/login';
 
 describe('actions', () => {
     it('login should create UPDATE_AUTH action', () => {

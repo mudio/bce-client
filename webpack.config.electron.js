@@ -7,7 +7,7 @@ export default {
 
     devtool: 'source-map',
 
-    entry: ['babel-polyfill', './app/main.development'],
+    entry: ['babel-polyfill', './app/main'],
 
     output: {
         ...baseConfig.output,
@@ -21,10 +21,6 @@ export default {
                 warnings: false
             }
         }),
-        // new webpack.BannerPlugin(
-        //     'require("source-map-support").install();',
-        //     {raw: true, entryOnly: false}
-        // ),
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')
@@ -42,6 +38,5 @@ export default {
     externals: [
         ...baseConfig.externals,
         'font-awesome'
-        // 'source-map-support'
     ]
 };

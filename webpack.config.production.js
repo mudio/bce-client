@@ -11,12 +11,12 @@ const config = {
 
     devtool: 'cheap-module-source-map',
 
-    entry: './app/index',
+    entry: './app/bce/index',
 
     output: {
         ...baseConfig.output,
 
-        publicPath: '../static/'
+        publicPath: '../../static/'
     },
 
     module: {

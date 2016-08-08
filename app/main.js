@@ -1,7 +1,7 @@
 /**
  * Main Process - bos client entry
  *
- * @file main.development.js
+ * @file main.js
  * @author mudio(job.mudio@gmail.com)
  */
 

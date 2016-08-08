@@ -3,7 +3,7 @@
 import {Application} from 'spectron';
 import {expect} from 'chai';
 import electronPath from 'electron-prebuilt';
-import counterStyles from '../app/components/Login.css';
+import counterStyles from '../app/bce/components/Login.css';
 
 const delay = time => new Promise(resolve => setTimeout(resolve, time));
 
