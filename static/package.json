@@ -23,10 +23,11 @@
   ],
   "homepage": "https://github.com/mudio/bos#readme",
   "dependencies": {
-    "font-awesome": "^4.6.3"
+    "font-awesome": "^4.6.3",
+    "source-map-support": "^0.4.2"
   },
   "devEngines": {
-    "node": "4.x || 5.x || 6.x",
+    "node": "5.x || 6.x",
     "npm": "2.x || 3.x"
   }
 }

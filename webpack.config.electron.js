@@ -1,16 +1,15 @@
 /* eslint import/no-extraneous-dependencies: 0 */
 import webpack from 'webpack';
+import merge from 'webpack-merge';
 import baseConfig from './webpack.config.base';
 
-export default {
-    ...baseConfig,
+export default merge(baseConfig, {
 
     devtool: 'source-map',
 
     entry: ['babel-polyfill', './app/main'],
 
     output: {
-        ...baseConfig.output,
         path: __dirname,
         filename: './static/main.js'
     },
@@ -21,6 +20,10 @@ export default {
                 warnings: false
             }
         }),
+        new webpack.BannerPlugin(
+            'require("source-map-support").install();',
+            {raw: true, entryOnly: false}
+        ),
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')
@@ -36,7 +39,7 @@ export default {
     },
 
     externals: [
-        ...baseConfig.externals,
-        'font-awesome'
+        'font-awesome',
+        'source-map-support'
     ]
-};
+});
