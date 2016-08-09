@@ -13,8 +13,6 @@
 				"react-optimize"
 			],
 			"plugins": [
-				"babel-plugin-transform-remove-console",
-				"babel-plugin-transform-remove-debugger",
 				"babel-plugin-dev-expression"
 			]
 		},
