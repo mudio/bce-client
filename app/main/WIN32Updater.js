@@ -17,9 +17,9 @@ export default class WIN32Updater {
         spawn(updateExe, args, {detached: true}).on('close', done);
     }
 
-    startUp() {
+    handleStartupEvent() {
         if (process.platform !== 'win32') {
-            return;
+            return false;
         }
 
         const cmd = process.argv[1];
@@ -29,10 +29,15 @@ export default class WIN32Updater {
 
         if (cmd === '--squirrel-install' || cmd === '--squirrel-updated') {
             this.run([`--createShortcut=${target}`], app.quit);
+            return true;
         } else if (cmd === '--squirrel-uninstall') {
             this.run([`--removeShortcut=${target}`], app.quit);
+            return true;
         } else if (cmd === '--squirrel-obsolete') {
             app.quit();
+            return true;
         }
+
+        return false;
     }
 }
