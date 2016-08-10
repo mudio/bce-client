@@ -9,32 +9,60 @@
     background-color: rgb(26, 138, 255);
 }
 
-.up, .down {
-    margin-left: 10px;
-}
-
-.left {
-    display: none;
-}
-
 .content {
     flex: auto;
-    display: none;
+    display: flex;
     line-height: 14px;
     justify-content: center;
 }
 
 .right {
-    margin-right: 10px;
-}
-
-.signout{
     display: flex;
-    font-size: 1.5em;
-    cursor: pointer;
 }
 
-.signout a {
-    text-decoration: none;
+.btn {
+    padding: 0 5px;
+    min-width: 20px;
+    cursor: pointer;
+    line-height: 20px;
+    position: relative;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.btn:hover {
+    background-color: rgba(42, 26, 255, 0.3);
+}
+
+.btn a {
+    font-size: 14px;
     color: #fff;
+}
+
+.tip {
+    top: -25px;
+    left: 10px;
+    display: none;
+    color: #fff;
+    font-size: 12px;
+    padding: 0 10px;
+    line-height: 20px;
+    position: absolute;
+    border-radius: 3px;
+    white-space: nowrap;
+    background-color: rgba(102,102,102,0.8);
+}
+
+.tip::before {
+    content: '';
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid rgba(102,102,102,0.8);
+    position: absolute;
+    bottom: -8px;
+    left: 10px;
+}
+
+.btn:hover .tip {
+    display: block;
 }

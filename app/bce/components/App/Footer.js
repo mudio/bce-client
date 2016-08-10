@@ -6,31 +6,37 @@
  */
 
 import {Link} from 'react-router';
-import React, {Component} from 'react';
+import {connect} from 'react-redux';
+import React, {Component, PropTypes} from 'react';
 
 import styles from './Footer.css';
 
-export default class Footer extends Component {
+class Footer extends Component {
+    static propTypes = {
+        update: PropTypes.shape({
+            version: PropTypes.string.isRequired,
+            lastUpdateTime: PropTypes.string.isRequired,
+            note: PropTypes.string.isRequired
+        })
+    }
+
     render() {
+        const update = this.props.update;
+
         return (
             <div className={styles.container}>
                 <div className={styles.left}>
-                    <span className={styles.up}>
-                        <i className="fa fa-arrow-up" />
-                        120KB/s
-                    </span>
-                    <span className={styles.down}>
-                        <i className="fa fa-arrow-down" />
-                        120KB/s
+                    <span className={styles.btn}>
+                        <i className="fa fa-map-signs" />
+                        {update.version}
+                        <span className={styles.tip}>{update.note}</span>
                     </span>
                 </div>
-                <div className={styles.content}>
-                    这里放错误信息
-                </div>
+                <div className={styles.content} />
                 <div className={styles.right}>
-                    <span className={styles.signout}>
+                    <span className={styles.btn}>
                         <Link to="/login" >
-                            <i className="fa fa-lock fa-fw" />
+                            <i className="fa fa-lock" />
                         </Link>
                     </span>
                 </div>
@@ -39,3 +45,9 @@ export default class Footer extends Component {
     }
 }
 
+function mapStateToProps(state) {
+    const update = state.update;
+    return {update};
+}
+
+export default connect(mapStateToProps)(Footer);

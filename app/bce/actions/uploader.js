@@ -1,7 +1,7 @@
 /**
  * Action - Uploader Action & Creater
  *
- * @file uoloader.js
+ * @file uploader.js
  * @author mudio(job.mudio@gmail.com)
  */
 

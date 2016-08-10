@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {ipcRenderer} from 'electron';
 import React from 'react';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
@@ -27,3 +28,9 @@ render(
     </Provider>,
     document.getElementById('main')
 );
+
+ipcRenderer.on('notify', (event, type, message) => {
+    if (type) {
+        store.dispatch({type, message});
+    }
+});
