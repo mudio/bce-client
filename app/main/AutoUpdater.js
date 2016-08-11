@@ -30,9 +30,8 @@ export default class OSXUpdater {
     }
 
     checkForUpdates() {
-        if (os.platform() !== 'darwin') {
-            return;
-        }
+        const platform = os.platform();
+        const feedURL = `http://${UPDATE_SERVER_HOST}/update/${platform}/v${app.getVersion()}`;
 
         autoUpdater.on('update-available', () => this.notify('发现新版本'));
         autoUpdater.on(
@@ -45,10 +44,7 @@ export default class OSXUpdater {
         autoUpdater.on('error', error => this.notify(UPDATE_ERROR, error.message));
         autoUpdater.on('checking-for-update', () => this.notify(UPDATE_CHECKING, '正在检查更新'));
         autoUpdater.on('update-not-available', () => this.notify(UPDATE_NOT_AVAILABLE, '没有可用的更新'));
-        autoUpdater.setFeedURL(
-            `http://${UPDATE_SERVER_HOST}/update/${os.platform()}_${os.arch()}/${app.getVersion()}`
-        );
-
+        autoUpdater.setFeedURL(feedURL);
         autoUpdater.checkForUpdates();
     }
 }

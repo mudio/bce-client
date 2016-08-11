@@ -8,12 +8,12 @@
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
 
 import {app, BrowserWindow} from 'electron';
-import OSXUpdater from './OSXUpdater';
+import AutoUpdater from './AutoUpdater';
 
 export default class WindowManager {
     constructor(show = false, width = 980, height = 720) {
         this._window = new BrowserWindow({show, width, height});
-        this._updater = new OSXUpdater(this._window);
+        this._updater = new AutoUpdater(this._window);
     }
 
     loadURL(url = '') {

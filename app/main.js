@@ -9,14 +9,14 @@ import {app} from 'electron';
 
 import MenuManager from './main/MenuManager';
 import Development from './main/Development';
-import WIN32Updater from './main/WIN32Updater';
 import WindowManager from './main/WindowManager';
+import Win32Installer from './main/Win32SquirrelEventsHandle';
 
 const developer = new Development();
-const win32Updater = new WIN32Updater();
+const win32Installer = new Win32Installer();
 let windowManager = null;
 
-if (!win32Updater.handleStartupEvent()) {
+if (!win32Installer.handleStartupEvent()) {
     const shouldQuit = app.makeSingleInstance(() => {
         if (windowManager) {
             windowManager.focusWindow();
