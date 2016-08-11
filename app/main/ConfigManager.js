@@ -7,18 +7,22 @@
 
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
 
+import os from 'os';
+import path from 'path';
 import ConfigStore from 'configstore';
 import {REGION_BJ, REGION_GZ} from '../bce/utils/Region';
 
-const config = new ConfigStore(
-    'bce',
+const config = new ConfigStore();
+config.path = path.join(os.homedir(), '.bce', 'config.json');
+config.all = Object.assign(
+    {},
     {
         endpoint: {
             [REGION_BJ]: 'http://bj.bcebos.com',
             [REGION_GZ]: 'http://gz.bcebos.com'
         }
     },
-    {globalConfigPath: true}
+    config.all
 );
 
 export default config;
