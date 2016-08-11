@@ -5,9 +5,9 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {ipcRenderer} from 'electron';
 import React from 'react';
 import {render} from 'react-dom';
+import {ipcRenderer} from 'electron';
 import {Provider} from 'react-redux';
 import {Router, hashHistory} from 'react-router';
 import {syncHistoryWithStore} from 'react-router-redux';
@@ -34,3 +34,4 @@ ipcRenderer.on('notify', (event, type, message) => {
         store.dispatch({type, message});
     }
 });
+

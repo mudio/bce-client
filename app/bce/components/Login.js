@@ -12,6 +12,9 @@ import React, {Component, PropTypes} from 'react';
 
 import styles from './Login.css';
 import {REGION_BJ} from '../utils/Region';
+import GlobalConfig from '../../main/ConfigManager';
+
+const credentials = Object.assign({}, GlobalConfig.get('credentials'));
 
 export default class Login extends Component {
     static propTypes = {
@@ -75,7 +78,7 @@ export default class Login extends Component {
                                   ref="ak"
                                   type="text"
                                   placeholder="请输入AK"
-                                  defaultValue="ac07c3a9d1744137a9781d7e73b43674"
+                                  defaultValue={credentials.ak}
                                 />
                             </div>
                             <div className={styles.sk}>
@@ -83,7 +86,7 @@ export default class Login extends Component {
                                   ref="sk"
                                   type="text"
                                   placeholder="请输入SK"
-                                  defaultValue="ca9598b0a49a4eb181b71d45cf18a7e6"
+                                  defaultValue={credentials.sk}
                                 />
                             </div>
                         </div>

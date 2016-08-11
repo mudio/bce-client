@@ -6,12 +6,9 @@
  */
 
 import {BosClient} from 'bce-sdk-js';
-import {REGION_BJ, REGION_GZ} from '../utils/Region';
+import GlobalConfig from '../../main/ConfigManager';
 
-const endpoint = {
-    [REGION_BJ]: 'http://bos.qasandbox.bcetest.baidu.com',
-    [REGION_GZ]: 'http://bos.gz.qasandbox.bcetest.baidu.com'
-};
+const endpoint = GlobalConfig.get('endpoint');
 
 export class Client extends BosClient {
     constructor(region, auth) {
