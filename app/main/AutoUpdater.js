@@ -18,7 +18,7 @@ import {
     UPDATE_NOT_AVAILABLE
 } from '../bce/actions/updater';
 
-const UPDATE_SERVER_HOST = '182.61.16.60';
+const UPDATE_SERVER_HOST = 'bce.mudio.net';
 
 export default class OSXUpdater {
     constructor(window) {
@@ -31,7 +31,7 @@ export default class OSXUpdater {
 
     checkForUpdates() {
         const platform = os.platform();
-        const feedURL = `http://${UPDATE_SERVER_HOST}/update/${platform}/v${app.getVersion()}`;
+        const feedURL = `http://${UPDATE_SERVER_HOST}/update/${platform}/${app.getVersion()}`;
 
         autoUpdater.on('update-available', () => this.notify('发现新版本'));
         autoUpdater.on(
