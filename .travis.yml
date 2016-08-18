@@ -6,7 +6,6 @@ os:
   - osx
 
 node_js:
-  - "5"
   - "6"
 
 cache:
@@ -15,7 +14,6 @@ cache:
 
 install:
 - npm install
-- npm install coveralls
 - npm run postinstall
 
 before_script:
@@ -27,8 +25,5 @@ script:
 - npm run pretest
 - npm run lint
 - npm run compile
-- npm run publish
+- npm run dist
 
-after_script:
-- npm run coverage
-- cat ./c coverage/lcov.info | coveralls
