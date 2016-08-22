@@ -8,7 +8,7 @@
 import React, {Component, PropTypes} from 'react';
 
 import styles from './UploadItem.css';
-import {getText} from '../../utils/TransferStatus';
+import {getText, TRANS_ERROR} from '../../utils/TransferStatus';
 
 export default class UploadItem extends Component {
     static propTypes = {
@@ -18,12 +18,59 @@ export default class UploadItem extends Component {
             region: PropTypes.string.isRequired,
             bucket: PropTypes.string.isRequired,
             key: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired,
+            loaded: PropTypes.number.isRequired,
+            error: PropTypes.string,
             process: PropTypes.shape({
                 rate: PropTypes.number,
                 schedule: PropTypes.number
             })
         })
     };
+
+    getLoader() {
+        const {loaded, fileSize, status} = this.props.item;
+        let klass = '';
+
+        switch (status) {
+        case TRANS_ERROR: {
+            klass = styles.error;
+            break;
+        }
+        default:
+            klass = '';
+        }
+
+        if (loaded) {
+            const width = Math.min(100, 100 * loaded / fileSize); // eslint-disable-line no-mixed-operators
+            return (
+                <span className={`${styles.loader} ${klass}`} style={{width: `${width}%`}} />
+            );
+        }
+        return '';
+    }
+
+    getSize() {
+        const size = this.props.item.loaded;
+
+        if (size > 1024 * 1024 * 1024) {
+            return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;
+        } else if (size > 1024 * 1024 && size < 1024 * 1024 * 1024) {
+            return `${(size / 1024 / 1024).toFixed(2)}MB`;
+        }
+
+        return `${(size / 1024).toFixed(2)}KB`;
+    }
+
+    getStatus() {
+        const {status, error} = this.props.item;
+
+        if (error) {
+            return (<div className={styles.status}>{error}</div>);
+        }
+
+        return (<div className={styles.status}>{getText(status)}</div>);
+    }
 
     render() {
         const {item} = this.props;
@@ -34,32 +81,11 @@ export default class UploadItem extends Component {
                     <i className={`fa fa-file-text fa-3x fa-fw ${styles.icon}`} />
                     <div className={styles.summary}>
                         <div>{item.region}://{item.bucket}/{item.key}</div>
-                        <div>
-                            {
-                                item.fileSize > 1024 * 1024 * 1024
-                                && `${(item.fileSize / 1024 / 1024 / 1024).toFixed(2)}GB`
-                            }
-                            {
-                                item.fileSize > 1024 * 1024
-                                && item.fileSize < 1024 * 1024 * 1024
-                                && `${(item.fileSize / 1024 / 1024).toFixed(2)}MB`
-                            }
-                            {
-                                item.fileSize > 1024
-                                && item.fileSize < 1024 * 1024
-                                && `${(item.fileSize / 1024).toFixed(2)}KB`
-                            }
-                        </div>
+                        <div>{this.getSize()}</div>
                     </div>
-                    <div className={styles.status}>{getText(item.status)}</div>
+                    {this.getStatus()}
                 </div>
-                {
-                    item.loaded
-                    && <span
-                      className={styles.loader}
-                      style={{width: `${100 * item.loaded / item.fileSize}%`}} // eslint-disable-line no-mixed-operators
-                    />
-                }
+                {this.getLoader()}
             </div>
         );
     }

@@ -24,6 +24,10 @@
     background-image: linear-gradient(90deg, rgb(34, 219, 255) 80%, rgb(34, 214, 255));
 }
 
+.loader.error {
+    background-image: linear-gradient(90deg, rgba(255, 49, 34, 0.4) 80%, rgba(255, 49, 34, 0.5));
+}
+
 .content {
     display: flex;
     flex: auto;

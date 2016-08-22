@@ -17,7 +17,8 @@ import {
 
 import {
     UPLOAD_NOTIFY_PROGRESS,
-    UPLOAD_NOTIFY_FINISH
+    UPLOAD_NOTIFY_FINISH,
+    UPLOAD_NOTIFY_ERROR
 } from '../middleware/uploader';
 
 import {
@@ -54,7 +55,7 @@ export function uploads(state = [], action) {
         return state.map(item => {
             const {uploadId} = action;
             if (item.uploadId === uploadId) {
-                return Object.assign({}, item, {status: TRANS_FINISH});
+                return Object.assign({}, item, {status: TRANS_FINISH, loaded: item.fileSize});
             }
             return Object.assign({}, item);
         });
@@ -63,6 +64,15 @@ export function uploads(state = [], action) {
             return state.filter(item => item.status !== TRANS_FINISH);
         }
         return state;
+    }
+    case UPLOAD_NOTIFY_ERROR: {
+        return state.map(item => {
+            const {uploadId, error} = action;
+            if (item.uploadId === uploadId) {
+                return Object.assign({}, item, {status: TRANS_ERROR, error});
+            }
+            return Object.assign({}, item);
+        });
     }
     default:
         return state;

@@ -158,12 +158,18 @@ export function uploadFromFile(task, done) {
         (err, results) => (err ? deferred.reject(err) : deferred.resolve(results))
     );
 
-    deferred.promise.then(allResponse => {
-        const partList = allResponse.map((response, index) => ({
-            partNumber: index + 1,
-            eTag: response.http_headers.etag
-        }));
+    deferred.promise.then(
+        allResponse => {
+            const partList = allResponse.map((response, index) => ({
+                partNumber: index + 1,
+                eTag: response.http_headers.etag
+            }));
 
-        return client.completeMultipartUpload(bucket, key, uploadId, partList); // 完成上传
-    }).then(done, err => done(err));
+            return client.completeMultipartUpload(bucket, key, uploadId, partList); // 完成上传
+        },
+        done
+    ).then(
+        () => done(),
+        done
+    );
 }
