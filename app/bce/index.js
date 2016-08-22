@@ -16,11 +16,14 @@ import './app.global.css';
 import routes from './routes';
 import configureStore from './store/configureStore';
 
-const auth = JSON.parse(localStorage.getItem('auth')) || {isAuth: false, isLoading: false};
-const store = configureStore({auth});
+const cache = JSON.parse(localStorage.getItem('cache')) || {};
+const store = configureStore(cache);
 const history = syncHistoryWithStore(hashHistory, store);
 
-store.subscribe(() => localStorage.setItem('auth', JSON.stringify(store.getState().auth)));
+store.subscribe(() => {
+    const {auth} = store.getState();
+    localStorage.setItem('cache', JSON.stringify({auth}));
+});
 
 render(
     <Provider store={store}>

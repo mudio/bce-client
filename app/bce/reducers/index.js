@@ -8,7 +8,7 @@
 import {combineReducers} from 'redux';
 import {routerReducer as routing} from 'react-router-redux';
 
-import auth from './login';
+import auth from './auth';
 import update from './updater';
 import explorer from './explorer';
 import navigator from './navigator';

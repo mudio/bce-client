@@ -21,7 +21,7 @@ const defaultState = {
     isLoading: false
 };
 
-export default function login(state = defaultState, action) {
+export default function auth(state = defaultState, action) {
     switch (action.type) {
     case UPDATE_AUTH:
         return Object.assign({}, defaultState, {

@@ -19,8 +19,19 @@ export default class Transfer extends Component {
             transType: PropTypes.string.isRequired
         }),
         uploads: PropTypes.array.isRequired,
-        downloads: PropTypes.array.isRequired
+        downloads: PropTypes.array.isRequired,
+        clearFinish: PropTypes.func.isRequired
     };
+
+    clearFinish() {
+        const {clearFinish} = this.props;
+        const {transType} = this.props.params;
+
+        return clearFinish(transType);
+    }
+
+    createTask() {
+    }
 
     render() {
         const {uploads, downloads} = this.props;
@@ -29,7 +40,10 @@ export default class Transfer extends Component {
         if (transType === TransUploadType) {
             return (
                 <div className={styles.container}>
-                    <Header />
+                    <Header
+                      createTask={evt => this.createTask(evt)}
+                      clearFinish={evt => this.clearFinish(evt)}
+                    />
                     <div className={styles.content}>
                     {
                         uploads.map(
@@ -46,7 +60,10 @@ export default class Transfer extends Component {
         } else if (transType === TransDownloadType) {
             return (
                 <div className={styles.container}>
-                    <Header />
+                    <Header
+                      createTask={evt => this.createTask(evt)}
+                      clearFinish={evt => this.clearFinish(evt)}
+                    />
                     <div className={styles.content}>
                     {
                         downloads.map(item => (

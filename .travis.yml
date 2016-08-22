@@ -17,13 +17,10 @@ install:
 - npm run postinstall
 
 before_script:
-- "export DISPLAY=:99.0"
-- "sh -e /etc/init.d/xvfb start || echo \"Unable to start virtual display.\""
-- sleep 3
+- npm run pretest
 
 script:
 - npm run pretest
 - npm run lint
 - npm run compile
-- npm run dist
 

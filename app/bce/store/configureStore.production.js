@@ -12,10 +12,11 @@ import {routerMiddleware} from 'react-router-redux';
 import rootReducer from '../reducers';
 import api from '../middleware/api';
 import {upload} from '../middleware/uploader';
+import {download} from '../middleware/downloader';
 
 const router = routerMiddleware(hashHistory);
 
-const enhancer = applyMiddleware(thunk, router, api, upload);
+const enhancer = applyMiddleware(thunk, router, api, upload, download);
 
 export default function configureStore(initialState) {
     return createStore(rootReducer, initialState, enhancer);

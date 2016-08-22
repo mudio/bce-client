@@ -21,6 +21,7 @@ export const UPLOAD_COMMAND_CANCEL = 'TRANS_UPLOAD_CANCEL'; // 取消任务
 export const UPLOAD_COMMAND_SUSPEND = 'TRANS_UPLOAD_SUSPEND'; // 挂起任务
 export const UPLOAD_NOTIFY_PROGRESS = 'TRANS_UPLOAD_PROGRESS'; // 任务进度通知
 export const UPLOAD_NOTIFY_FINISH = 'UPLOAD_NOTIFY_FINISH'; // 任务完成了
+export const UPLOAD_NOTIFY_ERROR = 'UPLOAD_NOTIFY_ERROR'; // 错误
 
 const credentials = {};
 let eventEmiter = noop => noop;
@@ -31,28 +32,29 @@ const queue = async.queue(
 );
 
 function startTask(uploadTasks = [], uploadIds = []) {
+    let waitTasks = [];
+
     if (uploadIds.length === 0) {
         const leftWorker = UPLOAD_TASK_LIMIT - queue.running();
-        const waitTasks = uploadTasks.filter(task => task.status === TRANS_WATING);
-
-        waitTasks.slice(0, leftWorker).forEach(
-            task => queue.push(
-                task,
-                () => eventEmiter({type: UPLOAD_NOTIFY_FINISH, uploadId: task.uploadId})
-            )
-        );
+        waitTasks = uploadTasks.filter(task => task.status === TRANS_WATING).slice(0, leftWorker);
     } else {
-        const waitTasks = uploadTasks.filter(
+        waitTasks = uploadTasks.filter(
             task => task.status === TRANS_WATING && uploadIds.indexOf(task.uploadId) > -1
         );
-
-        waitTasks.forEach(
-            task => queue.push(
-                task,
-                () => eventEmiter({type: UPLOAD_NOTIFY_FINISH, uploadId: task.uploadId})
-            )
-        );
     }
+
+    waitTasks.forEach(
+        task => queue.push(task, err => {
+            if (err) {
+                return eventEmiter({
+                    error: err.message,
+                    uploadId: task.uploadId,
+                    type: UPLOAD_NOTIFY_ERROR
+                });
+            }
+            eventEmiter({type: UPLOAD_NOTIFY_FINISH, uploadId: task.uploadId});
+        })
+    );
 }
 
 function cancelTask(uploadTasks = [], uploadIds = []) {

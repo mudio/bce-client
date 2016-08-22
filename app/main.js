@@ -27,19 +27,17 @@ if (!win32Installer.handleStartupEvent()) {
         app.quit();
     }
 
-    if (process.env.NODE_ENV === 'development') {
-        developer.enableDebug();
-    }
+    developer.showDevTools();
 
     app.on('ready', async () => {
         await developer.installExtensions();
 
         windowManager = new WindowManager();
-        const currentWindow = windowManager.getWindow();
         windowManager.registerAppEvent();
         windowManager.registerWebContentEvent();
         windowManager.loadURL(`file://${__dirname}/app.html`);
 
+        const currentWindow = windowManager.getWindow();
         const menuManager = new MenuManager(currentWindow);
         menuManager.initMenu();
     });

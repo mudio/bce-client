@@ -1,23 +1,32 @@
 
 .container {
-    display: none;
+    display: flex;
     flex-shrink: 0;
     height: 30px;
     align-items: center;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3);
 }
 
-.container i {
-    color: #666;
-    font-size: 1em;
-    cursor: pointer;
-}
-
 .new {
+    cursor: not-allowed;
+    color: #ccc;
+    font-size: 1.2em;
     padding: 0 30px;
     border-right: 1px dotted #ccc;
 }
 
-.start, .pause, .close {
+.start, .pause {
+    display: none;
     padding: 0 15px;
+}
+
+.clear {
+    color: #666;
+    padding: 0 15px;
+    font-size: 1.3em;
+    cursor: pointer;
+}
+
+.clear:hover {
+    color: #108cee;
 }

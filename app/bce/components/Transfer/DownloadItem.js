@@ -8,7 +8,7 @@
 import React, {Component, PropTypes} from 'react';
 
 import styles from './DownloadItem.css';
-import {getText} from '../../utils/TransferStatus';
+import {getText, TRANS_ERROR} from '../../utils/TransferStatus';
 
 export default class DownloadItem extends Component {
     static propTypes = {
@@ -20,6 +20,7 @@ export default class DownloadItem extends Component {
             status: PropTypes.string.isRequired,
             loaded: PropTypes.number.isRequired,
             path: PropTypes.string.isRequired,
+            error: PropTypes.string,
             process: PropTypes.shape({
                 rate: PropTypes.number,
                 schedule: PropTypes.number
@@ -27,8 +28,52 @@ export default class DownloadItem extends Component {
         })
     };
 
+    getLoader() {
+        const {loaded, size, status} = this.props.item;
+        let klass = '';
+
+        switch (status) {
+        case TRANS_ERROR: {
+            klass = styles.error;
+            break;
+        }
+        default:
+            klass = '';
+        }
+
+        if (loaded) {
+            const width = Math.min(100, 100 * loaded / size); // eslint-disable-line no-mixed-operators
+            return (
+                <span className={`${styles.loader} ${klass}`} style={{width: `${width}%`}} />
+            );
+        }
+        return '';
+    }
+
+    getSize() {
+        const size = this.props.item.size;
+
+        if (size > 1024 * 1024 * 1024) {
+            return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;
+        } else if (size > 1024 * 1024 && size < 1024 * 1024 * 1024) {
+            return `${(size / 1024 / 1024).toFixed(2)}MB`;
+        }
+
+        return `${(size / 1024).toFixed(2)}KB`;
+    }
+
+    getStatus() {
+        const {status, error} = this.props.item;
+
+        if (error) {
+            return (<div className={styles.status}>{error}</div>);
+        }
+
+        return (<div className={styles.status}>{getText(status)}</div>);
+    }
+
     render() {
-        const {region, bucket, key, status, size, loaded, path} = this.props.item;
+        const {region, bucket, key, path} = this.props.item;
 
         return (
             <div className={styles.container}>
@@ -39,31 +84,12 @@ export default class DownloadItem extends Component {
                         <div>
                             {path}
                             <span className={styles.seperation}>|</span>
-                            {
-                                size > 1024 * 1024 * 1024
-                                && `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`
-                            }
-                            {
-                                size > 1024 * 1024
-                                && size < 1024 * 1024 * 1024
-                                && `${(size / 1024 / 1024).toFixed(2)}MB`
-                            }
-                            {
-                                size > 1024
-                                && size < 1024 * 1024
-                                && `${(size / 1024).toFixed(2)}KB`
-                            }
+                            {this.getSize()}
                         </div>
                     </div>
-                    <div className={styles.status}>{getText(status)}</div>
+                    {this.getStatus()}
                 </div>
-                {
-                    loaded
-                    && <span
-                      className={styles.loader}
-                      style={{width: `${100 * loaded / size}%`}} // eslint-disable-line no-mixed-operators
-                    />
-                }
+                {this.getLoader()}
             </div>
         );
     }

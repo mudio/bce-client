@@ -25,7 +25,7 @@ export default class Development {
         };
     }
 
-    enableDebug() {
+    showDevTools() {
         if (process.env.NODE_ENV === 'development') {
             require('electron-debug')({showDevTools: true}); // eslint-disable-line global-require
         }

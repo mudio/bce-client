@@ -18,10 +18,15 @@
     z-index: 0;
     height: 100%;
     display: flex;
+    max-width: 100%;
     position: absolute;
     transition: width 1s;
     -webkit-filter: blur(2px);
-    background-image: linear-gradient(90deg, rgb(34, 219, 255) 80%, rgb(34, 214, 255));
+    background-image: linear-gradient(90deg, rgb(34, 219, 255) 80%, rgba(34, 163, 255, 0.8));
+}
+
+.loader.error {
+    background-image: linear-gradient(90deg, rgba(255, 49, 34, 0.4) 80%, rgba(255, 49, 34, 0.5));
 }
 
 .content {

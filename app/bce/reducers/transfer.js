@@ -8,7 +8,8 @@
 import {
     TRANS_WATING,
     TRANS_RUNNING,
-    TRANS_FINISH
+    TRANS_FINISH,
+    TRANS_ERROR
 } from '../utils/TransferStatus';
 import {
     TRANS_UPLOAD_NEW
@@ -25,9 +26,14 @@ import {
 
 import {
     DOWNLOAD_NOTIFY_FINISH,
-    DOWNLOAD_NOTIFY_PROGRESS
+    DOWNLOAD_NOTIFY_PROGRESS,
+    DOWNLOAD_NOTIFY_ERROR
 } from '../middleware/downloader';
 
+import {
+    TRANS_CLEAR_FINISH
+} from '../actions/transfer';
+import {TransUploadType, TransDownloadType} from '../utils/BosType';
 
 export function uploads(state = [], action) {
     switch (action.type) {
@@ -52,6 +58,12 @@ export function uploads(state = [], action) {
             }
             return Object.assign({}, item);
         });
+    case TRANS_CLEAR_FINISH: {
+        if (action.transType === TransUploadType) {
+            return state.filter(item => item.status !== TRANS_FINISH);
+        }
+        return state;
+    }
     default:
         return state;
     }
@@ -80,6 +92,21 @@ export function downloads(state = [], action) {
             }
             return Object.assign({}, item);
         });
+    }
+    case DOWNLOAD_NOTIFY_ERROR: {
+        return state.map(item => {
+            const {path, error} = action;
+            if (item.path === path) {
+                return Object.assign({}, item, {status: TRANS_ERROR, error});
+            }
+            return Object.assign({}, item);
+        });
+    }
+    case TRANS_CLEAR_FINISH: {
+        if (action.transType === TransDownloadType) {
+            return state.filter(item => item.status !== TRANS_FINISH);
+        }
+        return state;
     }
     default:
         return state;

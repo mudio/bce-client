@@ -20,6 +20,7 @@ export const DOWNLOAD_COMMAND_CANCEL = 'TRANS_DOWNLOAD_CANCEL'; // 取消任务
 export const DOWNLOAD_COMMAND_SUSPEND = 'TRANS_DOWNLOAD_SUSPEND'; // 挂起任务
 export const DOWNLOAD_NOTIFY_PROGRESS = 'TRANS_DOWNLOAD_PROGRESS'; // 任务进度通知
 export const DOWNLOAD_NOTIFY_FINISH = 'DOWNLOAD_NOTIFY_FINISH'; // 任务完成了
+export const DOWNLOAD_NOTIFY_ERROR = 'DOWNLOAD_NOTIFY_ERROR'; // 任务完成了
 
 const credentials = {};
 let eventEmiter = noop => noop;
@@ -30,28 +31,31 @@ const queue = async.queue(
 );
 
 function startTask(downloadTasks = [], downloadKeys = []) {
+    let waitTasks = [];
+
     if (downloadKeys.length === 0) {
         const leftWorker = DOWNLOAD_TASK_LIMIT - queue.running();
-        const waitTasks = downloadTasks.filter(task => task.status === TRANS_WATING);
-
-        waitTasks.slice(0, leftWorker).forEach(
-            task => queue.push(
-                task,
-                () => eventEmiter({type: DOWNLOAD_NOTIFY_FINISH, path: task.path})
-            )
-        );
+        waitTasks = downloadTasks.filter(
+            task => task.status === TRANS_WATING
+        ).slice(0, leftWorker);
     } else {
-        const waitTasks = downloadTasks.filter(
+        waitTasks = downloadTasks.filter(
             task => task.status === TRANS_WATING
         );
-
-        waitTasks.forEach(
-            task => queue.push(
-                task,
-                () => eventEmiter({type: DOWNLOAD_NOTIFY_FINISH, path: task.path})
-            )
-        );
     }
+
+    waitTasks.forEach(
+        task => queue.push(task, err => {
+            if (err) {
+                return eventEmiter({
+                    path: task.path,
+                    error: err.message,
+                    type: DOWNLOAD_NOTIFY_ERROR
+                });
+            }
+            eventEmiter({type: DOWNLOAD_NOTIFY_FINISH, path: task.path});
+        })
+    );
 }
 
 function cancelTask(uploadTasks = [], uploadIds = []) {
@@ -79,10 +83,11 @@ function fetchFileFromServer(task, done) {
         }
     }
 
+    let timer = null;
     const outputStream = fs.createWriteStream(path);
     outputStream.once('pipe', reader => {
         let loaded = 0;
-        const timer = setInterval(
+        timer = setInterval(
             () => eventEmiter({path, loaded, type: DOWNLOAD_NOTIFY_PROGRESS}),
             1e3
         );
@@ -90,7 +95,10 @@ function fetchFileFromServer(task, done) {
         reader.on('data', chunk => {
             loaded += chunk.length;
         });
-        reader.on('end', () => clearInterval(timer));
+
+        reader.socket.setTimeout(5e3,
+            () => reader.destroy(new Error('传输超时'))
+        );
     });
 
     client.sendRequest('GET', {
@@ -98,7 +106,9 @@ function fetchFileFromServer(task, done) {
         outputStream,
         bucketName: bucket,
         headers: {Range: ''}
-    }).then(done, err => done(err));
+    })
+    .then(() => done(), done)
+    .finally(() => clearInterval(timer));
 }
 
 export function download(store) {

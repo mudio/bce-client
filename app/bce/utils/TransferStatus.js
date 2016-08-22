@@ -9,6 +9,7 @@ export const TRANS_WATING = 'TRANS_WATING';
 export const TRANS_RUNNING = 'TRANS_RUNNING';
 export const TRANS_FINISH = 'TRANS_FINISH';
 export const TRANS_SUSPEND = 'TRANS_SUSPEND';
+export const TRANS_ERROR = 'TRANS_ERROR';
 
 export function getText(code) {
     switch (code) {
@@ -20,6 +21,8 @@ export function getText(code) {
         return '已完成';
     case TRANS_SUSPEND:
         return '暂停中';
+    case TRANS_ERROR:
+        return '错误';
     default:
         return code;
     }

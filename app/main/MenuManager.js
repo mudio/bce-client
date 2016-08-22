@@ -42,6 +42,28 @@ export default class MenuManager {
                             selector: 'orderFrontStandardAboutPanel:'
                         },
                         {
+                            type: 'separator'
+                        },
+                        {
+                            label: '退出',
+                            accelerator: 'Command+Q',
+                            click() {
+                                app.quit();
+                            }
+                        }
+                    ]
+                },
+                {
+                    label: '操作',
+                    submenu: [
+                        {label: '全选', accelerator: 'CmdOrCtrl+A', selector: 'selectAll:'},
+                        {label: '剪切', accelerator: 'CmdOrCtrl+X', selector: 'cut:'},
+                        {label: '复制', accelerator: 'CmdOrCtrl+C', selector: 'copy:'},
+                        {label: '粘贴', accelerator: 'CmdOrCtrl+V', selector: 'paste:'},
+                        {
+                            type: 'separator'
+                        },
+                        {
                             label: '刷新',
                             accelerator: 'CmdOrCtrl+R',
                             click: (item, focusedWindow) => {
@@ -57,16 +79,6 @@ export default class MenuManager {
                                 if (focusedWindow) {
                                     focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
                                 }
-                            }
-                        },
-                        {
-                            type: 'separator'
-                        },
-                        {
-                            label: '退出',
-                            accelerator: 'Command+Q',
-                            click() {
-                                app.quit();
                             }
                         }
                     ]
