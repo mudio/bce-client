@@ -2,7 +2,6 @@
 
 [![Build Status][travis-image]][travis-url]
 [![Build Status][appveyor-image]][appveyor-url]
-[![Coverage Status][coverage_img]][coverage_url]
 [![Dependency Status][david_img]][david_site]
 [![devDependency Status][david_dev_img]][david_dev_site]
 
@@ -11,10 +10,11 @@
 ## 使用文档
 
 - [Wiki](https://github.com/mudio/bos/wiki)
+- [BOS](https://cloud.baidu.com/doc/BOS/index.html)
 
 ## 自动更新
 
-- `Window`可以在重启的时候自动更新，`OSX`需要安装本地证书，证书下载
+- `Window`、`OSX`可以在重启的时候自动更新
 
 ## 需求与建议
 
@@ -38,6 +38,3 @@ MIT © [木休大人](https://github.com/mudio)
 
 [david_dev_img]: https://david-dm.org/mudio/bos/dev-status.svg
 [david_dev_site]: https://david-dm.org/mudio/bos#info=devDependencies
-
-[coverage_url]: https://coveralls.io/github/mudio/bos
-[coverage_img]: https://coveralls.io/repos/github/mudio/bos/badge.svg
