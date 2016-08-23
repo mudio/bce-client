@@ -6,8 +6,8 @@
  */
 
 import fs from 'fs';
-import async from 'async';
 import P from 'path';
+import async from 'async';
 import {getRegionClient} from '../api/client';
 import {TRANS_WATING} from '../utils/TransferStatus';
 
@@ -67,10 +67,11 @@ function suspendTask(uploadTasks = [], uploadIds = []) {
 }
 
 function fetchFileFromServer(task, done) {
+    let timer = null;
     const {bucket, key, region, path} = task;
+    const pathInfo = P.parse(path);
     const client = getRegionClient(region, credentials);
 
-    const pathInfo = P.parse(path);
     if (!fs.existsSync(pathInfo.dir)) {
         const dir = pathInfo.dir.substr(pathInfo.root.length);
         const dirParts = dir.split(P.sep);
@@ -81,9 +82,11 @@ function fetchFileFromServer(task, done) {
                 fs.mkdirSync(absoluteDir);
             }
         }
+    } else if (!fs.lstatSync(pathInfo.dir).isDirectory()) {
+        // 操作系统不支持文件夹与文件名相同，先抛出错误
+        return done(new Error('创建路径错误'));
     }
 
-    let timer = null;
     const outputStream = fs.createWriteStream(path);
     outputStream.once('pipe', reader => {
         let loaded = 0;
