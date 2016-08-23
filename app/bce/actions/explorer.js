@@ -29,6 +29,10 @@ export function updateNavigator(nav) {
     };
 }
 
+export function refresh(bucketName, prefix) {
+    return dispatch => dispatch(listObjects(bucketName, prefix));
+}
+
 export function uploadFile(...args) {
     return createUploadTask(...args);
 }

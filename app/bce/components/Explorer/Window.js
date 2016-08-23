@@ -7,6 +7,7 @@
 
 /* eslint react/no-string-refs: 0 */
 
+import u from 'underscore';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import React, {Component, PropTypes} from 'react';
@@ -16,6 +17,7 @@ import Bucket from './Bucket';
 import Folder from './Folder';
 import styles from './Window.css';
 import ContextMenu from './ContextMenu';
+import {TRANS_FINISH} from '../../utils/TransferStatus';
 import * as ExplorerActions from '../../actions/explorer';
 
 class Window extends Component {
@@ -39,8 +41,24 @@ class Window extends Component {
         isFetching: PropTypes.bool.isRequired,
         didInvalidate: PropTypes.bool.isRequired,
         updateNavigator: PropTypes.func.isRequired,
-        uploadFile: PropTypes.func.isRequired
+        uploadFile: PropTypes.func.isRequired,
+        refresh: PropTypes.func.isRequired,
+        uploadTask: PropTypes.shape({
+            objects: PropTypes.array.isRequired,
+            folders: PropTypes.array.isRequired
+        })
     };
+
+    componentWillReceiveProps(nextProps) {
+        const {refresh, uploadTask, nav} = this.props;
+        const objectIntersectionLen = u.intersection(uploadTask.objects, nextProps.uploadTask.objects).length;
+        const folderIntersectionLen = u.intersection(uploadTask.folders, nextProps.uploadTask.folders).length;
+
+        if (objectIntersectionLen !== uploadTask.objects.length
+            || folderIntersectionLen !== uploadTask.folders.length) {
+            refresh(nav.bucket, nav.folder);
+        }
+    }
 
     onContextMenu(context, x, y) {
         const rect = this.refs.main.getBoundingClientRect();
@@ -144,7 +162,29 @@ class Window extends Component {
 }
 
 function mapStateToProps(state) {
-    return Object.assign({}, state.explorer);
+    const {navigator, explorer, uploads} = state;
+
+    const uploadTask = uploads.reduce((context, task) => {
+        if (task.region === navigator.region
+            && task.bucket === navigator.bucket
+            && task.key.startsWith(navigator.folder)
+            && task.status !== TRANS_FINISH) {
+            // 上传文件一定在当前目录或者子目录下
+            const prefixs = task.key.split('/');
+
+            if (prefixs.length > 1 && context.folders.indexOf(prefixs[0]) === -1) {
+                context.folders.push(prefixs[0]);
+            }
+
+            if (prefixs.length === 1 && context.objects.indexOf(prefixs[0]) === -1) {
+                context.objects.push(prefixs[0]);
+            }
+        }
+
+        return context;
+    }, {objects: [], folders: []});
+
+    return Object.assign({uploadTask}, explorer);
 }
 
 function mapDispatchToProps(dispatch) {
