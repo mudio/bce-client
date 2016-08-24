@@ -1,7 +1,7 @@
 {
   "name": "bce-bos-client",
   "productName": "BOS",
-  "version": "0.1.1-beta",
+  "version": "0.1.2-beta",
   "description": "百度开放云-对象存储BOS-客户端",
   "main": "main.js",
   "scripts": {
@@ -97,7 +97,7 @@
     "chai": "^3.5.0",
     "concurrently": "^2.2.0",
     "cross-env": "^2.0.0",
-    "css-loader": "^0.23.1",
+    "css-loader": "^0.24.0",
     "del": "^2.2.1",
     "devtron": "^1.2.1",
     "electron-builder": "^5.22.1",

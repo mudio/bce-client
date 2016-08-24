@@ -47,16 +47,7 @@ export default class Explorer extends Component {
             <div className={styles.container}>
                 <Url nav={nav} updateNavigator={updateNavigator} />
                 <Tool models={[ICON_MODEL, LIST_MODEL]} />
-                <Window
-                  nav={nav}
-                  model={ICON_MODEL}
-                  onDBClick={noop => noop}
-                  onSelect={noop => noop}
-                  onDownload={noop => noop}
-                  onDrop={noop => noop}
-                  onCopy={noop => noop}
-                  onViscidity={noop => noop}
-                />
+                <Window nav={nav} model={ICON_MODEL} />
             </div>
         );
     }
