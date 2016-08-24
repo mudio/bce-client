@@ -10,6 +10,7 @@ import {connect} from 'react-redux';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './SideBar.css';
+import BrowserLink from '../Common/BrowserLink';
 import {TRANS_FINISH} from '../../utils/TransferStatus';
 import {regions, getLocalText} from '../../utils/Region';
 import {TransUploadType, TransDownloadType} from '../../utils/BosType';
@@ -54,6 +55,37 @@ class SideBar extends Component {
                             uploadCount > 0 ? <span className={styles.badge}>{uploadCount}</span> : ''
                         }
                     </Link>
+                </div>
+                <div className={styles.separate} />
+                <div className={styles.body}>
+                    <BrowserLink
+                      className={styles.item}
+                      linkTo="https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0"
+                    >
+                        <i className="fa fa-share" />
+                        开发者文档
+                    </BrowserLink>
+                    <BrowserLink
+                      className={styles.item}
+                      linkTo="https://github.com/leeight/bce-bos-uploader/"
+                    >
+                        <i className="fa fa-share" />
+                        Web Uploader
+                    </BrowserLink>
+                    <BrowserLink
+                      className={styles.item}
+                      linkTo="https://github.com/baidubce/bce-sdk-js"
+                    >
+                        <i className="fa fa-share" />
+                        JavaScript SDK
+                    </BrowserLink>
+                    <BrowserLink
+                      className={styles.item}
+                      linkTo="https://github.com/mudio/bos/issues"
+                    >
+                        <i className="fa fa-share" />
+                        客户端建议
+                    </BrowserLink>
                 </div>
             </div>
         );
