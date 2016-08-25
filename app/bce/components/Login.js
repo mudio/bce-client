@@ -94,12 +94,12 @@ export default class Login extends Component {
                     <div className={styles.pin}>
                         <input type="text" placeholder="输入PIN码" ref="pin" />
                         {
-                            isLoading === true ? <i className="fa fa-spinner fa-pulse fa-fw" />
+                            isLoading === true ? <i className={`${styles.loading} fa fa-spinner fa-pulse fa-fw`} />
                             : <input type="submit" className={styles.loginBtn} value="登录" />
                         }
                     </div>
                     {
-                        ak && sk && isAuth === false
+                        ak && sk && isAuth === false && error
                         && <span className={styles.error}>登录失败:{error}</span>
                     }
                     {
