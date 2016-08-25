@@ -10,7 +10,7 @@
 import keytar from 'keytar';
 import {ipcRenderer} from 'electron';
 
-const SERVICE_NAME = 'org.baidu.bce';
+const SERVICE_NAME = 'com.baidu.bce';
 const LOGIN_NAME = 'baidu_bce';
 
 export default class AutoSignIn {

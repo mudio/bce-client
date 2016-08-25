@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint no-underscore-dangle: [2, { allow: ["_credentials", "_store"] }] */
+
 import fs from 'fs';
 import P from 'path';
 import async from 'async';
@@ -22,8 +24,8 @@ export const DOWNLOAD_NOTIFY_PROGRESS = 'TRANS_DOWNLOAD_PROGRESS'; // 任务进�
 export const DOWNLOAD_NOTIFY_FINISH = 'DOWNLOAD_NOTIFY_FINISH'; // 任务完成了
 export const DOWNLOAD_NOTIFY_ERROR = 'DOWNLOAD_NOTIFY_ERROR'; // 任务完成了
 
-const credentials = {};
-let eventEmiter = noop => noop;
+const _credentials = {};
+let _store = null;
 
 const queue = async.queue(
     (task, callback) => fetchFileFromServer(task, callback),
@@ -32,28 +34,37 @@ const queue = async.queue(
 
 function startTask(downloadTasks = [], downloadKeys = []) {
     let waitTasks = [];
+    const leftWorker = DOWNLOAD_TASK_LIMIT - queue.running();
 
     if (downloadKeys.length === 0) {
-        const leftWorker = DOWNLOAD_TASK_LIMIT - queue.running();
+        // 从剩余任务中选取等待下载的任务并开始
         waitTasks = downloadTasks.filter(
             task => task.status === TRANS_WATING
         ).slice(0, leftWorker);
     } else {
+        // 从剩余任务中选取指定key等待下载的任务并开始
         waitTasks = downloadTasks.filter(
-            task => task.status === TRANS_WATING
-        );
+            task => task.status === TRANS_WATING && downloadKeys.indexOf(task.key) > -1
+        ).slice(0, leftWorker);
     }
 
     waitTasks.forEach(
         task => queue.push(task, err => {
             if (err) {
-                return eventEmiter({
+                return _store.dispatch({
                     path: task.path,
                     error: err.message,
                     type: DOWNLOAD_NOTIFY_ERROR
                 });
             }
-            eventEmiter({type: DOWNLOAD_NOTIFY_FINISH, path: task.path});
+            _store.dispatch({type: DOWNLOAD_NOTIFY_FINISH, path: task.path});
+            // 一个任务完成了，无论是因为出错还是下载完成，都会开始下个等待任务
+            _store.dispatch({
+                [DOWNLOAD_TYPE]: {
+                    keys: [],
+                    command: DOWNLOAD_COMMAND_START
+                }
+            });
         })
     );
 }
@@ -70,7 +81,7 @@ function fetchFileFromServer(task, done) {
     let timer = null;
     const {bucket, key, region, path} = task;
     const pathInfo = P.parse(path);
-    const client = getRegionClient(region, credentials);
+    const client = getRegionClient(region, _credentials);
 
     if (!fs.existsSync(pathInfo.dir)) {
         const dir = pathInfo.dir.substr(pathInfo.root.length);
@@ -91,7 +102,7 @@ function fetchFileFromServer(task, done) {
     outputStream.once('pipe', reader => {
         let loaded = 0;
         timer = setInterval(
-            () => eventEmiter({path, loaded, type: DOWNLOAD_NOTIFY_PROGRESS}),
+            () => _store.dispatch({path, loaded, type: DOWNLOAD_NOTIFY_PROGRESS}),
             1e3
         );
 
@@ -125,9 +136,9 @@ export function download(store) {
         const {command, keys} = downloadTask;
         const {downloads, auth} = store.getState();
 
-        credentials.ak = auth.ak;
-        credentials.sk = auth.sk;
-        eventEmiter = message => next(message);
+        _credentials.ak = auth.ak;
+        _credentials.sk = auth.sk;
+        _store = store;
 
         next({type: command, keys});
 
