@@ -134,7 +134,7 @@
   },
   "dependencies": {
     "async": "^2.0.0",
-    "bce-sdk-js": "^0.1.7",
+    "bce-sdk-js": "^0.1.8",
     "classnames": "^2.2.5",
     "configstore": "^2.0.0",
     "css-modules-require-hook": "^4.0.1",

@@ -55,6 +55,21 @@ class File extends Component {
         download(item.key, path[0]);
     }
 
+    _trash() {
+        const {item, trash} = this.props;
+
+        const comfirmTrash = !remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+            message: `您确定删除${item.key}?`,
+            title: '删除提示',
+            buttons: ['删除', '取消'],
+            cancelId: 1
+        });
+
+        if (comfirmTrash) {
+            trash(item);
+        }
+    }
+
     _onContextMenu(evt) {
         evt.preventDefault();
         const {
@@ -67,10 +82,10 @@ class File extends Component {
             // {name: '查看', icon: 'low-vision', click: () => view(item, ObjectType)},
             // {name: '重命名', icon: 'pencil', click: () => rename(item, ObjectType)},
             // {name: '分享', icon: 'chain', click: () => share(item, ObjectType)},
-            {name: '下载', icon: 'cloud-download', click: () => this._onDownload()}
+            {name: '下载', icon: 'cloud-download', click: () => this._onDownload()},
             // {name: '复制', icon: 'copy', click: () => copy(item, ObjectType)},
             // {name: '移动到', icon: 'arrows', click: () => move(item, ObjectType)},
-            // {name: '删除', icon: 'trash', click: () => trash(item, ObjectType)}
+            {name: '删除', icon: 'trash', click: () => this._trash()}
         ], evt.clientX, evt.clientY);
     }
 

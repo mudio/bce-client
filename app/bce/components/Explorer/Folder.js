@@ -15,6 +15,10 @@ import React, {Component, PropTypes} from 'react';
 import styles from './Folder.css';
 import * as ExplorerActons from '../../actions/explorer';
 
+function normalize(key = '') {
+    return key.replace(/(.*\/)?(.*)\/$/, '$2');
+}
+
 class Folder extends Component {
     static propTypes = {
         item: PropTypes.shape({
@@ -30,6 +34,21 @@ class Folder extends Component {
         move: PropTypes.func.isRequired,
         trash: PropTypes.func.isRequired
     };
+
+    _trash() {
+        const {item, trash} = this.props;
+
+        const comfirmTrash = !remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+            message: `您确定删除${normalize(item.key)}文件夹?`,
+            title: '删除提示',
+            buttons: ['删除文件夹', '取消'],
+            cancelId: 1
+        });
+
+        if (comfirmTrash) {
+            trash(item);
+        }
+    }
 
     _onDownload() {
         // 选择文件夹
@@ -53,10 +72,10 @@ class Folder extends Component {
         onContextMenu([
             // {name: '查看', icon: 'low-vision', click: () => view(item, FolderType)},
             // {name: '重命名', icon: 'pencil', click: () => rename(item, FolderType)},
-            {name: '下载', icon: 'cloud-download', click: () => this._onDownload()}
+            {name: '下载', icon: 'cloud-download', click: () => this._onDownload()},
             // {name: '复制', icon: 'copy', click: () => copy(item, FolderType)},
             // {name: '移动到', icon: 'arrows', click: () => move(item, FolderType)},
-            // {name: '删除', icon: 'trash', click: () => trash(item, FolderType)}
+            {name: '删除', icon: 'trash', click: () => this._trash()}
         ], evt.clientX, evt.clientY);
     }
 
@@ -66,12 +85,12 @@ class Folder extends Component {
         return (
             <div
               className={styles.container}
-              onContextMenu={evt => this._onContextMenu(evt)} // eslint-disable-line no-underscore-dangle
+              onContextMenu={evt => this._onContextMenu(evt)}
               onDoubleClick={() => onDoubleClick(item.key)}
             >
                 <i className={`fa fa-4x fa-folder ${styles.folder}`} />
-                <span className={styles.text} title={item.key.replace(/(.*\/)?(.*)\/$/, '$2')}>
-                    {item.key.replace(/(.*\/)?(.*)\/$/, '$2')}
+                <span className={styles.text} title={normalize(item.key)}>
+                    {normalize(item.key)}
                 </span>
             </div>
         );
