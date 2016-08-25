@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint react/no-string-refs: 0 */
+
 import React, {Component, PropTypes} from 'react';
 import styles from './ContextMenu.css';
 
@@ -21,6 +23,10 @@ export default class ContextMenu extends Component {
             datasource: [],
             visibility: 'hidden'
         };
+    }
+
+    getRect() {
+        return this.refs.main.getBoundingClientRect();
     }
 
     popup(datasource, positionX, positionY) {
@@ -40,7 +46,11 @@ export default class ContextMenu extends Component {
         const {datasource, visibility, positionX, positionY} = this.state;
 
         return (
-            <div className={styles.container} style={{left: positionX, top: positionY, visibility}}>
+            <div
+              ref="main"
+              className={styles.container}
+              style={{left: positionX, top: positionY, visibility}}
+            >
                 {
                     datasource.map((item, index) => (
                         <div

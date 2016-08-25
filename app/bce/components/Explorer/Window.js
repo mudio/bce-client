@@ -62,11 +62,17 @@ class Window extends Component {
 
     onContextMenu(context, x, y) {
         const rect = this.refs.main.getBoundingClientRect();
-        this.refs._contextMenu.popup( // eslint-disable-line no-underscore-dangle
-            context,
-            x - rect.left,
-            (y - rect.top) + this.refs.main.scrollTop
-        );
+        const contextMenu = this.refs._contextMenu; // eslint-disable-line no-underscore-dangle
+        const menuRect = contextMenu.getRect();
+
+        let offsetX = x - rect.left;
+        const offsetY = y - rect.top;
+
+        if (document.body.clientWidth - x <= menuRect.width) {
+            offsetX -= menuRect.width;
+        }
+
+        contextMenu.popup(context, offsetX, offsetY + this.refs.main.scrollTop);
     }
 
     onDrop(evt) {
