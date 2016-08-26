@@ -33,6 +33,6 @@ export function logout() {
     return (dispath, getState) => {
         const {auth} = getState();
 
-        dispath({type: UPDATE_AUTH, ak: auth.ak, sk: auth.sk});
+        dispath({type: UPDATE_AUTH, ak: auth.ak, sk: auth.sk, pin: ''});
     };
 }
