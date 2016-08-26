@@ -56,6 +56,15 @@ export class Client extends BosClient {
             config: options.config
         });
     }
+
+    uploadPartFromFile(...args) {
+        // electron 对asar文件处理特殊处理，这里屏蔽下
+        process.noAsar = true;
+        const deferred = super.uploadPartFromFile(...args);
+        process.noAsar = false;
+
+        return deferred;
+    }
 }
 
 export function getRegionClient(region, auth) {

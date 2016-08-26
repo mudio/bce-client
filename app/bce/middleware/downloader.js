@@ -98,7 +98,10 @@ function fetchFileFromServer(task, done) {
         return done(new Error('创建路径错误'));
     }
 
+    process.noAsar = true;
     const outputStream = fs.createWriteStream(path);
+    process.noAsar = false;
+
     outputStream.once('pipe', reader => {
         let loaded = 0;
         timer = setInterval(

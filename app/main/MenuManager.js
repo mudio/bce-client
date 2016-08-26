@@ -24,7 +24,7 @@ export default class MenuManager {
                 Menu.buildFromTemplate([
                     {
                         label: '查看元素',
-                        click() {
+                        click: () => {
                             this._window.inspectElement(x, y);
                         }
                     }
