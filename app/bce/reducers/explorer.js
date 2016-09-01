@@ -20,11 +20,11 @@ const defaultState = {
     }
 };
 
-export default function window(state = defaultState, action) {
+export default function explorer(state = defaultState, action) {
     switch (action.type) {
     case LIST_OBJECT_REQUEST:
     case LIST_BUCKET_REQUEST:
-        return Object.assign({}, state, {
+        return Object.assign({}, defaultState, {
             isFetching: true,
             didInvalidate: false
         });
@@ -37,8 +37,6 @@ export default function window(state = defaultState, action) {
     case LIST_OBJECT_SUCCESS:
     case LIST_BUCKET_SUCCESS:
         return Object.assign({}, defaultState, {
-            isFetching: false,
-            didInvalidate: false,
             response: action.response
         });
     default:

@@ -5,7 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {hashHistory} from 'react-router';
 import React, {Component, PropTypes} from 'react';
 
 import Footer from '../components/App/Footer';
@@ -16,10 +15,6 @@ export default class App extends Component {
         children: PropTypes.element.isRequired,
         location: PropTypes.object.isRequired
     };
-
-    handleChange(nextValue) {
-        hashHistory.push(nextValue);
-    }
 
     render() {
         return (
