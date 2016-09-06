@@ -19,7 +19,7 @@ export default class UploadItem extends Component {
             bucket: PropTypes.string.isRequired,
             key: PropTypes.string.isRequired,
             status: PropTypes.string.isRequired,
-            loaded: PropTypes.number.isRequired,
+            loaded: PropTypes.number,
             error: PropTypes.string,
             process: PropTypes.shape({
                 rate: PropTypes.number,
@@ -51,7 +51,7 @@ export default class UploadItem extends Component {
     }
 
     getSize() {
-        const size = this.props.item.loaded;
+        const size = this.props.item.loaded || 0;
 
         if (size > 1024 * 1024 * 1024) {
             return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;

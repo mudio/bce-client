@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import debug from 'debug';
 import {render} from 'react-dom';
 import {ipcRenderer} from 'electron';
 import {Provider} from 'react-redux';
@@ -16,9 +17,12 @@ import './app.global.css';
 import routes from './routes';
 import configureStore from './store/configureStore';
 
+const logger = debug('bce-client:renderer');
 const cache = JSON.parse(localStorage.getItem('cache')) || {};
 const store = configureStore(cache);
 const history = syncHistoryWithStore(hashHistory, store);
+
+logger('startup');
 
 store.subscribe(() => {
     const {auth} = store.getState();
