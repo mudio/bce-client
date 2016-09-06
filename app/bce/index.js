@@ -29,6 +29,12 @@ store.subscribe(() => {
     localStorage.setItem('cache', JSON.stringify({auth}));
 });
 
+ipcRenderer.on('notify', (event, type, message) => {
+    if (type) {
+        store.dispatch({type, message});
+    }
+});
+
 render(
     <Provider store={store}>
         <Router history={history} routes={routes} />
@@ -36,9 +42,5 @@ render(
     document.getElementById('main')
 );
 
-ipcRenderer.on('notify', (event, type, message) => {
-    if (type) {
-        store.dispatch({type, message});
-    }
-});
-
+document.body.ondrop = evt => evt.preventDefault();
+document.body.ondragover = evt => evt.preventDefault();

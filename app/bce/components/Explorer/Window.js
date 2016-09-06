@@ -77,6 +77,7 @@ class Window extends Component {
 
     onDrop(evt) {
         evt.preventDefault();
+        evt.stopPropagation();
         const {nav, uploadFile} = this.props;
 
         uploadFile(evt.dataTransfer.items, nav.region, nav.bucket, nav.folder);
