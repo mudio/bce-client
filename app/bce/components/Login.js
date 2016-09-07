@@ -136,6 +136,11 @@ export default class Login extends Component {
                     }
                     <div className={styles.pin}>
                         <input type="text" placeholder="输入PIN码" ref="pin" />
+                        <span className={`${styles.pinTipWrap} fa fa-question-circle-o fa-fw`}>
+                            <span className={styles.pinTip}>
+                                输入PIN码后，系统将记住你的AK、SK,下次登录只需要输入PIN码即可。
+                            </span>
+                        </span>
                         {this.getLoginRender()}
                     </div>
                     {this.getLoginError()}

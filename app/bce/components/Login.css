@@ -52,7 +52,6 @@
 .loginBtn {
     display: flex;
     cursor: pointer;
-    margin-left: 10px;
     align-items: center;
     justify-content: center;
 }
@@ -85,4 +84,41 @@
         0 0 20px #228DFF,
         0 0 25px #228DFF,
         0 0 38px #228DFF;
+}
+
+.pinTipWrap {
+    width: 30px;
+    color: #fff;
+    display: flex;
+    cursor: pointer;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.pinTipWrap .pinTip {
+    top: 30px;
+    padding: 5px;
+    display: none;
+    color: #fff;
+    font-size: 12px;
+    min-width: 200px;
+    line-height: 20px;
+    border-radius: 3px;
+    position: absolute;
+    background-color: rgba(102,102,102,0.8);
+}
+
+.pinTipWrap .pinTip:before {
+    top: -8px;
+    left: 95px;
+    content: '';
+    position: absolute;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid rgba(102,102,102,0.8);
+}
+
+.pinTipWrap:hover .pinTip {
+    display: inline-flex;
 }
