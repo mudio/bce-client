@@ -21,10 +21,6 @@ export default class DownloadItem extends Component {
             loaded: PropTypes.number.isRequired,
             path: PropTypes.string.isRequired,
             error: PropTypes.string,
-            process: PropTypes.shape({
-                rate: PropTypes.number,
-                schedule: PropTypes.number
-            })
         })
     };
 

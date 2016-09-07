@@ -6,6 +6,7 @@
  */
 
 import Q from 'q';
+import debug from 'debug';
 import async from 'async';
 import {TRANS_WATING} from '../utils/TransferStatus';
 import {getRegionClient} from '../api/client';
@@ -24,6 +25,7 @@ export const UPLOAD_NOTIFY_FINISH = 'UPLOAD_NOTIFY_FINISH'; // 任务完成了
 export const UPLOAD_NOTIFY_ERROR = 'UPLOAD_NOTIFY_ERROR'; // 错误
 
 const credentials = {};
+const logger = debug('bce-client:upload');
 let eventEmiter = noop => noop;
 
 const queue = async.queue(
@@ -131,21 +133,25 @@ export function uploadFromFile(task, done) {
     const tasks = decompose(task);
     const client = getRegionClient(region, credentials);
 
-    let loaded = 0;
-
     function uploadPartFile(part, callback) {
+        logger('Start UploadId = %s, PartNumber = %s, Part = %s',
+            uploadId, part.partNumber, JSON.stringify(part));
+
         return client.uploadPartFromFile(
             part.bucketName, part.key, part.uploadId,
             part.partNumber, part.partSize,
             part.file, part.start
         ).then(
             res => {
-                loaded++;
+                logger('Finish UploadId = %s, PartNumber = %s, Part = %s',
+                    uploadId, part.partNumber, JSON.stringify(part));
+                // 通知分片进度
                 eventEmiter({
                     type: UPLOAD_NOTIFY_PROGRESS,
                     uploadId: part.uploadId,
-                    loaded: loaded * Math.min(UPLOAD_PART_SIZE, part.partSize),
+                    increaseSize: part.partSize,
                 });
+                // 完成分片任务
                 callback(null, res);
             },
             err => callback(err)
@@ -169,7 +175,6 @@ export function uploadFromFile(task, done) {
         },
         done
     ).then(
-        () => done(),
-        done
+        () => done(), done
     );
 }

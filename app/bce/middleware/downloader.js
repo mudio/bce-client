@@ -9,6 +9,7 @@
 
 import fs from 'fs';
 import P from 'path';
+import debug from 'debug';
 import async from 'async';
 import {getRegionClient} from '../api/client';
 import {TRANS_WATING} from '../utils/TransferStatus';
@@ -25,6 +26,7 @@ export const DOWNLOAD_NOTIFY_FINISH = 'DOWNLOAD_NOTIFY_FINISH'; // 任务完成�
 export const DOWNLOAD_NOTIFY_ERROR = 'DOWNLOAD_NOTIFY_ERROR'; // 任务完成了
 
 const _credentials = {};
+const logger = debug('bce-client:download');
 let _store = null;
 
 const queue = async.queue(
@@ -48,8 +50,16 @@ function startTask(downloadTasks = [], downloadKeys = []) {
         ).slice(0, leftWorker);
     }
 
-    waitTasks.forEach(
-        task => queue.push(task, err => {
+    // 这里默认不会有重复的待添加任务
+    const queueKeys = queue.workersList().map(item => item.data.key);
+    waitTasks.forEach(task => {
+        if (queueKeys.indexOf(task.key) > -1) {
+            // 任务去重
+            logger('Ignore duplicate task, key = %s', task.key);
+            return;
+        }
+
+        queue.push(task, err => {
             if (err) {
                 return _store.dispatch({
                     path: task.path,
@@ -65,8 +75,8 @@ function startTask(downloadTasks = [], downloadKeys = []) {
                     command: DOWNLOAD_COMMAND_START
                 }
             });
-        })
-    );
+        });
+    });
 }
 
 function cancelTask(uploadTasks = [], uploadIds = []) {
@@ -105,7 +115,11 @@ function fetchFileFromServer(task, done) {
     outputStream.once('pipe', reader => {
         let loaded = 0;
         timer = setInterval(
-            () => _store.dispatch({path, loaded, type: DOWNLOAD_NOTIFY_PROGRESS}),
+            () => {
+                const increaseSize = loaded;
+                loaded = 0;
+                _store.dispatch({path, increaseSize, type: DOWNLOAD_NOTIFY_PROGRESS});
+            },
             1e3
         );
 
@@ -118,14 +132,25 @@ function fetchFileFromServer(task, done) {
         );
     });
 
+    logger('Start path = %s, bucket = %s, key = %s', path, bucket, key);
     client.sendRequest('GET', {
         key,
         outputStream,
         bucketName: bucket,
         headers: {Range: ''}
     })
-    .then(() => done(), done)
-    .finally(() => clearInterval(timer));
+    .then(
+        () => {
+            clearInterval(timer);
+            logger('Finish path = %s, bucket = %s, key = %s', path, bucket, key);
+            done();
+        },
+        ex => {
+            clearInterval(timer);
+            logger('Finish path = %s, bucket = %s, key = %s, error = %s', path, bucket, key, ex);
+            done(ex);
+        }
+    );
 }
 
 export function download(store) {

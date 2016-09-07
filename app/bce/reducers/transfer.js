@@ -39,15 +39,21 @@ import {TransUploadType, TransDownloadType} from '../utils/BosType';
 export function uploads(state = [], action) {
     switch (action.type) {
     case TRANS_UPLOAD_NEW: {
-        const task = Object.assign({status: TRANS_WATING}, action);
+        const task = Object.assign({
+            loaded: 0,
+            status: TRANS_WATING
+        }, action);
         delete task.type;
         return state.concat([task]);
     }
     case UPLOAD_NOTIFY_PROGRESS:
         return state.map(item => {
-            const {loaded, uploadId} = action;
+            const {increaseSize, uploadId} = action;
             if (item.uploadId === uploadId) {
-                return Object.assign({}, item, {loaded, status: TRANS_RUNNING});
+                return Object.assign({}, item, {
+                    loaded: item.loaded + increaseSize,
+                    status: TRANS_RUNNING
+                });
             }
             return Object.assign({}, item);
         });
@@ -87,9 +93,12 @@ export function downloads(state = [], action) {
     }
     case DOWNLOAD_NOTIFY_PROGRESS: {
         return state.map(item => {
-            const {loaded, path} = action;
+            const {increaseSize, path} = action;
             if (item.path === path) {
-                return Object.assign({}, item, {loaded, status: TRANS_RUNNING});
+                return Object.assign({}, item, {
+                    loaded: item.loaded + increaseSize,
+                    status: TRANS_RUNNING
+                });
             }
             return Object.assign({}, item);
         });
