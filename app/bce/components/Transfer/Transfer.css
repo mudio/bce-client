@@ -1,8 +1,9 @@
 
 .container {
-    display: flex;
     flex: auto;
+    display: flex;
     flex-flow: column nowrap;
+    width: calc(100% - 150px);
 }
 
 .content {

@@ -87,7 +87,7 @@
 }
 
 .pinTipWrap {
-    width: 30px;
+    left: -25px;
     color: #fff;
     display: flex;
     cursor: pointer;
@@ -97,7 +97,7 @@
 }
 
 .pinTipWrap .pinTip {
-    top: 30px;
+    top: 33px;
     padding: 5px;
     display: none;
     color: #fff;
@@ -106,17 +106,19 @@
     line-height: 20px;
     border-radius: 3px;
     position: absolute;
-    background-color: rgba(102,102,102,0.8);
+    background-color: rgba(34, 141, 255, 0.8);
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.3);
+    font-family: Arial, Helvetica, Helvetica Neue;
 }
 
 .pinTipWrap .pinTip:before {
-    top: -8px;
-    left: 95px;
+    top: -10px;
+    left: 94px;
     content: '';
     position: absolute;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 10px solid rgba(102,102,102,0.8);
+    border-bottom: 10px solid rgba(34, 141, 255, 0.8);
 }
 
 .pinTipWrap:hover .pinTip {

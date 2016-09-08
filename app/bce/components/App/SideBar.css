@@ -9,10 +9,11 @@
 }
 
 .header {
-    display: flex;
     height: 50px;
-    margin: 0 10px;
     color: #fff;
+    display: flex;
+    margin: 0 10px;
+    flex-shrink: 0;
     align-items: center;
     justify-content: flex-end;
     background: url(../../assets/logo.png) no-repeat;

@@ -45,6 +45,7 @@
 
 .summary {
     flex: auto;
+    word-break: break-all;
 }
 
 .summary div {
@@ -62,4 +63,8 @@
 .seperation {
     padding: 0 10px;
     color: #ccc;
+}
+
+.status {
+    flex-shrink: 0;
 }

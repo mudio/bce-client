@@ -10,12 +10,14 @@ body {
 }
 
 #main {
+    width: 100vh;
     display: flex;
     flex: auto;
 }
 
 .layout {
     flex: auto;
+    width: 100vh;
     display: flex;
     flex-flow: column nowrap;
 }

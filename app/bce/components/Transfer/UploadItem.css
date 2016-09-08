@@ -44,6 +44,7 @@
 
 .summary {
     flex: auto;
+    word-break: break-all;
 }
 
 .summary div {
@@ -56,5 +57,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.status {
+    flex-shrink: 0;
 }
 
