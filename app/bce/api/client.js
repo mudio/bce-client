@@ -45,18 +45,6 @@ export class Client extends BosClient {
         return super.listObjects(...args);
     }
 
-    deleteMultipleObjects(bucketName, objects, options = {}) {
-        // bce-sdk-js v0.1.8 api参数有问题，这里重写下
-        return this.sendRequest('POST', {
-            bucketName,
-            params: {delete: ''},
-            body: JSON.stringify({
-                objects: objects.map(key => ({key}))
-            }),
-            config: options.config
-        });
-    }
-
     uploadPartFromFile(...args) {
         // electron 对asar文件处理特殊处理，这里屏蔽下
         process.noAsar = true;

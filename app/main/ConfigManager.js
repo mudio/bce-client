@@ -12,10 +12,10 @@ import path from 'path';
 import ConfigStore from 'configstore';
 import {REGION_BJ, REGION_GZ} from '../bce/utils/Region';
 
+// TODO: 这里会生成~/.config/undefine.json
 const config = new ConfigStore();
 config.path = path.join(os.homedir(), '.bce', 'config.json');
 config.all = Object.assign(
-    {},
     {
         endpoint: {
             [REGION_BJ]: 'http://bj.bcebos.com',
