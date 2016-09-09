@@ -88,7 +88,7 @@
 
 .pinTipWrap {
     left: -25px;
-    color: #fff;
+    color: #999;
     display: flex;
     cursor: pointer;
     position: relative;
@@ -119,6 +119,10 @@
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 10px solid rgba(34, 141, 255, 0.8);
+}
+
+.pinTipWrap:hover {
+    color: #108cee;
 }
 
 .pinTipWrap:hover .pinTip {
