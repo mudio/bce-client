@@ -48,12 +48,15 @@ function startTask(uploadTasks = [], uploadIds = []) {
     waitTasks.forEach(
         task => queue.push(task, err => {
             if (err) {
+                logger('Finish UploadId = %s, Error = %s', task.uploadId, err.message);
                 return eventEmiter({
                     error: err.message,
                     uploadId: task.uploadId,
                     type: UPLOAD_NOTIFY_ERROR
                 });
             }
+
+            logger('Finish UploadId = %s', task.uploadId);
             eventEmiter({type: UPLOAD_NOTIFY_FINISH, uploadId: task.uploadId});
         })
     );
@@ -115,8 +118,7 @@ function decompose(task) {
             partNumber,
             start: offset,
             file: filePath,
-            bucketName: bucket,
-            stop: offset + partSize - 1 // eslint-disable-line no-mixed-operators
+            bucketName: bucket
         });
 
         leftSize -= partSize;
@@ -129,9 +131,14 @@ function decompose(task) {
 
 export function uploadFromFile(task, done) {
     const {bucket, key, uploadId, region} = task;
-    const deferred = Q.defer();
-    const tasks = decompose(task);
     const client = getRegionClient(region, credentials);
+
+    // 如果少于2片，就别分了
+    if (task.fileSize <= 2 * UPLOAD_PART_SIZE) {
+        client.putObjectFromFile(task.bucket, task.key, task.filePath)
+            .then(() => done(), done);
+        return;
+    }
 
     function uploadPartFile(part, callback) {
         logger('Start UploadId = %s, PartNumber = %s, Part = %s',
@@ -157,6 +164,9 @@ export function uploadFromFile(task, done) {
             err => callback(err)
         );
     }
+
+    const deferred = Q.defer();
+    const tasks = decompose(task);
 
     async.mapLimit(
         tasks, UPLOAD_PART_LIMIT,
