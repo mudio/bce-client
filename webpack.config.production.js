@@ -8,7 +8,7 @@ import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
 
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
 
     entry: './app/bce/index',
 
