@@ -8,6 +8,7 @@
 /* eslint no-underscore-dangle: [2, { allow: ["_credentials", "_store"] }] */
 
 import fs from 'fs';
+import mkdirp from 'mkdirp';
 import P from 'path';
 import debug from 'debug';
 import async from 'async';
@@ -90,21 +91,16 @@ function suspendTask(uploadTasks = [], uploadIds = []) {
 function fetchFileFromServer(task, done) {
     let timer = null;
     const {bucket, key, region, path} = task;
-    const pathInfo = P.parse(path);
+    const dirName = P.dirname(path);
     const client = getRegionClient(region, _credentials);
 
-    if (!fs.existsSync(pathInfo.dir)) {
-        const dir = pathInfo.dir.substr(pathInfo.root.length);
-        const dirParts = dir.split(P.sep);
-
-        for (let index = 0; index < dirParts.length; index++) { // eslint-disable-line no-plusplus
-            const relativeDir = dirParts.slice(0, index + 1).join(P.sep);
-            const absoluteDir = pathInfo.root + relativeDir;
-            if (!fs.existsSync(absoluteDir)) {
-                fs.mkdirSync(absoluteDir);
-            }
+    if (!fs.existsSync(dirName)) {
+        try {
+            mkdirp.sync(dirName, parseInt('0700', 8));
+        } catch (e) {
+            return done(e);
         }
-    } else if (!fs.lstatSync(pathInfo.dir).isDirectory()) {
+    } else if (!fs.lstatSync(dirName).isDirectory()) {
         // 操作系统不支持文件夹与文件名相同，先抛出错误
         return done(new Error('创建路径错误'));
     }

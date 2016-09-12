@@ -8,7 +8,7 @@
 import React, {Component, PropTypes} from 'react';
 
 import styles from './DownloadItem.css';
-import {getText, TRANS_ERROR} from '../../utils/TransferStatus';
+import {getText, TRANS_ERROR, TRANS_FINISH} from '../../utils/TransferStatus';
 
 export default class DownloadItem extends Component {
     static propTypes = {
@@ -27,23 +27,21 @@ export default class DownloadItem extends Component {
     getLoader() {
         const {loaded, size, status} = this.props.item;
         let klass = '';
+        let width = 100 * loaded / size; // eslint-disable-line no-mixed-operators
 
-        switch (status) {
+        switch (status) { // eslint-disable-line default-case
         case TRANS_ERROR: {
             klass = styles.error;
             break;
         }
-        default:
-            klass = '';
+        case TRANS_FINISH: {
+            width = 100;
+        }
         }
 
-        if (loaded) {
-            const width = Math.min(100, 100 * loaded / size); // eslint-disable-line no-mixed-operators
-            return (
-                <span className={`${styles.loader} ${klass}`} style={{width: `${width}%`}} />
-            );
-        }
-        return '';
+        return (
+            <span className={`${styles.loader} ${klass}`} style={{width: `${width}%`}} />
+        );
     }
 
     getSize() {
