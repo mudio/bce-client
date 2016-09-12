@@ -94,7 +94,7 @@ export function createUploadTask(dataTransferItem = [], region, bucket, key) {
             }
         }
 
-        for (let index = 0; index < dataTransferItem.length; index++) {
+        for (let index = 0; index < dataTransferItem.length; index++) { // eslint-disable-line no-plusplus
             const item = dataTransferItem[index];
             const entry = item.webkitGetAsEntry();
             entryHandle(entry, key);

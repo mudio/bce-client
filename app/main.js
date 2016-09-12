@@ -33,7 +33,7 @@ if (!win32Installer.handleStartupEvent()) {
 
     developer.showDevTools();
 
-    app.on('ready', async () => {
+    app.on('ready', async () => { // eslint-disable-line arrow-parens
         logger('ready');
         await developer.installExtensions();
 

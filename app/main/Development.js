@@ -7,7 +7,7 @@
 
 export default class Development {
     get installExtensions() {
-        return async () => {
+        return async () => { // eslint-disable-line arrow-parens
             if (process.env.NODE_ENV === 'development') {
                 const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
 

@@ -96,7 +96,8 @@ function fetchFileFromServer(task, done) {
     if (!fs.existsSync(pathInfo.dir)) {
         const dir = pathInfo.dir.substr(pathInfo.root.length);
         const dirParts = dir.split(P.sep);
-        for (let index = 0; index < dirParts.length; index++) {
+
+        for (let index = 0; index < dirParts.length; index++) { // eslint-disable-line no-plusplus
             const relativeDir = dirParts.slice(0, index + 1).join(P.sep);
             const absoluteDir = pathInfo.root + relativeDir;
             if (!fs.existsSync(absoluteDir)) {

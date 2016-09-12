@@ -13,7 +13,7 @@ const {shell} = electron;
 export default class BrowserLink extends Component {
     static propTypes = {
         className: PropTypes.string,
-        children: PropTypes.array.isRequired,
+        children: PropTypes.node.isRequired,
         linkTo: PropTypes.string.isRequired
     };
 
