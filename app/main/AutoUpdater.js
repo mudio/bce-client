@@ -18,7 +18,7 @@ import {
     UPDATE_NOT_AVAILABLE
 } from '../bce/actions/updater';
 
-const UPDATE_SERVER_HOST = 'bce.mudio.net';
+const UPDATE_SERVER_HOST = 'bceclient.duapp.com';
 
 export default class OSXUpdater {
     constructor(window) {
