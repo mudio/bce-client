@@ -96,7 +96,7 @@ function fetchFileFromServer(task, done) {
 
     if (!fs.existsSync(dirName)) {
         try {
-            mkdirp.sync(dirName, parseInt('0700', 8));
+            mkdirp.sync(dirName, 0o700);
         } catch (e) {
             return done(e);
         }

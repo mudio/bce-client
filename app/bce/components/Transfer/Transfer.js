@@ -45,15 +45,15 @@ export default class Transfer extends Component {
                       clearFinish={evt => this.clearFinish(evt)}
                     />
                     <div className={styles.content}>
-                    {
-                        uploads.map(
-                            item => (<UploadItem key={item.uploadId} item={item} />)
-                        )
-                    }
-                    {
-                        uploads.length === 0
-                        && <span className={`fa fa-cloud-upload ${styles.nocontent}`}>没有上传任务~(&gt;_&lt;)!!!</span>
-                    }
+                        {
+                            uploads.map(
+                                item => (<UploadItem key={item.uploadId} item={item} />)
+                            )
+                        }
+                        {
+                            uploads.length === 0
+                            && <span className={`fa fa-cloud-upload ${styles.nocontent}`}>没有上传任务~(&gt;_&lt;)!!!</span>
+                        }
                     </div>
                 </div>
             );
@@ -65,15 +65,15 @@ export default class Transfer extends Component {
                       clearFinish={evt => this.clearFinish(evt)}
                     />
                     <div className={styles.content}>
-                    {
-                        downloads.map(item => (
-                            <DownloadItem key={item.path} item={item} />
-                        ))
-                    }
-                    {
-                        downloads.length === 0
-                        && <span className={`fa fa-cloud-download ${styles.nocontent}`}>没有下载任务~(&gt;_&lt;)!!!</span>
-                    }
+                        {
+                            downloads.map(item => (
+                                <DownloadItem key={item.path} item={item} />
+                            ))
+                        }
+                        {
+                            downloads.length === 0
+                            && <span className={`fa fa-cloud-download ${styles.nocontent}`}>没有下载任务~(&gt;_&lt;)!!!</span>
+                        }
                     </div>
                 </div>
             );
