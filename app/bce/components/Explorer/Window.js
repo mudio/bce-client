@@ -7,7 +7,7 @@
 
 /* eslint react/no-string-refs: 0 */
 
-import u from 'underscore';
+import u from 'lodash';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import React, {Component, PropTypes} from 'react';
