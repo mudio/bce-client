@@ -41,15 +41,6 @@
           "type": "file"
         }
       ]
-    },
-    "win": {
-      "iconUrl": "https://bce.bdstatic.com/portal/product/bos/bos-banner_94db6ad3.png"
-    },
-    "linux": {
-      "target": [
-        "deb",
-        "AppImage"
-      ]
     }
   },
   "directories": {
