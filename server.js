@@ -1,4 +1,10 @@
-/* eslint no-console: 0, import/no-extraneous-dependencies: 0 */
+/**
+* Setup and run the development server for Hot-Module-Replacement
+* https://webpack.github.io/docs/hot-module-replacement-with-webpack.html
+*/
+
+/* eslint no-console: 0 */
+
 import express from 'express';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';

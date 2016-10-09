@@ -1,12 +1,16 @@
-/* eslint import/no-extraneous-dependencies: 0 */
+/** Used in .babelrc for 'test' environment */
+
+// for babel-plugin-webpack-loaders
 require('babel-register');
-const devConfigs = require('./webpack.config.development');
+const devConfig = require('./webpack.config.development');
 
 module.exports = {
     output: {
         libraryTarget: 'commonjs2'
     },
+
     module: {
-        loaders: devConfigs.module.loaders.slice(1)  // remove babel-loader
+        // Use base + development loaders, but exclude 'babel-loader'
+        loaders: devConfig.module.loaders.slice(1)
     }
 };
