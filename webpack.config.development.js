@@ -50,8 +50,6 @@ export default merge(baseConfig, {
     },
 
     plugins: [
-        ...baseConfig.plugins,
-
         // https://webpack.github.io/docs/hot-module-replacement-with-webpack.html
         new webpack.HotModuleReplacementPlugin(),
 

@@ -21,8 +21,6 @@ export default merge(baseConfig, {
 
     module: {
         loaders: [
-            ...baseConfig.module.loaders,
-
             // Extract all .global.css to style.css as is
             {
                 test: /\.global\.css$/,
@@ -52,8 +50,6 @@ export default merge(baseConfig, {
     },
 
     plugins: [
-        ...baseConfig.plugins,
-
         // https://webpack.github.io/docs/list-of-plugins.html#occurrenceorderplugin
         // https://github.com/webpack/webpack/issues/864
         new webpack.optimize.OccurrenceOrderPlugin(),
