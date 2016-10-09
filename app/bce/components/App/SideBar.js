@@ -26,7 +26,7 @@ class SideBar extends Component {
 
         return (
             <div className={styles.container}>
-                <div className={styles.header}>百度云</div>
+                <div className={styles.header} />
                 <div className={styles.body}>
                     {
                         regions.map(r => (
