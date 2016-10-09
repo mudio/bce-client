@@ -112,7 +112,7 @@ export default class Login extends Component {
         return (
             <div className={styles.container}>
                 <form className={styles.login} onSubmit={evt => this.handleSubmit(evt)}>
-                    <h1>百度开放云</h1>
+                    <h1>百度云</h1>
                     {
                         (!isAuth || !pin)
                         && <div>

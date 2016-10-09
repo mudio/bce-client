@@ -1,4 +1,4 @@
-# 百度开放云-对象存储BOS-客户端
+# 百度云-对象存储BOS-客户端
 
 [![Build Status][travis-image]][travis-url]
 [![Build Status][appveyor-image]][appveyor-url]

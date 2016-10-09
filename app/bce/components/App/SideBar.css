@@ -17,8 +17,8 @@
     align-items: center;
     justify-content: flex-end;
     background: url(../../assets/logo.png) no-repeat;
-    background-size: 25%;
-    background-position: 5px 50%;
+    background-size: cover;
+    background-position: 0 50%;
     border-bottom: 1px dotted rgba(238, 238, 238, 0.3);
 }
 

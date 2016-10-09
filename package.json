@@ -2,7 +2,7 @@
   "name": "bce-bos-client",
   "productName": "BOS",
   "version": "0.1.5-beta",
-  "description": "百度开放云-对象存储BOS-客户端",
+  "description": "百度云-对象存储BOS-客户端",
   "main": "main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",

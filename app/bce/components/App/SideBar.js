@@ -26,7 +26,7 @@ class SideBar extends Component {
 
         return (
             <div className={styles.container}>
-                <div className={styles.header}>百度开放云</div>
+                <div className={styles.header}>百度云</div>
                 <div className={styles.body}>
                     {
                         regions.map(r => (
@@ -84,7 +84,7 @@ class SideBar extends Component {
                       linkTo="https://github.com/mudio/bos/issues"
                     >
                         <i className="fa fa-share" />
-                        客户端建议
+                        问题反馈
                     </BrowserLink>
                 </div>
             </div>
