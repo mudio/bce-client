@@ -6,7 +6,7 @@
  */
 
 import thunk from 'redux-thunk';
-import createLogger from 'redux-logger'; // eslint-disable-line import/no-extraneous-dependencies
+import createLogger from 'redux-logger';
 import {hashHistory} from 'react-router';
 import {routerMiddleware} from 'react-router-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
@@ -18,7 +18,7 @@ import {download} from '../middleware/downloader';
 
 const logger = createLogger({
     level: 'info',
-    collapsed: true,
+    collapsed: true
 });
 
 const router = routerMiddleware(hashHistory);
