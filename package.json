@@ -18,9 +18,9 @@
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
     "dist": "build",
     "compile": "npm run build-main && npm run build-renderer",
-    "publish": "build --win nsis squirrel --publish onTagOrDraft",
+    "publish": "build --x64 --win nsis squirrel --publish onTagOrDraft",
     "build": "npm run compile && npm run dist",
-    "build:win": "npm run compile && build --win nsis squirrel",
+    "build:win": "npm run compile && build --x64 --win nsis squirrel",
     "build:linux": "npm run compile && build --linux",
     "build:osx": "npm run compile && build --mac"
   },
