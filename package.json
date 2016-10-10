@@ -16,13 +16,10 @@
     "start-hot": "cross-env DEBUG=bce-client:*,bce-sdk:* HOT=1 NODE_ENV=development electron -r babel-register -r babel-polyfill ./app/main",
     "hot-server": "cross-env NODE_ENV=development node -r babel-register server.js",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
-    "dist": "build",
     "compile": "npm run build-main && npm run build-renderer",
-    "publish": "build --x64 --win nsis squirrel --publish onTagOrDraft",
-    "build": "npm run compile && npm run dist",
-    "build:win": "npm run compile && build --x64 --win nsis squirrel",
-    "build:linux": "npm run compile && build --linux",
-    "build:osx": "npm run compile && build --mac"
+    "build": "npm run compile && build",
+    "publish:win": "build --x64 --win squirrel --publish onTagOrDraft",
+    "publish:osx": "build --mac --publish onTagOrDraft"
   },
   "build": {
     "appId": "com.baidu.bce",
