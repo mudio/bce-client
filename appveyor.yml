@@ -37,7 +37,9 @@ test_script:
   - npm run pretest
   - npm run lint
   - npm run compile
-  - npm run publish:win
+  - npm run build:win
+  - npm run publish:bos
+  - npm run publish:github
 
 # Don't actually build.
 build: off

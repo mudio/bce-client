@@ -24,5 +24,5 @@ script:
 - npm run pretest
 - npm run lint
 - npm run compile
-- npm run publish:osx
+- npm run build
 
