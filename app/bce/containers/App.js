@@ -7,21 +7,15 @@
 
 import React, {Component, PropTypes} from 'react';
 
-import SideBar from '../components/App/SideBar';
-
 export default class App extends Component {
     static propTypes = {
-        children: PropTypes.element.isRequired,
-        location: PropTypes.object.isRequired
-    };
+        children: PropTypes.element.isRequired
+    }
 
     render() {
         return (
             <div className="layout">
-                <div className="layout-content">
-                    <SideBar />
-                    {this.props.children}
-                </div>
+                {this.props.children}
             </div>
         );
     }

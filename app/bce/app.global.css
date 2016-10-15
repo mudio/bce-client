@@ -24,20 +24,18 @@ button {
     flex: auto;
     width: 100vh;
     display: flex;
-    flex-flow: column nowrap;
-}
-
-.layout .layout-content {
-    display: flex;
-    flex: auto;
 }
 
 ::-webkit-scrollbar {
-    -webkit-appearance: none;
     width: 7px;
+    height: 7px;
+    -webkit-appearance: none;
+    -webkit-app-region: no-drag;
 }
+
 ::-webkit-scrollbar-thumb {
     border-radius: 4px;
+    -webkit-app-region: no-drag;
     background-color: rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
 }

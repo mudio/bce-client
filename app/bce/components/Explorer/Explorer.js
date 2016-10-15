@@ -11,6 +11,8 @@ import Url from './Url';
 import Tool from './Tool';
 import Window from './Window';
 import styles from './Explorer.css';
+import SideBar from '../App/SideBar';
+
 
 const ICON_MODEL = 'icon_model';
 const LIST_MODEL = 'list_model';
@@ -45,9 +47,12 @@ export default class Explorer extends Component {
 
         return (
             <div className={styles.container}>
-                <Url nav={nav} updateNavigator={updateNavigator} />
-                <Tool models={[ICON_MODEL, LIST_MODEL]} />
-                <Window nav={nav} model={ICON_MODEL} />
+                <SideBar />
+                <div className={styles.body}>
+                    <Url nav={nav} updateNavigator={updateNavigator} />
+                    <Tool models={[ICON_MODEL, LIST_MODEL]} />
+                    <Window nav={nav} model={ICON_MODEL} />
+                </div>
             </div>
         );
     }

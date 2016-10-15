@@ -2,6 +2,11 @@
 .container {
     flex: auto;
     display: flex;
+}
+
+.body {
+    flex: auto;
+    display: flex;
     flex-flow: column nowrap;
     width: calc(100% - 150px);
 }

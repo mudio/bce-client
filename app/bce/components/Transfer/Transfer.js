@@ -11,6 +11,7 @@ import Header from './Header';
 import styles from './Transfer.css';
 import UploadItem from './UploadItem';
 import DownloadItem from './DownloadItem';
+import SideBar from '../App/SideBar';
 import {TransUploadType, TransDownloadType} from '../../utils/BosType';
 
 export default class Transfer extends Component {
@@ -23,6 +24,41 @@ export default class Transfer extends Component {
         clearFinish: PropTypes.func.isRequired
     };
 
+    getCategoryContent() {
+        const {uploads, downloads} = this.props;
+        const {transType} = this.props.params;
+
+        if (transType === TransUploadType) {
+            return (
+                <div className={styles.content}>
+                    {
+                        uploads.map(
+                            item => (<UploadItem key={item.uploadId} item={item} />)
+                        )
+                    }
+                    {
+                        uploads.length === 0
+                        && <span className={`fa fa-cloud-upload ${styles.nocontent}`}>没有上传任务~(&gt;_&lt;)!!!</span>
+                    }
+                </div>
+            );
+        } else if (transType === TransDownloadType) {
+            return (
+                <div className={styles.content}>
+                    {
+                        downloads.map(item => (
+                            <DownloadItem key={item.path} item={item} />
+                        ))
+                    }
+                    {
+                        downloads.length === 0
+                        && <span className={`fa fa-cloud-download ${styles.nocontent}`}>没有下载任务~(&gt;_&lt;)!!!</span>
+                    }
+                </div>
+            );
+        }
+    }
+
     clearFinish() {
         const {clearFinish} = this.props;
         const {transType} = this.props.params;
@@ -34,49 +70,17 @@ export default class Transfer extends Component {
     }
 
     render() {
-        const {uploads, downloads} = this.props;
-        const {transType} = this.props.params;
-
-        if (transType === TransUploadType) {
-            return (
-                <div className={styles.container}>
+        return (
+            <div className={styles.container}>
+                <SideBar />
+                <div className={styles.body}>
                     <Header
                       createTask={evt => this.createTask(evt)}
                       clearFinish={evt => this.clearFinish(evt)}
                     />
-                    <div className={styles.content}>
-                        {
-                            uploads.map(
-                                item => (<UploadItem key={item.uploadId} item={item} />)
-                            )
-                        }
-                        {
-                            uploads.length === 0
-                            && <span className={`fa fa-cloud-upload ${styles.nocontent}`}>没有上传任务~(&gt;_&lt;)!!!</span>
-                        }
-                    </div>
+                    {this.getCategoryContent()}
                 </div>
-            );
-        } else if (transType === TransDownloadType) {
-            return (
-                <div className={styles.container}>
-                    <Header
-                      createTask={evt => this.createTask(evt)}
-                      clearFinish={evt => this.clearFinish(evt)}
-                    />
-                    <div className={styles.content}>
-                        {
-                            downloads.map(item => (
-                                <DownloadItem key={item.path} item={item} />
-                            ))
-                        }
-                        {
-                            downloads.length === 0
-                            && <span className={`fa fa-cloud-download ${styles.nocontent}`}>没有下载任务~(&gt;_&lt;)!!!</span>
-                        }
-                    </div>
-                </div>
-            );
-        }
+            </div>
+        );
     }
 }
