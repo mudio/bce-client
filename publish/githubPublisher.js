@@ -97,6 +97,7 @@ function publish() {
 
             if (!draft) {
                 console.log('没有找到Draft,取消发布~');
+                return;
             }
 
             const uploadUrl = draft.upload_url.substring(0, draft.upload_url.indexOf('{'));
