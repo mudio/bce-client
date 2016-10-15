@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {Link} from 'react-router';
 import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
@@ -62,24 +63,31 @@ export default class Url extends Component {
         return (
             <div className={styles.container}>
                 <div className={styles.nav}>
-                    <i
+                    <span
                       className={
-                        classnames('fa', 'fa-arrow-left', {[styles.disable]: !nav.bucket})
+                        classnames({[styles.disable]: !nav.bucket})
                       }
                       onClick={() => this.backward()}
-                    />
-                    <i
+                    >
+                    &lt;
+                    </span>
+                    <span
                       className={
-                          classnames('fa', 'fa-arrow-right', {[styles.disable]: history.length === 0})
+                          classnames({[styles.disable]: history.length === 0})
                       }
                       onClick={() => this.forward()}
-                    />
+                    >
+                    &gt;
+                    </span>
                 </div>
                 <div className={styles.url}>
                     {nav.region}://
                     {nav.bucket && `${nav.bucket}/`}
                     {nav.folder}
                 </div>
+                <Link to="/login" className={styles.lock} >
+                    <i className="fa fa-lg fa-power-off" />
+                </Link>
             </div>
         );
     }

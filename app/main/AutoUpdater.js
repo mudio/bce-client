@@ -7,6 +7,7 @@
 
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }], no-unused-vars: 0 */
 
+import debug from 'debug';
 import * as os from 'os';
 import request from 'request';
 import {app, autoUpdater} from 'electron';
@@ -19,6 +20,7 @@ import {
     UPDATE_NOT_AVAILABLE
 } from '../bce/actions/updater';
 
+const logger = debug('bce-client:updater');
 const UPDATE_SERVER_HOST = 'bceclient.duapp.com';
 
 export default class OSXUpdater {
@@ -40,8 +42,11 @@ export default class OSXUpdater {
             (event, releaseNotes, releaseName) => this.notify(UPDATE_DOWNLOADED, {releaseName})
         );
         autoUpdater.on('error', error => {
+            logger(error.message);
+
             request(feedURL, (err, response, body) => {
                 if (err) {
+                    logger(err.message);
                     this.notify(UPDATE_ERROR, {error: err.message});
                 }
 
