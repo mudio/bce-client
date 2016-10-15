@@ -2,7 +2,7 @@
 .container {
     display: flex;
     flex-shrink: 0;
-    height: 30px;
+    height: 40px;
     align-items: center;
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3);
 }
@@ -21,12 +21,12 @@
 }
 
 .clear {
-    color: #666;
+    color: #8692b2;
     padding: 0 15px;
     font-size: 1.3em;
     cursor: pointer;
 }
 
 .clear:hover {
-    color: #108cee;
+    color: #2eacfc;
 }
