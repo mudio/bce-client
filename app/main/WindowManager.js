@@ -11,8 +11,13 @@ import {app, BrowserWindow} from 'electron';
 import AutoUpdater from './AutoUpdater';
 
 export default class WindowManager {
-    constructor(show = false, width = 980, height = 720) {
-        this._window = new BrowserWindow({show, width, height});
+    constructor(show = false, width = 1000, height = 680) {
+        this._window = new BrowserWindow({
+            show,
+            width,
+            height,
+            titleBarStyle: 'hidden-inset'
+        });
         this._updater = new AutoUpdater(this._window);
     }
 

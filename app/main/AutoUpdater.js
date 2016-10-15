@@ -8,6 +8,7 @@
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }], no-unused-vars: 0 */
 
 import * as os from 'os';
+import request from 'request';
 import {app, autoUpdater} from 'electron';
 
 import {
@@ -33,17 +34,25 @@ export default class OSXUpdater {
         const platform = os.platform();
         const feedURL = `http://${UPDATE_SERVER_HOST}/update/${platform}/${app.getVersion()}`;
 
-        autoUpdater.on('update-available', () => this.notify('发现新版本'));
+        autoUpdater.on('update-available', () => this.notify(UPDATE_AVAILABLE));
         autoUpdater.on(
             'update-downloaded',
-            (event, releaseNotes, releaseName, releaseDate, updateURL) => this.notify(
-                UPDATE_DOWNLOADED,
-                `新版本 ${releaseName} 已经下载，重启客户端将自动安装更新`
-            )
+            (event, releaseNotes, releaseName) => this.notify(UPDATE_DOWNLOADED, {releaseName})
         );
-        autoUpdater.on('error', error => this.notify(UPDATE_ERROR, error.message));
-        autoUpdater.on('checking-for-update', () => this.notify(UPDATE_CHECKING, '正在检查更新'));
-        autoUpdater.on('update-not-available', () => this.notify(UPDATE_NOT_AVAILABLE, '没有可用的更新'));
+        autoUpdater.on('error', error => {
+            request(feedURL, (err, response, body) => {
+                if (err) {
+                    this.notify(UPDATE_ERROR, {error: err.message});
+                }
+
+                if (response.statusCode === 200) {
+                    const {name, url} = JSON.parse(body);
+                    return this.notify(UPDATE_ERROR, {releaseName: name, url});
+                }
+            });
+        });
+        autoUpdater.on('checking-for-update', () => this.notify(UPDATE_CHECKING));
+        autoUpdater.on('update-not-available', () => this.notify(UPDATE_NOT_AVAILABLE));
         autoUpdater.setFeedURL(feedURL);
         autoUpdater.checkForUpdates();
     }

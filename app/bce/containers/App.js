@@ -7,7 +7,6 @@
 
 import React, {Component, PropTypes} from 'react';
 
-import Footer from '../components/App/Footer';
 import SideBar from '../components/App/SideBar';
 
 export default class App extends Component {
@@ -23,7 +22,6 @@ export default class App extends Component {
                     <SideBar />
                     {this.props.children}
                 </div>
-                <Footer className="layout-footer" />
             </div>
         );
     }

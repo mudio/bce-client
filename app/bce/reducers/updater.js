@@ -16,9 +16,11 @@ import {
 } from '../actions/updater';
 
 const defaultState = {
+    type: UPDATE_NOT_AVAILABLE,
     version: remote.app.getVersion(),
-    lastUpdateTime: (new Date()).toString(),
-    note: '当前最新版本'
+    lastest: {
+        name: remote.app.getVersion()
+    }
 };
 
 export default function updater(state = defaultState, action) {
@@ -29,8 +31,8 @@ export default function updater(state = defaultState, action) {
     case UPDATE_DOWNLOADED:
     case UPDATE_NOT_AVAILABLE:
         return Object.assign({}, state, {
-            lastUpdateTime: (new Date()).toString(),
-            note: action.message
+            type: action.type,
+            lastest: action.message
         });
     default:
         return state;

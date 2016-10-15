@@ -1,30 +1,15 @@
 
 .container {
-    color: #fff;
     display: flex;
-    flex-shrink: 0;
-    font-size: 12px;
-    align-items: center;
-    justify-content: flex-end;
-    background-color: rgb(26, 138, 255);
-}
-
-.content {
-    flex: auto;
-    display: flex;
-    line-height: 14px;
-    justify-content: center;
-}
-
-.right {
-    display: flex;
+    font-size: 14px;
+    color: #8692b2;
+    padding: 30px 0 20px 40px;
 }
 
 .btn {
-    padding: 0 5px;
     min-width: 20px;
     cursor: pointer;
-    line-height: 20px;
+    line-height: 30px;
     position: relative;
     align-items: center;
     display: inline-flex;
@@ -32,26 +17,37 @@
 }
 
 .btn:hover {
-    background-color: rgba(42, 26, 255, 0.3);
+    color: #2eacfc;
 }
 
-.btn a {
+.btn i:before {
+    width: 23px;
+    height: 20px;
+    display: flex;
     font-size: 14px;
-    color: #fff;
+    align-items: center;
+    justify-content: center;
 }
 
 .tip {
-    top: -25px;
+    top: -24px;
     left: 10px;
+    z-index: 1;
     display: none;
     color: #fff;
+    cursor: default;
     font-size: 12px;
     padding: 0 10px;
-    line-height: 20px;
+    line-height: 24px;
     position: absolute;
     border-radius: 3px;
     white-space: nowrap;
     background-color: rgba(102,102,102,0.8);
+}
+
+.tip a {
+    cursor: pointer;
+    color: #2eacfc;
 }
 
 .tip::before {
