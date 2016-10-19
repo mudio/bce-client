@@ -5,8 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {Link} from 'react-router';
 import electron from 'electron';
+import {Link} from 'react-router';
 import React, {Component, PropTypes} from 'react';
 
 const browserWindow = electron.remote.getCurrentWindow();

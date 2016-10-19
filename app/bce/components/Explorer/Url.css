@@ -6,14 +6,12 @@
     user-select: none;
     align-items: center;
     border-bottom: 1px solid #f3f5f9;
-    -webkit-app-region: drag;
 }
 
 .nav {
-    display: flex;
     height: 30px;
+    display: flex;
     padding-left: 10px;
-    -webkit-app-region: no-drag;
 }
 
 .nav span {
