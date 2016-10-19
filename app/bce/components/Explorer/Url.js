@@ -5,7 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {Link} from 'react-router';
 import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
@@ -85,9 +84,6 @@ export default class Url extends Component {
                     {nav.bucket && `${nav.bucket}/`}
                     {nav.folder}
                 </div>
-                <Link to="/login" className={styles.lock} >
-                    <i className="fa fa-lg fa-power-off" />
-                </Link>
             </div>
         );
     }
