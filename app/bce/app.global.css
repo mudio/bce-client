@@ -3,14 +3,14 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    position: relative;
     height: 100vh;
-    font-family: Arial, Helvetica, Helvetica Neue, serif;
+    position: relative;
     overflow-y: hidden;
-    -webkit-app-region: drag;
+    border-radius: 3px;
+    font-family: Arial, Helvetica, Helvetica Neue, serif;
 }
 
-button {
+button, input, textarea, a, p, i, span, h1, h2, h3, li {
     -webkit-app-region: no-drag;
 }
 
