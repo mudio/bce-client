@@ -7,7 +7,7 @@ body {
     position: relative;
     overflow-y: hidden;
     border-radius: 3px;
-    font-family: Arial, Helvetica, Helvetica Neue, serif;
+    font-family: Helvetica, "Helvetica Neue", "Microsoft YaHei", Arial, serif;
 }
 
 button, input, textarea, a, p, i, span, h1, h2, h3, li {
@@ -35,7 +35,6 @@ a {
     top: 0;
     right: 0;
     display: flex;
-    z-index: 999;
     position: absolute;
 }
 
@@ -55,7 +54,7 @@ a {
 }
 
 .window-bar .fa {
-    color: #999;
+    color: #ccc;
     width: 35px;
     display: flex;
     cursor: pointer;
@@ -63,6 +62,12 @@ a {
     align-items: center;
     justify-content: center;
     transition: background 0.3s ease-in,color 0.3s ease-in;
+}
+
+.window-bar .exit,
+.window-bar .min,
+.window-bar .max {
+    z-index: 999;
 }
 
 .window-bar .lock:hover,

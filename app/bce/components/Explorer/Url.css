@@ -3,9 +3,9 @@
     display: flex;
     height: 60px;
     flex-shrink: 0;
-    user-select: none;
     align-items: center;
     border-bottom: 1px solid #f3f5f9;
+    -webkit-user-select: none;
 }
 
 .nav {
@@ -44,4 +44,5 @@
     font-size: 14px;
     align-items: center;
     white-space: nowrap;
+    -webkit-user-select: text;
 }
