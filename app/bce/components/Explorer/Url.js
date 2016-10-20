@@ -59,19 +59,18 @@ export default class Url extends Component {
         const {nav} = this.props;
         const {history} = this.state;
 
+        const leftClassName = classnames('fa', 'fa-angle-left', 'fa-lg', {
+            [styles.disable]: !nav.bucket}
+        );
+        const rightClassName = classnames('fa', 'fa-angle-right', 'fa-lg', {
+            [styles.disable]: history.length === 0
+        });
+
         return (
             <div className={styles.container}>
                 <div className={styles.nav}>
-                    <span className={classnames({[styles.disable]: !nav.bucket})}
-                        onClick={() => this.backward()}
-                    >
-                    &lt;
-                    </span>
-                    <span className={classnames({[styles.disable]: history.length === 0})}
-                        onClick={() => this.forward()}
-                    >
-                    &gt;
-                    </span>
+                    <span className={leftClassName} onClick={() => this.backward()} />
+                    <span className={rightClassName} onClick={() => this.forward()} />
                 </div>
                 <div className={styles.url}>
                     {nav.region}://
