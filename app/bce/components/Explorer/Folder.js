@@ -83,10 +83,9 @@ class Folder extends Component {
         const {item, onDoubleClick} = this.props;
 
         return (
-            <div
-              className={styles.container}
-              onContextMenu={evt => this._onContextMenu(evt)}
-              onDoubleClick={() => onDoubleClick(item.key)}
+            <div className={styles.container}
+                onContextMenu={evt => this._onContextMenu(evt)}
+                onDoubleClick={() => onDoubleClick(item.key)}
             >
                 <i className={`fa fa-4x fa-folder ${styles.folder}`} />
                 <span className={styles.text} title={normalize(item.key)}>

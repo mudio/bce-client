@@ -22,9 +22,8 @@ export default class Bucket extends Component {
         const {item, onDoubleClick} = this.props;
 
         return (
-            <div
-              className={styles.container}
-              onDoubleClick={() => onDoubleClick(item.name)}
+            <div className={styles.container}
+                onDoubleClick={() => onDoubleClick(item.name)}
             >
                 <i className="fa fa-database fa-4x" />
                 <span className={styles.text} alt={item.creationDate}>{item.name}</span>

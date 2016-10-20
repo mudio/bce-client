@@ -42,29 +42,27 @@ class SideBar extends Component {
                     {
                         regions.map(r => (
                             <Link
-                              to={`/region/${r}`}
-                              className={`${styles.item} ${styles.region}`}
-                              activeClassName={styles.active}
-                              key={`/region/${r}`}
+                                to={`/region/${r}`}
+                                className={`${styles.item} ${styles.region}`}
+                                activeClassName={styles.active}
+                                key={`/region/${r}`}
                             >
                                 {getLocalText(r)}
                             </Link>
                         ))
                     }
-                    <Link
-                      to={`/transfer/${TransDownloadType}`}
-                      className={`${styles.item} ${styles.download}`}
-                      activeClassName={styles.active}
+                    <Link to={`/transfer/${TransDownloadType}`}
+                        className={`${styles.item} ${styles.download}`}
+                        activeClassName={styles.active}
                     >
                         下载队列
                         {
                             donwloadCount > 0 ? <span className={styles.badge}>{donwloadCount}</span> : ''
                         }
                     </Link>
-                    <Link
-                      to={`/transfer/${TransUploadType}`}
-                      className={`${styles.item} ${styles.upload}`}
-                      activeClassName={styles.active}
+                    <Link to={`/transfer/${TransUploadType}`}
+                        className={`${styles.item} ${styles.upload}`}
+                        activeClassName={styles.active}
                     >
                         上传队列
                         {

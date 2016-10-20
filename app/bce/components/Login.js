@@ -78,6 +78,33 @@ export default class Login extends Component {
         }
     }
 
+    getAkSkFields() {
+        const {pin, isAuth} = this.props.auth;
+
+        if (!pin || !isAuth) {
+            return (
+                <div>
+                    <div className={styles.ak}>
+                        <input
+                            ref="ak"
+                            type="text"
+                            placeholder="请输入AK"
+                            defaultValue={credentials.ak}
+                        />
+                    </div>
+                    <div className={styles.sk}>
+                        <input
+                            ref="sk"
+                            type="text"
+                            placeholder="请输入SK"
+                            defaultValue={credentials.sk}
+                        />
+                    </div>
+                </div>
+            );
+        }
+    }
+
     handleSubmit(evt) {
         evt.preventDefault();
 
@@ -107,36 +134,14 @@ export default class Login extends Component {
     }
 
     render() {
-        const {pin, isAuth} = this.props.auth;
-
         return (
             <div className={styles.container}>
                 <form className={styles.login} onSubmit={evt => this.handleSubmit(evt)}>
                     <h1>百度云</h1>
-                    {
-                        (!isAuth || !pin)
-                        && <div>
-                            <div className={styles.ak}>
-                                <input
-                                  ref="ak"
-                                  type="text"
-                                  placeholder="请输入AK"
-                                  defaultValue={credentials.ak}
-                                />
-                            </div>
-                            <div className={styles.sk}>
-                                <input
-                                  ref="sk"
-                                  type="text"
-                                  placeholder="请输入SK"
-                                  defaultValue={credentials.sk}
-                                />
-                            </div>
-                        </div>
-                    }
+                    {this.getAkSkFields()}
                     <div className={styles.pin}>
                         <input type="text" placeholder="输入PIN码" ref="pin" />
-                        <span className={`${styles.pinTipWrap} fa fa-question-circle-o fa-fw`}>
+                        <span className={`${styles.pinTipWrap} fa fa-question-circle-o`}>
                             <span className={styles.pinTip}>
                                 输入PIN码后，系统将记住你的AK、SK,下次登录只需要输入PIN码即可。
                             </span>

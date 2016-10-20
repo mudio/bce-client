@@ -99,12 +99,11 @@ class Window extends Component {
         const {buckets, folders, objects} = response;
 
         return (
-            <div
-              ref="main"
-              className={styles.container}
-              onDragOver={evt => this.onDragOver(evt)}
-              onDrop={evt => this.onDrop(evt)}
-              onClick={() => this.refs._contextMenu.hide()} // eslint-disable-line no-underscore-dangle
+            <div ref="main"
+                className={styles.container}
+                onDragOver={evt => this.onDragOver(evt)}
+                onDrop={evt => this.onDrop(evt)}
+                onClick={() => this.refs._contextMenu.hide()} // eslint-disable-line no-underscore-dangle
             >
                 {
                     isFetching
@@ -132,33 +131,30 @@ class Window extends Component {
                 {
                     !isFetching
                     && buckets.map((item, index) => (
-                        <Bucket
-                          key={index}
-                          item={item}
-                          onDoubleClick={bucket => this.redirect(bucket)}
+                        <Bucket key={index}
+                            item={item}
+                            onDoubleClick={bucket => this.redirect(bucket)}
                         />
                     ))
                 }
                 {
                     !isFetching
                     && folders.map((item, index) => (
-                        <Folder
-                          key={index}
-                          item={item}
-                          onDownload={(...args) => this.onDownload(...args)}
-                          onContextMenu={(...args) => this.onContextMenu(...args)}
-                          onDoubleClick={folder => this.redirect(nav.bucket, folder)}
+                        <Folder key={index}
+                            item={item}
+                            onDownload={(...args) => this.onDownload(...args)}
+                            onContextMenu={(...args) => this.onContextMenu(...args)}
+                            onDoubleClick={folder => this.redirect(nav.bucket, folder)}
                         />
                     ))
                 }
                 {
                     !isFetching
                     && objects.map((item, index) => (
-                        <File
-                          key={index}
-                          item={item}
-                          onDownload={(...args) => this.onDownload(...args)}
-                          onContextMenu={(...args) => this.onContextMenu(...args)}
+                        <File key={index}
+                            item={item}
+                            onDownload={(...args) => this.onDownload(...args)}
+                            onContextMenu={(...args) => this.onContextMenu(...args)}
                         />
                     ))
                 }

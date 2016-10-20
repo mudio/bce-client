@@ -20,17 +20,15 @@ export default class Header extends Component {
 
         return (
             <div className={styles.container}>
-                <i
-                  title="新建任务"
-                  className={`fa fa-plus ${styles.new}`}
-                  onClick={createTask}
+                <i title="新建任务"
+                    className={`fa fa-plus ${styles.new}`}
+                    onClick={createTask}
                 />
                 <i className={`fa fa-play ${styles.start}`} title="开始全部" />
                 <i className={`fa fa-pause ${styles.pause}`} title="暂停全部" />
-                <i
-                  title="清除已完成"
-                  className={`fa fa-close ${styles.clear}`}
-                  onClick={clearFinish}
+                <i title="清除已完成"
+                    className={`fa fa-close ${styles.clear}`}
+                    onClick={clearFinish}
                 />
             </div>
         );

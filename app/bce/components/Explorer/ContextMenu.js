@@ -13,7 +13,7 @@ import styles from './ContextMenu.css';
 export default class ContextMenu extends Component {
     static propTypes = {
         onRemove: PropTypes.func
-    };
+    }
 
     constructor(...args) {
         super(...args);
@@ -47,16 +47,15 @@ export default class ContextMenu extends Component {
 
         return (
             <div
-              ref="main"
-              className={styles.container}
-              style={{left: positionX, top: positionY, visibility}}
+                ref="main"
+                className={styles.container}
+                style={{left: positionX, top: positionY, visibility}}
             >
                 {
                     datasource.map((item, index) => (
-                        <div
-                          key={index}
-                          onClick={item.click}
-                          className={item.icon === 'trash' ? `${styles.menuItem} ${styles.trash}` : styles.menuItem}
+                        <div key={index}
+                            onClick={item.click}
+                            className={item.icon === 'trash' ? `${styles.menuItem} ${styles.trash}` : styles.menuItem}
                         >
                             <i className={`fa fa-${item.icon} fa-fw`} />
                             {item.name}

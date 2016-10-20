@@ -95,9 +95,8 @@ class File extends Component {
         const fileName = item.key.replace(/(.*\/)(.*)$/, '$2');
 
         return (
-            <div
-              className={styles.container}
-              onContextMenu={evt => this._onContextMenu(evt)} // eslint-disable-line no-underscore-dangle
+            <div onContextMenu={evt => this._onContextMenu(evt)}
+                className={styles.container}
             >
                 <i className={`fa fa-4x ${extMap[ext] || extMap.normal}`} />
                 <span className={styles.text} title={fileName}>{fileName}</span>

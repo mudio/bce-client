@@ -74,9 +74,8 @@ export default class Transfer extends Component {
             <div className={styles.container}>
                 <SideBar />
                 <div className={styles.body}>
-                    <Header
-                      createTask={evt => this.createTask(evt)}
-                      clearFinish={evt => this.clearFinish(evt)}
+                    <Header createTask={evt => this.createTask(evt)}
+                        clearFinish={evt => this.clearFinish(evt)}
                     />
                     {this.getCategoryContent()}
                 </div>

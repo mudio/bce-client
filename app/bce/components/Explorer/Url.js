@@ -62,19 +62,13 @@ export default class Url extends Component {
         return (
             <div className={styles.container}>
                 <div className={styles.nav}>
-                    <span
-                      className={
-                        classnames({[styles.disable]: !nav.bucket})
-                      }
-                      onClick={() => this.backward()}
+                    <span className={classnames({[styles.disable]: !nav.bucket})}
+                        onClick={() => this.backward()}
                     >
                     &lt;
                     </span>
-                    <span
-                      className={
-                          classnames({[styles.disable]: history.length === 0})
-                      }
-                      onClick={() => this.forward()}
+                    <span className={classnames({[styles.disable]: history.length === 0})}
+                        onClick={() => this.forward()}
                     >
                     &gt;
                     </span>
