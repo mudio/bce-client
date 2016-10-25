@@ -12,11 +12,11 @@ export const REGION_HK = 'hk';
 export function getLocalText(region) {
     switch (region) {
     case REGION_BJ:
-        return '北京机房';
+        return '北京区域';
     case REGION_GZ:
-        return '广州机房';
+        return '广州区域';
     case REGION_HK:
-        return '香港机房';
+        return '香港区域';
     default:
         return region;
     }
