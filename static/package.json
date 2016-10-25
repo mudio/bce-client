@@ -23,8 +23,8 @@
   ],
   "homepage": "https://github.com/mudio/bos#readme",
   "dependencies": {
-    "font-awesome": "^4.6.3",
-    "source-map-support": "^0.4.3"
+    "font-awesome": "^4.7.0",
+    "source-map-support": "^0.4.5"
   },
   "devEngines": {
     "node": "5.x || 6.x",
