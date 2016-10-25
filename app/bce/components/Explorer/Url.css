@@ -6,6 +6,7 @@
     align-items: center;
     border-bottom: 1px solid #f3f5f9;
     -webkit-user-select: none;
+    -webkit-app-region: drag;
 }
 
 .nav {
