@@ -89,15 +89,101 @@ class Window extends Component {
         evt.preventDefault();
     }
 
+    getLoading() {
+        if (this.props.isFetching) {
+            return (
+                <span className={styles.loading}>
+                    <i className="fa fa-spinner fa-pulse" />
+                    数据加载中...
+                </span>
+            );
+        }
+    }
+
+    getError() {
+        const {isFetching, didInvalidate} = this.props;
+
+        if (!isFetching && didInvalidate) {
+            return (
+                <span className={styles.error}>
+                    <i className="fa fa-mixcloud" />
+                    出错啦~(&gt;_&lt;)!!!
+                </span>
+            );
+        }
+    }
+
+    getEmpty() {
+        const {isFetching, didInvalidate, response} = this.props;
+        const {buckets, folders, objects} = response;
+
+        if (!isFetching
+            && !didInvalidate
+            && buckets.length === 0
+            && folders.length === 0
+            && objects.length === 0) {
+            return (
+                <span className={`fa fa-cloud-upload ${styles.nocontent}`}>
+                    文件夹为空，拖拽文件上传
+                </span>
+            );
+        }
+    }
+
+    getBuckets() {
+        const {isFetching, response} = this.props;
+
+        if (!isFetching) {
+            return response.buckets.map(
+                (item, index) => (
+                    <Bucket key={index}
+                        item={item}
+                        onDoubleClick={bucket => this.redirect(bucket)}
+                    />
+                )
+            );
+        }
+    }
+
+    getFolders() {
+        const {isFetching, response, nav} = this.props;
+
+        if (!isFetching) {
+            return response.folders.map(
+                (item, index) => (
+                    <Folder key={index}
+                        item={item}
+                        onDownload={(...args) => this.onDownload(...args)}
+                        onContextMenu={(...args) => this.onContextMenu(...args)}
+                        onDoubleClick={folder => this.redirect(nav.bucket, folder)}
+                    />
+                )
+            );
+        }
+    }
+
+    getObejcts() {
+        const {isFetching, response} = this.props;
+
+        if (!isFetching) {
+            return response.objects.map(
+                (item, index) => (
+                    <File key={index}
+                        item={item}
+                        onDownload={(...args) => this.onDownload(...args)}
+                        onContextMenu={(...args) => this.onContextMenu(...args)}
+                    />
+                )
+            );
+        }
+    }
+
     redirect(bucket = '', folder = '') {
         const {nav, updateNavigator} = this.props;
         updateNavigator({region: nav.region, bucket, folder});
     }
 
     render() {
-        const {nav, isFetching, didInvalidate, response} = this.props;
-        const {buckets, folders, objects} = response;
-
         return (
             <div ref="main"
                 className={styles.container}
@@ -105,59 +191,12 @@ class Window extends Component {
                 onDrop={evt => this.onDrop(evt)}
                 onClick={() => this.refs._contextMenu.hide()} // eslint-disable-line no-underscore-dangle
             >
-                {
-                    isFetching
-                    && <span className={styles.loading}>
-                        <i className="fa fa-spinner fa-pulse" />
-                        数据加载中...
-                    </span>
-                }
-                {
-                    !isFetching
-                    && didInvalidate
-                    && <span className={styles.error}>
-                        <i className="fa fa-mixcloud" />
-                        出错啦~(&gt;_&lt;)!!!
-                    </span>
-                }
-                {
-                    !isFetching
-                    && !didInvalidate
-                    && buckets.length === 0
-                    && folders.length === 0
-                    && objects.length === 0
-                    && <span className={`fa fa-cloud-upload ${styles.nocontent}`}>文件夹为空，拖拽文件上传</span>
-                }
-                {
-                    !isFetching
-                    && buckets.map((item, index) => (
-                        <Bucket key={index}
-                            item={item}
-                            onDoubleClick={bucket => this.redirect(bucket)}
-                        />
-                    ))
-                }
-                {
-                    !isFetching
-                    && folders.map((item, index) => (
-                        <Folder key={index}
-                            item={item}
-                            onDownload={(...args) => this.onDownload(...args)}
-                            onContextMenu={(...args) => this.onContextMenu(...args)}
-                            onDoubleClick={folder => this.redirect(nav.bucket, folder)}
-                        />
-                    ))
-                }
-                {
-                    !isFetching
-                    && objects.map((item, index) => (
-                        <File key={index}
-                            item={item}
-                            onDownload={(...args) => this.onDownload(...args)}
-                            onContextMenu={(...args) => this.onContextMenu(...args)}
-                        />
-                    ))
-                }
+                {this.getLoading()}
+                {this.getError()}
+                {this.getEmpty()}
+                {this.getBuckets()}
+                {this.getFolders()}
+                {this.getObejcts()}
                 <ContextMenu ref="_contextMenu" />
             </div>
         );
