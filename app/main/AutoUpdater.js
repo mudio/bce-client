@@ -47,7 +47,7 @@ export default class OSXUpdater {
             request(feedURL, (err, response, body) => {
                 if (err) {
                     logger(err.message);
-                    this.notify(UPDATE_ERROR, {error: err.message});
+                    return this.notify(UPDATE_ERROR, {error: err.message});
                 }
 
                 if (response.statusCode === 200) {

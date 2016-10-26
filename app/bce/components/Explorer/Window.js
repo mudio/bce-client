@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint react/no-string-refs: 0 */
+/* eslint react/no-string-refs: 0, no-underscore-dangle: 0 */
 
 import u from 'lodash';
 import {connect} from 'react-redux';
@@ -62,7 +62,7 @@ class Window extends Component {
 
     onContextMenu(context, x, y) {
         const rect = this.refs.main.getBoundingClientRect();
-        const contextMenu = this.refs._contextMenu; // eslint-disable-line no-underscore-dangle
+        const contextMenu = this.refs._contextMenu;
         const menuRect = contextMenu.getRect();
 
         let offsetX = x - rect.left;
@@ -87,6 +87,14 @@ class Window extends Component {
 
     onDragOver(evt) {
         evt.preventDefault();
+    }
+
+    onMouseDown() {
+        // TODO: 拖拽全选开启
+    }
+
+    onMouseUp() {
+        // TODO: 拖拽全选结束
     }
 
     getLoading() {
@@ -189,7 +197,9 @@ class Window extends Component {
                 className={styles.container}
                 onDragOver={evt => this.onDragOver(evt)}
                 onDrop={evt => this.onDrop(evt)}
-                onClick={() => this.refs._contextMenu.hide()} // eslint-disable-line no-underscore-dangle
+                onClick={() => this.refs._contextMenu.hide()}
+                onMouseUp={evt => this.onMouseUp(evt)}
+                onMouseDown={evt => this.onMouseDown(evt)}
             >
                 {this.getLoading()}
                 {this.getError()}
