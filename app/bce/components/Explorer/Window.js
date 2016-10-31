@@ -97,6 +97,10 @@ class Window extends Component {
         // TODO: 拖拽全选结束
     }
 
+    onMouseMove() {
+        // TOOD: 拖拽中
+    }
+
     getLoading() {
         if (this.props.isFetching) {
             return (
@@ -200,6 +204,7 @@ class Window extends Component {
                 onClick={() => this.refs._contextMenu.hide()}
                 onMouseUp={evt => this.onMouseUp(evt)}
                 onMouseDown={evt => this.onMouseDown(evt)}
+                onMouseMove={evt => this.onMouseMove(evt)}
             >
                 {this.getLoading()}
                 {this.getError()}
