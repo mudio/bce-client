@@ -79,6 +79,26 @@ export function prepareUploadTask(filePath, fileSize, region, bucket, key) {
 
 export function createUploadTask(dataTransferItem = [], region, bucket, key) {
     return dispatch => {
+        // 参考：https://dev.w3.org/2009/dap/file-system/file-dir-sys.html
+        function getAllEntries(directoryReader, callback) {
+            let allEntries = [];
+
+            function readEntries() {
+                directoryReader.readEntries(entries => {
+                    if (entries.length === 0) {
+                        callback(allEntries);
+                    } else {
+                        const iterator = Array.prototype.slice.call(entries, 0);
+                        allEntries = allEntries.concat(iterator);
+                        readEntries();
+                    }
+                });
+            }
+
+            readEntries();
+        }
+
+        // 文件准备上传，文件夹递归遍历
         function entryHandle(entry, relativePath = '') {
             if (entry.isFile) {
                 entry.file(
@@ -87,13 +107,14 @@ export function createUploadTask(dataTransferItem = [], region, bucket, key) {
                     )
                 );
             } else if (entry.isDirectory) {
-                const dirReader = entry.createReader();
-                dirReader.readEntries(
+                getAllEntries(
+                    entry.createReader(),
                     entries => entries.forEach(item => entryHandle(item, `${relativePath}${entry.name}/`))
                 );
             }
         }
 
+        // 支持拖拽多个文件，包括文件、文件夹
         for (let index = 0; index < dataTransferItem.length; index++) { // eslint-disable-line no-plusplus
             const item = dataTransferItem[index];
             const entry = item.webkitGetAsEntry();
