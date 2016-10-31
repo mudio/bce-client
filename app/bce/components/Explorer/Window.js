@@ -224,10 +224,10 @@ function mapStateToProps(state) {
     const uploadTask = uploads.reduce((context, task) => {
         if (task.region === navigator.region
             && task.bucket === navigator.bucket
-            && task.key.startsWith(navigator.folder)
+            && task.object.startsWith(navigator.folder)
             && task.status !== TRANS_FINISH) {
             // 上传文件一定在当前目录或者子目录下
-            const prefixs = task.key.split('/');
+            const prefixs = task.object.split('/');
 
             if (prefixs.length > 1 && context.folders.indexOf(prefixs[0]) === -1) {
                 context.folders.push(prefixs[0]);

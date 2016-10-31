@@ -47,19 +47,19 @@ export function uploadCancel(uploadIds = []) {
     };
 }
 
-export function prepareUploadTask(filePath, fileSize, region, bucket, key) {
+export function prepareUploadTask(filePath, fileSize, region, bucket, object) {
     return (dispatch, getState) => {
         const {auth} = getState();
         const client = getRegionClient(region, auth);
         // 准备上传
-        dispatch({type: TRANS_UPLOAD_PREPARE, key, region, bucket, filePath, fileSize});
+        dispatch({type: TRANS_UPLOAD_PREPARE, object, region, bucket, filePath, fileSize});
 
-        client.initiateMultipartUpload(bucket, key).then(
+        client.initiateMultipartUpload(bucket, object).then(
             response => {
                 const uploadId = response.body.uploadId;
 
                 dispatch({
-                    key,
+                    object,
                     region,
                     bucket,
                     filePath,

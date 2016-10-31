@@ -102,7 +102,7 @@ export function upload(store) {
 
 // 任务分解
 function decompose(task) {
-    const {filePath, fileSize, uploadId, bucket, key} = task;
+    const {filePath, fileSize, uploadId, bucket, object} = task;
     const tasks = [];
 
     let leftSize = fileSize;
@@ -112,7 +112,7 @@ function decompose(task) {
     while (leftSize > 0) {
         const partSize = Math.min(leftSize, UPLOAD_PART_SIZE);
         tasks.push({
-            key,
+            object,
             uploadId,
             partSize,
             partNumber,
@@ -130,12 +130,12 @@ function decompose(task) {
 }
 
 export function uploadFromFile(task, done) {
-    const {bucket, key, uploadId, region} = task;
+    const {bucket, object, uploadId, region} = task;
     const client = getRegionClient(region, credentials);
 
-    // 如果少于2片，就别分了
-    if (task.fileSize <= 2 * UPLOAD_PART_SIZE) {
-        client.putObjectFromFile(task.bucket, task.key, task.filePath)
+    // 如果少于UPLOAD_PART_LIMIT片，就别分了
+    if (task.fileSize <= UPLOAD_PART_LIMIT * UPLOAD_PART_SIZE) {
+        client.putObjectFromFile(task.bucket, object, task.filePath)
             .then(() => done(), done);
         return;
     }
@@ -145,7 +145,7 @@ export function uploadFromFile(task, done) {
             uploadId, part.partNumber, JSON.stringify(part));
 
         return client.uploadPartFromFile(
-            part.bucketName, part.key, part.uploadId,
+            part.bucketName, part.object, part.uploadId,
             part.partNumber, part.partSize,
             part.file, part.start
         ).then(
@@ -181,7 +181,7 @@ export function uploadFromFile(task, done) {
                 eTag: response.http_headers.etag
             }));
 
-            return client.completeMultipartUpload(bucket, key, uploadId, partList); // 完成上传
+            return client.completeMultipartUpload(bucket, object, uploadId, partList); // 完成上传
         },
         done
     ).then(
