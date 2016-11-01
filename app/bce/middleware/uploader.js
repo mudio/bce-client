@@ -33,22 +33,25 @@ const queue = async.queue(
     UPLOAD_TASK_LIMIT
 );
 
-function startTask(uploadTasks = [], uploadIds = []) {
+function startTask(uploadTasks = [], objects = []) {
     let waitTasks = [];
 
-    if (uploadIds.length === 0) {
+    if (objects.length === 0) {
         const leftWorker = UPLOAD_TASK_LIMIT - queue.running();
         waitTasks = uploadTasks.filter(task => task.status === TRANS_WATING).slice(0, leftWorker);
     } else {
         waitTasks = uploadTasks.filter(
-            task => task.status === TRANS_WATING && uploadIds.indexOf(task.uploadId) > -1
+            task => task.status === TRANS_WATING && objects.indexOf(task.object) > -1
         );
     }
 
     waitTasks.forEach(
         task => queue.push(task, err => {
             if (err) {
-                logger('Finish UploadId = %s, Error = %s', task.uploadId, err.message);
+                logger(
+                    'Failed Region = %s, Bucket = %s, Object = %s, Error = %s',
+                     task.region, task.bucket, task.object, err.message
+                );
                 return eventEmiter({
                     error: err.message,
                     uploadId: task.uploadId,
@@ -56,18 +59,21 @@ function startTask(uploadTasks = [], uploadIds = []) {
                 });
             }
 
-            logger('Finish UploadId = %s', task.uploadId);
+            logger(
+                'Finish Region = %s, Bucket = %s, Object = %s',
+                task.region, task.bucket, task.object
+            );
             eventEmiter({type: UPLOAD_NOTIFY_FINISH, uploadId: task.uploadId});
         })
     );
 }
 
-function cancelTask(uploadTasks = [], uploadIds = []) {
-    return {uploadTasks, uploadIds};
+function cancelTask(uploadTasks = [], objects = []) {
+    return {uploadTasks, objects};
 }
 
-function suspendTask(uploadTasks = [], uploadIds = []) {
-    return {uploadTasks, uploadIds};
+function suspendTask(uploadTasks = [], objects = []) {
+    return {uploadTasks, objects};
 }
 
 export function upload(store) {
@@ -78,22 +84,22 @@ export function upload(store) {
             return next(action);
         }
 
-        const {command, uploadIds} = uploadTask;
+        const {command, objects} = uploadTask;
         const {uploads, auth} = store.getState();
 
         credentials.ak = auth.ak;
         credentials.sk = auth.sk;
         eventEmiter = message => next(message);
 
-        next({type: command, uploadIds});
+        next({type: command, objects});
 
         switch (command) {
         case UPLOAD_COMMAND_START:
-            return startTask(uploads, uploadIds);
+            return startTask(uploads, objects);
         case UPLOAD_COMMAND_CANCEL:
-            return cancelTask(uploads, uploadIds);
+            return cancelTask(uploads, objects);
         case UPLOAD_COMMAND_SUSPEND:
-            return suspendTask(uploads, uploadIds);
+            return suspendTask(uploads, objects);
         default:
             throw new Error(`Not Expected Command: ${command}`);
         }
@@ -101,8 +107,8 @@ export function upload(store) {
 }
 
 // 任务分解
-function decompose(task) {
-    const {filePath, fileSize, uploadId, bucket, object} = task;
+function decompose(task, uploadId) {
+    const {filePath, fileSize, bucket, object} = task;
     const tasks = [];
 
     let leftSize = fileSize;
@@ -130,7 +136,7 @@ function decompose(task) {
 }
 
 export function uploadFromFile(task, done) {
-    const {bucket, object, uploadId, region} = task;
+    const {bucket, object, region} = task;
     const client = getRegionClient(region, credentials);
 
     // 如果少于UPLOAD_PART_LIMIT片，就别分了
@@ -142,7 +148,7 @@ export function uploadFromFile(task, done) {
 
     function uploadPartFile(part, callback) {
         logger('Start UploadId = %s, PartNumber = %s, Part = %s',
-            uploadId, part.partNumber, JSON.stringify(part));
+            part.uploadId, part.partNumber, JSON.stringify(part));
 
         return client.uploadPartFromFile(
             part.bucketName, part.object, part.uploadId,
@@ -151,7 +157,7 @@ export function uploadFromFile(task, done) {
         ).then(
             res => {
                 logger('Finish UploadId = %s, PartNumber = %s, Part = %s',
-                    uploadId, part.partNumber, JSON.stringify(part));
+                    part.uploadId, part.partNumber, JSON.stringify(part));
                 // 通知分片进度
                 eventEmiter({
                     type: UPLOAD_NOTIFY_PROGRESS,
@@ -165,26 +171,34 @@ export function uploadFromFile(task, done) {
         );
     }
 
-    const deferred = Q.defer();
-    const tasks = decompose(task);
+    // 分片之前先创建一个uploadId
+    client.initiateMultipartUpload(bucket, object).then(
+        res => {
+            const uploadId = res.body.uploadId;
 
-    async.mapLimit(
-        tasks, UPLOAD_PART_LIMIT,
-        uploadPartFile,
-        (err, results) => (err ? deferred.reject(err) : deferred.resolve(results))
-    );
+            const deferred = Q.defer();
+            const tasks = decompose(task, uploadId);
 
-    deferred.promise.then(
-        allResponse => {
-            const partList = allResponse.map((response, index) => ({
-                partNumber: index + 1,
-                eTag: response.http_headers.etag
-            }));
+            async.mapLimit(
+                tasks, UPLOAD_PART_LIMIT,
+                uploadPartFile,
+                (err, results) => (err ? deferred.reject(err) : deferred.resolve(results))
+            );
 
-            return client.completeMultipartUpload(bucket, object, uploadId, partList); // 完成上传
+            deferred.promise.then(
+                allResponse => {
+                    const partList = allResponse.map((response, index) => ({
+                        partNumber: index + 1,
+                        eTag: response.http_headers.etag
+                    }));
+
+                    return client.completeMultipartUpload(bucket, object, uploadId, partList); // 完成上传
+                },
+                done
+            ).then(
+                () => done(), done
+            );
         },
-        done
-    ).then(
-        () => done(), done
+        response => done(response.body)
     );
 }

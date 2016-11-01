@@ -5,7 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {getRegionClient} from '../api/client';
 import {
     UPLOAD_TYPE,
     UPLOAD_COMMAND_START,
@@ -20,60 +19,39 @@ export const TRANS_UPLOAD_NEW = 'TRANS_UPLOAD_NEW';
 export const TRANS_UPLOAD_ERROR = 'TRANS_UPLOAD_ERROR';
 export const TRANS_UPLOAD_PREPARE = 'TRANS_UPLOAD_PREPARE';
 
-export function uploadStart(uploadIds = []) {
+export function uploadStart(objects = []) {
     return {
         [UPLOAD_TYPE]: {
             command: UPLOAD_COMMAND_START,  // 开始任务
-            uploadIds                       // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+            objects                       // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function uploadSuspend(uploadIds = []) {
+export function uploadSuspend(objects = []) {
     return {
         [UPLOAD_TYPE]: {
             command: UPLOAD_COMMAND_SUSPEND,  // 暂停任务
-            uploadIds                       // 如果为空，全部挂起， 不为空，挂起指定任务
+            objects                       // 如果为空，全部挂起， 不为空，挂起指定任务
         }
     };
 }
 
-export function uploadCancel(uploadIds = []) {
+export function uploadCancel(objects = []) {
     return {
         [UPLOAD_TYPE]: {
             command: UPLOAD_COMMAND_CANCEL,  // 取消任务
-            uploadIds                       // 不为空，取消指定任务
+            objects                       // 不为空，取消指定任务
         }
     };
 }
 
 export function prepareUploadTask(filePath, fileSize, region, bucket, object) {
-    return (dispatch, getState) => {
-        const {auth} = getState();
-        const client = getRegionClient(region, auth);
-        // 准备上传
-        dispatch({type: TRANS_UPLOAD_PREPARE, object, region, bucket, filePath, fileSize});
-
-        client.initiateMultipartUpload(bucket, object).then(
-            response => {
-                const uploadId = response.body.uploadId;
-
-                dispatch({
-                    object,
-                    region,
-                    bucket,
-                    filePath,
-                    fileSize,
-                    uploadId,
-                    type: TRANS_UPLOAD_NEW
-                });
-                dispatch(uploadStart([uploadId]));
-            },
-            response => dispatch({
-                type: TRANS_UPLOAD_ERROR,
-                error: response.body
-            })
-        );
+    return dispatch => {
+        // 新建一个上传任务
+        dispatch({type: TRANS_UPLOAD_NEW, region, bucket, object, filePath, fileSize});
+        // 立即开始这个任务，如果排队则自动等待
+        dispatch(uploadStart([object]));
     };
 }
 
