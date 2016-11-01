@@ -12,6 +12,7 @@ import {getText, TRANS_ERROR, TRANS_FINISH} from '../../utils/TransferStatus';
 
 export default class DownloadItem extends Component {
     static propTypes = {
+        uuid: PropTypes.string.isRequired,
         region: PropTypes.string.isRequired,
         bucket: PropTypes.string.isRequired,
         object: PropTypes.string.isRequired,

@@ -11,47 +11,49 @@ import {
     UPLOAD_COMMAND_CANCEL,
     UPLOAD_COMMAND_SUSPEND
 } from '../middleware/uploader';
+import getUuid from '../utils/Uuid';
 
 export const TRANS_UPLOAD_REMOVE = 'TRANS_UPLOAD_REMOVE';
 export const TRANS_UPLOAD_FINISH = 'TRANS_UPLOAD_FINISH';
 export const TRANS_UPLOAD_PROGRESS = 'TRANS_UPLOAD_PROGRESS';
 export const TRANS_UPLOAD_NEW = 'TRANS_UPLOAD_NEW';
 export const TRANS_UPLOAD_ERROR = 'TRANS_UPLOAD_ERROR';
-export const TRANS_UPLOAD_PREPARE = 'TRANS_UPLOAD_PREPARE';
 
-export function uploadStart(objects = []) {
+export function uploadStart(uuids = []) {
     return {
         [UPLOAD_TYPE]: {
             command: UPLOAD_COMMAND_START,  // 开始任务
-            objects                       // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+            uuids                       // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function uploadSuspend(objects = []) {
+export function uploadSuspend(uuids = []) {
     return {
         [UPLOAD_TYPE]: {
             command: UPLOAD_COMMAND_SUSPEND,  // 暂停任务
-            objects                       // 如果为空，全部挂起， 不为空，挂起指定任务
+            uuids                       // 如果为空，全部挂起， 不为空，挂起指定任务
         }
     };
 }
 
-export function uploadCancel(objects = []) {
+export function uploadCancel(uuids = []) {
     return {
         [UPLOAD_TYPE]: {
             command: UPLOAD_COMMAND_CANCEL,  // 取消任务
-            objects                       // 不为空，取消指定任务
+            uuids                       // 不为空，取消指定任务
         }
     };
 }
 
 export function prepareUploadTask(filePath, fileSize, region, bucket, object) {
     return dispatch => {
+        // 创建一个uuid来标识任务
+        const uuid = getUuid();
         // 新建一个上传任务
-        dispatch({type: TRANS_UPLOAD_NEW, region, bucket, object, filePath, fileSize});
+        dispatch({type: TRANS_UPLOAD_NEW, uuid, region, bucket, object, filePath, fileSize});
         // 立即开始这个任务，如果排队则自动等待
-        dispatch(uploadStart([object]));
+        dispatch(uploadStart());
     };
 }
 

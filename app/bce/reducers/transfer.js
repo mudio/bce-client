@@ -48,35 +48,38 @@ export function uploads(state = [], action) {
     }
     case UPLOAD_NOTIFY_PROGRESS:
         return state.map(item => {
-            const {increaseSize, uploadId} = action;
-            if (item.uploadId === uploadId) {
+            const {increaseSize, uuid} = action;
+            if (item.uuid === uuid) {
                 return Object.assign({}, item, {
                     loaded: item.loaded + increaseSize,
                     status: TRANS_RUNNING
                 });
             }
+
             return Object.assign({}, item);
         });
     case UPLOAD_NOTIFY_FINISH:
         return state.map(item => {
-            const {uploadId} = action;
-            if (item.uploadId === uploadId) {
+            if (item.uuid === action.uuid) {
                 return Object.assign({}, item, {status: TRANS_FINISH, loaded: item.fileSize});
             }
+
             return Object.assign({}, item);
         });
     case TRANS_CLEAR_FINISH: {
         if (action.transType === TransUploadType) {
             return state.filter(item => item.status !== TRANS_FINISH);
         }
+
         return state;
     }
     case UPLOAD_NOTIFY_ERROR: {
         return state.map(item => {
-            const {uploadId, error} = action;
-            if (item.uploadId === uploadId) {
+            const {uuid, error} = action;
+            if (item.uuid === uuid) {
                 return Object.assign({}, item, {status: TRANS_ERROR, error});
             }
+
             return Object.assign({}, item);
         });
     }
@@ -93,8 +96,8 @@ export function downloads(state = [], action) {
     }
     case DOWNLOAD_NOTIFY_PROGRESS: {
         return state.map(item => {
-            const {increaseSize, path} = action;
-            if (item.path === path) {
+            const {increaseSize, uuid} = action;
+            if (item.uuid === uuid) {
                 return Object.assign({}, item, {
                     loaded: item.loaded + increaseSize,
                     status: TRANS_RUNNING
@@ -105,8 +108,7 @@ export function downloads(state = [], action) {
     }
     case DOWNLOAD_NOTIFY_FINISH: {
         return state.map(item => {
-            const {path} = action;
-            if (item.path === path) {
+            if (item.uuid === action.uuid) {
                 return Object.assign({}, item, {status: TRANS_FINISH, loaded: item.size});
             }
             return Object.assign({}, item);
@@ -114,8 +116,8 @@ export function downloads(state = [], action) {
     }
     case DOWNLOAD_NOTIFY_ERROR: {
         return state.map(item => {
-            const {path, error} = action;
-            if (item.path === path) {
+            const {uuid, error} = action;
+            if (item.uuid === uuid) {
                 return Object.assign({}, item, {status: TRANS_ERROR, error});
             }
             return Object.assign({}, item);

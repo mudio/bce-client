@@ -35,44 +35,44 @@ const queue = async.queue(
     DOWNLOAD_TASK_LIMIT
 );
 
-function startTask(downloadTasks = [], downloadKeys = []) {
+function startTask(downloadTasks = [], uuids = []) {
     let waitTasks = [];
     const leftWorker = DOWNLOAD_TASK_LIMIT - queue.running();
 
-    if (downloadKeys.length === 0) {
+    if (uuids.length === 0) {
         // 从剩余任务中选取等待下载的任务并开始
         waitTasks = downloadTasks.filter(
             task => task.status === TRANS_WATING
         ).slice(0, leftWorker);
     } else {
-        // 从剩余任务中选取指定key等待下载的任务并开始
+        // 从剩余任务中选取指定uuid等待下载的任务并开始
         waitTasks = downloadTasks.filter(
-            task => task.status === TRANS_WATING && downloadKeys.indexOf(task.key) > -1
+            task => task.status === TRANS_WATING && uuids.indexOf(task.uuid) > -1
         ).slice(0, leftWorker);
     }
 
     // 这里默认不会有重复的待添加任务
-    const queueKeys = queue.workersList().map(item => item.data.key);
+    const queueUuids = queue.workersList().map(item => item.data.uuid);
     waitTasks.forEach(task => {
-        if (queueKeys.indexOf(task.key) > -1) {
+        if (queueUuids.indexOf(task.uuid) > -1) {
             // 任务去重
-            logger('Ignore duplicate task, key = %s', task.key);
+            logger('Ignore duplicate task, uuid = %s', task.uuid);
             return;
         }
 
         queue.push(task, err => {
             if (err) {
                 return _store.dispatch({
-                    path: task.path,
+                    uuid: task.uuid,
                     error: err.message,
                     type: DOWNLOAD_NOTIFY_ERROR
                 });
             }
-            _store.dispatch({type: DOWNLOAD_NOTIFY_FINISH, path: task.path});
+            _store.dispatch({type: DOWNLOAD_NOTIFY_FINISH, uuid: task.uuid});
             // 一个任务完成了，无论是因为出错还是下载完成，都会开始下个等待任务
             _store.dispatch({
                 [DOWNLOAD_TYPE]: {
-                    keys: [],
+                    uuids: [],
                     command: DOWNLOAD_COMMAND_START
                 }
             });
@@ -90,7 +90,7 @@ function suspendTask(uploadTasks = [], uploadIds = []) {
 
 function fetchFileFromServer(task, done) {
     let timer = null;
-    const {bucket, key, region, path} = task;
+    const {uuid, region, bucket, object, path} = task;
     const dirName = P.dirname(path);
     const client = getRegionClient(region, _credentials);
 
@@ -115,7 +115,7 @@ function fetchFileFromServer(task, done) {
             () => {
                 const increaseSize = loaded;
                 loaded = 0;
-                _store.dispatch({path, increaseSize, type: DOWNLOAD_NOTIFY_PROGRESS});
+                _store.dispatch({uuid, increaseSize, type: DOWNLOAD_NOTIFY_PROGRESS});
             },
             1e3
         );
@@ -129,9 +129,9 @@ function fetchFileFromServer(task, done) {
         );
     });
 
-    logger('Start path = %s, bucket = %s, key = %s', path, bucket, key);
+    logger('Start uuid = %s, bucket = %s, key = %s', uuid, bucket, object);
     client.sendRequest('GET', {
-        key,
+        key: object,
         outputStream,
         bucketName: bucket,
         headers: {Range: ''}
@@ -139,12 +139,12 @@ function fetchFileFromServer(task, done) {
     .then(
         () => {
             clearInterval(timer);
-            logger('Finish path = %s, bucket = %s, key = %s', path, bucket, key);
+            logger('Finish uuid = %s, bucket = %s, key = %s', uuid, bucket, object);
             done();
         },
         ex => {
             clearInterval(timer);
-            logger('Finish path = %s, bucket = %s, key = %s, error = %s', path, bucket, key, ex);
+            logger('Finish uuid = %s, bucket = %s, key = %s, error = %s', uuid, bucket, object, ex);
             done(ex);
         }
     );
@@ -158,22 +158,22 @@ export function download(store) {
             return next(action);
         }
 
-        const {command, keys} = downloadTask;
+        const {command, uuids} = downloadTask;
         const {downloads, auth} = store.getState();
 
         _credentials.ak = auth.ak;
         _credentials.sk = auth.sk;
         _store = store;
 
-        next({type: command, keys});
+        next({type: command, uuids});
 
         switch (command) {
         case DOWNLOAD_COMMAND_START:
-            return startTask(downloads, keys);
+            return startTask(downloads, uuids);
         case DOWNLOAD_COMMAND_CANCEL:
-            return cancelTask(downloads, keys);
+            return cancelTask(downloads, uuids);
         case DOWNLOAD_COMMAND_SUSPEND:
-            return suspendTask(downloads, keys);
+            return suspendTask(downloads, uuids);
         default:
             throw new Error(`Not Expected Command: ${command}`);
         }

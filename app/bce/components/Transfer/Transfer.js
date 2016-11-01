@@ -33,7 +33,7 @@ export default class Transfer extends Component {
                 <div className={styles.content}>
                     {
                         uploads.map(
-                            item => (<UploadItem key={item.object} {...item} />)
+                            item => (<UploadItem key={item.uuid} {...item} />)
                         )
                     }
                     {
@@ -47,7 +47,7 @@ export default class Transfer extends Component {
                 <div className={styles.content}>
                     {
                         downloads.map(item => (
-                            <DownloadItem key={item.path} {...item} />
+                            <DownloadItem key={item.uuid} {...item} />
                         ))
                     }
                     {

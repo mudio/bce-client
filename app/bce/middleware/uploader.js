@@ -33,15 +33,15 @@ const queue = async.queue(
     UPLOAD_TASK_LIMIT
 );
 
-function startTask(uploadTasks = [], objects = []) {
+function startTask(uploadTasks = [], uuids = []) {
     let waitTasks = [];
 
-    if (objects.length === 0) {
+    if (uuids.length === 0) {
         const leftWorker = UPLOAD_TASK_LIMIT - queue.running();
         waitTasks = uploadTasks.filter(task => task.status === TRANS_WATING).slice(0, leftWorker);
     } else {
         waitTasks = uploadTasks.filter(
-            task => task.status === TRANS_WATING && objects.indexOf(task.object) > -1
+            task => task.status === TRANS_WATING && uuids.indexOf(task.uuid) > -1
         );
     }
 
@@ -53,8 +53,8 @@ function startTask(uploadTasks = [], objects = []) {
                      task.region, task.bucket, task.object, err.message
                 );
                 return eventEmiter({
+                    uuid: task.uuid,
                     error: err.message,
-                    uploadId: task.uploadId,
                     type: UPLOAD_NOTIFY_ERROR
                 });
             }
@@ -63,7 +63,7 @@ function startTask(uploadTasks = [], objects = []) {
                 'Finish Region = %s, Bucket = %s, Object = %s',
                 task.region, task.bucket, task.object
             );
-            eventEmiter({type: UPLOAD_NOTIFY_FINISH, uploadId: task.uploadId});
+            eventEmiter({type: UPLOAD_NOTIFY_FINISH, uuid: task.uuid});
         })
     );
 }
@@ -84,22 +84,22 @@ export function upload(store) {
             return next(action);
         }
 
-        const {command, objects} = uploadTask;
+        const {command, uuids} = uploadTask;
         const {uploads, auth} = store.getState();
 
         credentials.ak = auth.ak;
         credentials.sk = auth.sk;
         eventEmiter = message => next(message);
 
-        next({type: command, objects});
+        next({type: command, uuids});
 
         switch (command) {
         case UPLOAD_COMMAND_START:
-            return startTask(uploads, objects);
+            return startTask(uploads, uuids);
         case UPLOAD_COMMAND_CANCEL:
-            return cancelTask(uploads, objects);
+            return cancelTask(uploads, uuids);
         case UPLOAD_COMMAND_SUSPEND:
-            return suspendTask(uploads, objects);
+            return suspendTask(uploads, uuids);
         default:
             throw new Error(`Not Expected Command: ${command}`);
         }
@@ -108,7 +108,7 @@ export function upload(store) {
 
 // 任务分解
 function decompose(task, uploadId) {
-    const {filePath, fileSize, bucket, object} = task;
+    const {uuid, bucket, object, filePath, fileSize} = task;
     const tasks = [];
 
     let leftSize = fileSize;
@@ -118,13 +118,14 @@ function decompose(task, uploadId) {
     while (leftSize > 0) {
         const partSize = Math.min(leftSize, UPLOAD_PART_SIZE);
         tasks.push({
-            object,
+            uuid,
             uploadId,
+            bucket,
+            object,
             partSize,
             partNumber,
-            start: offset,
-            file: filePath,
-            bucketName: bucket
+            filePath,
+            start: offset
         });
 
         leftSize -= partSize;
@@ -136,7 +137,7 @@ function decompose(task, uploadId) {
 }
 
 export function uploadFromFile(task, done) {
-    const {bucket, object, region} = task;
+    const {uuid, region, bucket, object} = task;
     const client = getRegionClient(region, credentials);
 
     // 如果少于UPLOAD_PART_LIMIT片，就别分了
@@ -147,22 +148,24 @@ export function uploadFromFile(task, done) {
     }
 
     function uploadPartFile(part, callback) {
-        logger('Start UploadId = %s, PartNumber = %s, Part = %s',
-            part.uploadId, part.partNumber, JSON.stringify(part));
+        logger(
+            'Start Uuid = %s, UploadId = %s, PartNumber = %s, Part = %s',
+            uuid, part.uploadId, part.partNumber, JSON.stringify(part)
+        );
 
         return client.uploadPartFromFile(
-            part.bucketName, part.object, part.uploadId,
+            part.bucket, part.object, part.uploadId,
             part.partNumber, part.partSize,
-            part.file, part.start
+            part.filePath, part.start
         ).then(
             res => {
-                logger('Finish UploadId = %s, PartNumber = %s, Part = %s',
-                    part.uploadId, part.partNumber, JSON.stringify(part));
+                logger('Finish Uuid = %s, UploadId = %s, PartNumber = %s, Part = %s',
+                    uuid, part.uploadId, part.partNumber, JSON.stringify(part));
                 // 通知分片进度
                 eventEmiter({
-                    type: UPLOAD_NOTIFY_PROGRESS,
-                    uploadId: part.uploadId,
+                    uuid: part.uuid,
                     increaseSize: part.partSize,
+                    type: UPLOAD_NOTIFY_PROGRESS
                 });
                 // 完成分片任务
                 callback(null, res);
