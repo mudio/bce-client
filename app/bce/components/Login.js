@@ -13,6 +13,7 @@ import React, {Component, PropTypes} from 'react';
 import styles from './Login.css';
 import {REGION_BJ} from '../utils/Region';
 import GlobalConfig from '../../main/ConfigManager';
+import SystemBar from './Common/SystemBar';
 
 const VALID_AUTH = 'VALID_AUTH';
 const INVALID_PIN = 'INVALID_PIN';
@@ -40,7 +41,7 @@ export default class Login extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.auth.isAuth) {
+        if (nextProps.auth.isAuth && !this.props.auth.isAuth) {
             hashHistory.push(`/region/${REGION_BJ}`);
         }
     }
@@ -136,6 +137,7 @@ export default class Login extends Component {
     render() {
         return (
             <div className={styles.container}>
+                <SystemBar />
                 <form className={styles.login} onSubmit={evt => this.handleSubmit(evt)}>
                     <h1>百度云</h1>
                     {this.getAkSkFields()}

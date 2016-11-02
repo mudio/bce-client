@@ -9,6 +9,7 @@ import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './Url.css';
+import SystemBar from '../Common/SystemBar';
 
 export default class Url extends Component {
     static propTypes = {
@@ -77,6 +78,7 @@ export default class Url extends Component {
                     {nav.bucket && `${nav.bucket}/`}
                     {nav.folder}
                 </div>
+                <SystemBar />
             </div>
         );
     }

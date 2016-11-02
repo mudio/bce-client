@@ -53,7 +53,7 @@ export function prepareUploadTask(filePath, fileSize, region, bucket, object) {
         // 新建一个上传任务
         dispatch({type: TRANS_UPLOAD_NEW, uuid, region, bucket, object, filePath, fileSize});
         // 立即开始这个任务，如果排队则自动等待
-        dispatch(uploadStart());
+        dispatch(uploadStart([uuid]));
     };
 }
 

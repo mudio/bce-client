@@ -1,24 +1,24 @@
 
 .container {
     display: flex;
-    height: 60px;
+    height: 50px;
     flex-shrink: 0;
-    align-items: center;
-    border-bottom: 1px solid #f3f5f9;
     -webkit-user-select: none;
     -webkit-app-region: drag;
+    border-bottom: 1px solid #f3f5f9;
 }
 
 .nav {
     height: 30px;
     display: flex;
     padding-left: 10px;
+    align-self: center;
 }
 
 .nav span {
     display: flex;
     width: 40px;
-    height: 30px;
+    height: 28px;
     cursor: pointer;
     color: #8692b2;
     margin-right: 10px;
@@ -43,6 +43,7 @@
     height: 30px;
     color: #8692b2;
     font-size: 14px;
+    align-self: center;
     align-items: center;
     white-space: nowrap;
     -webkit-user-select: text;

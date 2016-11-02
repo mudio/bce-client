@@ -137,12 +137,12 @@ function decompose(task, uploadId) {
 }
 
 export function uploadFromFile(task, done) {
-    const {uuid, region, bucket, object} = task;
+    const {uuid, region, bucket, object, filePath, fileSize} = task;
     const client = getRegionClient(region, credentials);
 
     // 如果少于UPLOAD_PART_LIMIT片，就别分了
-    if (task.fileSize <= UPLOAD_PART_LIMIT * UPLOAD_PART_SIZE) {
-        client.putObjectFromFile(task.bucket, object, task.filePath)
+    if (fileSize <= UPLOAD_PART_LIMIT * UPLOAD_PART_SIZE) {
+        client.putObjectFromFile(bucket, object, filePath)
             .then(() => done(), done);
         return;
     }

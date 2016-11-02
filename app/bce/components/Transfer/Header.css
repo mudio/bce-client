@@ -3,8 +3,14 @@
     display: flex;
     flex-shrink: 0;
     height: 40px;
-    align-items: center;
+    -webkit-app-region: drag;
     border-bottom: 1px solid #f3f5f9;
+}
+
+.body {
+    display: flex;
+    flex: auto;
+    align-items: center;
 }
 
 .new {
