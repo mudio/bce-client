@@ -33,7 +33,21 @@ export function listObjects(bucketName, prefix = '') {
         [API_TYPE]: {
             types: [LIST_OBJECT_REQUEST, LIST_OBJECT_SUCCESS, LIST_OBJECT_FAILURE],
             method: 'listObjects',
-            args: [bucketName, {delimiter: '/', prefix}]
+            args: [bucketName, {delimiter: '/', prefix, maxKeys: 200}]
+        }
+    };
+}
+
+export const LIST_MORE_REQUEST = 'LIST_MORE_REQUEST';
+export const LIST_MORE_SUCCESS = 'LIST_MORE_SUCCESS';
+export const LIST_MORE_FAILURE = 'LIST_MORE_FAILURE';
+
+export function listMoreObjects(bucketName, prefix = '', marker = '') {
+    return {
+        [API_TYPE]: {
+            types: [LIST_MORE_REQUEST, LIST_MORE_SUCCESS, LIST_MORE_FAILURE],
+            method: 'listObjects',
+            args: [bucketName, {delimiter: '/', prefix, marker, maxKeys: 200}]
         }
     };
 }

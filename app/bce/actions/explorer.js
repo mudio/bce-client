@@ -8,7 +8,7 @@
 import URL from '../utils/URL';
 import {createUploadTask} from './uploader';
 import {createDownloadTask} from './downloader';
-import {listBuckets, listObjects, deleteObject} from './window';
+import {listBuckets, listObjects, deleteObject, listMoreObjects} from './window';
 
 export const UPDATE_NAV = 'UPDATE_NAV';
 
@@ -70,4 +70,8 @@ export function download(...args) {
 
 export function trash(item) {
     return deleteObject(item.key);
+}
+
+export function listMore(...args) {
+    return listMoreObjects(...args);
 }

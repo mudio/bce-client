@@ -20,7 +20,7 @@ export class Client extends BosClient {
         return super.listBuckets().then(res => {
             // 按照地域过滤
             const buckets = res.body.buckets.filter(item => item.location === this.region);
-            return Object.assign(res.body, {buckets, folders: [], objects: []});
+            return Object.assign(res.body, {buckets});
         });
     }
 
@@ -34,7 +34,6 @@ export class Client extends BosClient {
 
             return {
                 ...res.body,
-                buckets: [],
                 folders,
                 objects,
             };

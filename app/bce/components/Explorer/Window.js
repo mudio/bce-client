@@ -27,22 +27,32 @@ class Window extends Component {
             bucket: PropTypes.string,
             folder: PropTypes.string
         }),
-        response: PropTypes.shape({
-            buckets: PropTypes.array.isRequired,
-            folders: PropTypes.array.isRequired,
-            objects: PropTypes.array.isRequired,
-            name: PropTypes.string,
-            prefix: PropTypes.string,
-            delimiter: PropTypes.string,
-            marker: PropTypes.string,
-            maxKeys: PropTypes.number,
-            isTruncated: PropTypes.boolean
-        }),
+        // 当前BucketName
+        bucketName: PropTypes.string,
+        // 当前筛选前缀
+        prefix: PropTypes.string,
+        // 数据是否正在请求
         isFetching: PropTypes.bool.isRequired,
-        didInvalidate: PropTypes.bool.isRequired,
+        // 是否出错
+        hasError: PropTypes.bool.isRequired,
+        // 错误信息
+        error: PropTypes.string,
+        // 数据是否全部返回
+        isTruncated: PropTypes.bool.isRequired,
+        // 下次请求起点，isTruncated为true时候有效
+        nextMarker: PropTypes.string,
+        // buckets集合，最多100个
+        buckets: PropTypes.array.isRequired,
+        // 文件夹集合, 这里存放多次请求的response
+        folders: PropTypes.array.isRequired,
+        // 文件集合，这里存放多次请求的response
+        objects: PropTypes.array.isRequired,
+        // func
         updateNavigator: PropTypes.func.isRequired,
         uploadFile: PropTypes.func.isRequired,
         refresh: PropTypes.func.isRequired,
+        listMore: PropTypes.func.isRequired,
+        // 检测刷新
         uploadTask: PropTypes.shape({
             objects: PropTypes.array.isRequired,
             folders: PropTypes.array.isRequired
@@ -101,6 +111,16 @@ class Window extends Component {
         // TOOD: 拖拽中
     }
 
+    onScroll() {
+        const {scrollTop, scrollHeight, clientHeight} = this.refs.main;
+        const {bucketName, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
+        const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
+
+        if (!isFetching && isTruncated && bucketName && allowListMore) {
+            listMore(bucketName, prefix, nextMarker);
+        }
+    }
+
     getLoading() {
         if (this.props.isFetching) {
             return (
@@ -113,9 +133,9 @@ class Window extends Component {
     }
 
     getError() {
-        const {isFetching, didInvalidate} = this.props;
+        const {isFetching, hasError} = this.props;
 
-        if (!isFetching && didInvalidate) {
+        if (!isFetching && hasError) {
             return (
                 <span className={styles.error}>
                     <i className="fa fa-mixcloud" />
@@ -126,11 +146,10 @@ class Window extends Component {
     }
 
     getEmpty() {
-        const {isFetching, didInvalidate, response} = this.props;
-        const {buckets, folders, objects} = response;
+        const {isFetching, hasError, buckets, folders, objects} = this.props;
 
         if (!isFetching
-            && !didInvalidate
+            && !hasError
             && buckets.length === 0
             && folders.length === 0
             && objects.length === 0) {
@@ -143,50 +162,72 @@ class Window extends Component {
     }
 
     getBuckets() {
-        const {isFetching, response} = this.props;
+        const {buckets} = this.props;
 
-        if (!isFetching) {
-            return response.buckets.map(
-                (item, index) => (
-                    <Bucket key={index}
-                        item={item}
-                        onDoubleClick={bucket => this.redirect(bucket)}
-                    />
-                )
-            );
-        }
+        return buckets.map(
+            (item, index) => (
+                <Bucket key={index}
+                    item={item}
+                    onDoubleClick={bucket => this.redirect(bucket)}
+                />
+            )
+        );
     }
 
     getFolders() {
-        const {isFetching, response, nav} = this.props;
+        const {folders, bucketName} = this.props;
 
-        if (!isFetching) {
-            return response.folders.map(
-                (item, index) => (
-                    <Folder key={index}
-                        item={item}
-                        onDownload={(...args) => this.onDownload(...args)}
-                        onContextMenu={(...args) => this.onContextMenu(...args)}
-                        onDoubleClick={folder => this.redirect(nav.bucket, folder)}
-                    />
-                )
-            );
-        }
+        return folders.map(
+            (item, index) => (
+                <Folder key={index}
+                    item={item}
+                    onDownload={(...args) => this.onDownload(...args)}
+                    onContextMenu={(...args) => this.onContextMenu(...args)}
+                    onDoubleClick={folder => this.redirect(bucketName, folder)}
+                />
+            )
+        );
     }
 
     getObejcts() {
-        const {isFetching, response} = this.props;
+        const {objects} = this.props;
 
-        if (!isFetching) {
-            return response.objects.map(
-                (item, index) => (
-                    <File key={index}
-                        item={item}
-                        onDownload={(...args) => this.onDownload(...args)}
-                        onContextMenu={(...args) => this.onContextMenu(...args)}
-                    />
-                )
+        return objects.map(
+            (item, index) => (
+                <File key={index}
+                    item={item}
+                    onDownload={(...args) => this.onDownload(...args)}
+                    onContextMenu={(...args) => this.onContextMenu(...args)}
+                />
+            )
+        );
+    }
+
+    getMore() {
+        const {isFetching, isTruncated, bucketName, prefix, nextMarker, listMore} = this.props;
+
+        // 数据正在加载，并且没有加载完
+        if (isFetching && isTruncated) {
+            return (
+                <div className={styles.loadMore}>
+                    <i className="fa fa-spinner fa-pulse fa-lg" aria-hidden="true" />
+                    正在加载中...
+                </div>
             );
+        }
+
+        // 数据加载完毕，然而数据没有加载完
+        if (!isFetching && isTruncated) {
+            return (
+                <div className={styles.loadMore}>
+                    <button onClick={() => listMore(bucketName, prefix, nextMarker)}>加载更多&gt;&gt;</button>
+                </div>
+            );
+        }
+
+        // 数据加载完毕，并且没有更多了
+        if (!isFetching && !isTruncated) {
+            return '';
         }
     }
 
@@ -205,6 +246,7 @@ class Window extends Component {
                 onMouseUp={evt => this.onMouseUp(evt)}
                 onMouseDown={evt => this.onMouseDown(evt)}
                 onMouseMove={evt => this.onMouseMove(evt)}
+                onScroll={evt => this.onScroll(evt)}
             >
                 {this.getLoading()}
                 {this.getError()}
@@ -212,6 +254,7 @@ class Window extends Component {
                 {this.getBuckets()}
                 {this.getFolders()}
                 {this.getObejcts()}
+                {this.getMore()}
                 <ContextMenu ref="_contextMenu" />
             </div>
         );
