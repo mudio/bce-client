@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import u from 'lodash';
 import {
     LIST_BUCKET_REQUEST, LIST_BUCKET_SUCCESS, LIST_BUCKET_FAILURE,
     LIST_OBJECT_REQUEST, LIST_OBJECT_SUCCESS, LIST_OBJECT_FAILURE,
@@ -66,7 +67,7 @@ export default function explorer(state = defaultState, action) {
             hasError: false,
             isFetching: false,
             objects: [...state.objects, ...objects],
-            folders: [...state.folders, ...folders]
+            folders: u.uniq([...state.folders, ...folders], item => item.key)
         });
     }
     case LIST_OBJECT_SUCCESS:
