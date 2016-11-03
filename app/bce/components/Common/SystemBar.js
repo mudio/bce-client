@@ -7,13 +7,17 @@
 
 import electron from 'electron';
 import {Link} from 'react-router';
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 
 import styles from './SystemBar.css';
 
 const browserWindow = electron.remote.getCurrentWindow();
 
 export default class SystemBar extends Component {
+    static propTypes = {
+        darwinHidden: PropTypes.bool
+    }
+
     close() {
         browserWindow.close();
     }
@@ -44,10 +48,14 @@ export default class SystemBar extends Component {
             );
         }
 
-        return (
-            <Link to="/login" className={styles.darwinBar}>
-                <i className="fa fa-lg fa-power-off" />
-            </Link>
-        );
+        if (!this.props.darwinHidden) {
+            return (
+                <Link to="/login" className={styles.darwinBar}>
+                    <i className="fa fa-lg fa-power-off" />
+                </Link>
+            );
+        }
+
+        return null;
     }
 }

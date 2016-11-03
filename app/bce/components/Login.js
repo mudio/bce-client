@@ -137,7 +137,7 @@ export default class Login extends Component {
     render() {
         return (
             <div className={styles.container}>
-                <SystemBar />
+                <SystemBar darwinHidden />
                 <form className={styles.login} onSubmit={evt => this.handleSubmit(evt)}>
                     <h1>百度云</h1>
                     {this.getAkSkFields()}
