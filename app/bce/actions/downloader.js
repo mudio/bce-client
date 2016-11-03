@@ -53,14 +53,13 @@ export function createDownloadTask(key, path) {
         const {region, bucket, folder} = navigator;
         const client = getRegionClient(region, auth);
 
-        client.listRawObjects(bucket, {prefix: key}).then(
-            response => {
-                const {contents} = response.body;
+        client.listAllObjects(bucket, key).then(
+            contents => {
                 const uuids = contents.map(item => {
                     // 创建任务uuid
                     const uuid = getUuid();
                     const localDir = `${path}/${item.key.replace(folder, '')}`;
-                    const extra = {region, bucket, object: key, path: localDir};
+                    const extra = {region, bucket, object: item.key, path: localDir};
 
                     // 这里用object替换key，免得与React.Component.key冲突
                     delete item.key; // eslint-disable-line no-param-reassign

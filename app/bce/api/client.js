@@ -53,7 +53,7 @@ export class Client extends BosClient {
             this.listRawObjects(bucketName, {prefix, marker}).then(
                 res => {
                     const {isTruncated, contents, nextMarker} = res.body;
-                    const keys = contents.map(item => item.key);
+                    const keys = contents.filter(item => !item.key.endsWith('/'));
                     objects = [...objects, ...keys];
 
                     if (isTruncated) {
