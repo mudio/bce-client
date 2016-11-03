@@ -10,7 +10,8 @@ body {
     font-family: Helvetica, "Helvetica Neue", "Microsoft YaHei", Arial, serif;
 }
 
-button, input, textarea, a, p, i, span, h1, h2, h3, li {
+button, input, textarea, a, p, i, span, h1, h2, h3, li,
+.fa {
     -webkit-app-region: no-drag;
 }
 
