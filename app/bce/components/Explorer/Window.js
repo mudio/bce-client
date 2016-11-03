@@ -175,12 +175,15 @@ class Window extends Component {
     }
 
     getFolders() {
-        const {folders, bucketName} = this.props;
+        const {bucketName, prefix, folders, nav} = this.props;
 
         return folders.map(
             (item, index) => (
                 <Folder key={index}
-                    item={item}
+                    region={nav.region}
+                    folder={item}
+                    prefix={prefix}
+                    bucketName={bucketName}
                     onDownload={(...args) => this.onDownload(...args)}
                     onContextMenu={(...args) => this.onContextMenu(...args)}
                     onDoubleClick={folder => this.redirect(bucketName, folder)}
@@ -190,12 +193,15 @@ class Window extends Component {
     }
 
     getObejcts() {
-        const {objects} = this.props;
+        const {bucketName, prefix, objects, nav} = this.props;
 
         return objects.map(
-            (item, index) => (
+            (object, index) => (
                 <File key={index}
-                    item={item}
+                    region={nav.region}
+                    object={object}
+                    prefix={prefix}
+                    bucketName={bucketName}
                     onDownload={(...args) => this.onDownload(...args)}
                     onContextMenu={(...args) => this.onContextMenu(...args)}
                 />

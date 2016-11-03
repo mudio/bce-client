@@ -68,8 +68,8 @@ export function download(...args) {
     return createDownloadTask(...args);
 }
 
-export function trash(item) {
-    return deleteObject(item.key);
+export function trash(...args) {
+    return deleteObject(...args);
 }
 
 export function listMore(...args) {

@@ -21,7 +21,10 @@ function normalize(key = '') {
 
 class Folder extends Component {
     static propTypes = {
-        item: PropTypes.shape({
+        region: PropTypes.string.isRequired,
+        prefix: PropTypes.string.isRequired,
+        bucketName: PropTypes.string.isRequired,
+        folder: PropTypes.shape({
             key: PropTypes.string.isRequired
         }),
         onDoubleClick: PropTypes.func.isRequired,
@@ -36,30 +39,30 @@ class Folder extends Component {
     };
 
     _trash() {
-        const {item, trash} = this.props;
+        const {region, bucketName, prefix, folder, trash} = this.props;
 
         const comfirmTrash = !remote.dialog.showMessageBox(remote.getCurrentWindow(), {
-            message: `您确定删除${normalize(item.key)}文件夹?`,
+            message: `您确定删除${normalize(folder.key)}文件夹?`,
             title: '删除提示',
             buttons: ['删除文件夹', '取消'],
             cancelId: 1
         });
 
         if (comfirmTrash) {
-            trash(item);
+            trash(region, bucketName, prefix, [folder.key]);
         }
     }
 
     _onDownload() {
         // 选择文件夹
-        const {download, item} = this.props;
+        const {download, folder} = this.props;
         const path = remote.dialog.showOpenDialog({properties: ['openDirectory']});
         // 用户取消了
         if (path === undefined) {
             return;
         }
         // 不支持选择多个文件夹，所以只取第一个
-        download(item.key, path[0]);
+        download(folder.key, path[0]);
     }
 
     _onContextMenu(evt) {
@@ -80,16 +83,16 @@ class Folder extends Component {
     }
 
     render() {
-        const {item, onDoubleClick} = this.props;
+        const {folder, onDoubleClick} = this.props;
 
         return (
             <div className={styles.container}
                 onContextMenu={evt => this._onContextMenu(evt)}
-                onDoubleClick={() => onDoubleClick(item.key)}
+                onDoubleClick={() => onDoubleClick(folder.key)}
             >
                 <i className={`fa fa-4x fa-folder ${styles.folder}`} />
-                <span className={styles.text} title={normalize(item.key)}>
-                    {normalize(item.key)}
+                <span className={styles.text} title={normalize(folder.key)}>
+                    {normalize(folder.key)}
                 </span>
             </div>
         );

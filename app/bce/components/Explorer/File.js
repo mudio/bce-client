@@ -27,7 +27,10 @@ extMap = zipTag.reduce((context, tag) => Object.assign(context, {[tag]: zipIcon}
 
 class File extends Component {
     static propTypes = {
-        item: PropTypes.shape({
+        region: PropTypes.string.isRequired,
+        prefix: PropTypes.string.isRequired,
+        bucketName: PropTypes.string.isRequired,
+        object: PropTypes.shape({
             key: PropTypes.string.isRequired,
             lastModified: PropTypes.string.isRequired,
             ETag: PropTypes.string,
@@ -45,28 +48,28 @@ class File extends Component {
 
     _onDownload() {
         // 选择文件夹
-        const {download, item} = this.props;
+        const {download, object} = this.props;
         const path = remote.dialog.showOpenDialog({properties: ['openDirectory']});
         // 用户取消了
         if (path === undefined) {
             return;
         }
         // 不支持选择多个文件夹，所以只取第一个
-        download(item.key, path[0]);
+        download(object.key, path[0]);
     }
 
     _trash() {
-        const {item, trash} = this.props;
+        const {region, bucketName, prefix, object, trash} = this.props;
 
         const comfirmTrash = !remote.dialog.showMessageBox(remote.getCurrentWindow(), {
-            message: `您确定删除${item.key}?`,
+            message: `您确定删除${object.key}?`,
             title: '删除提示',
             buttons: ['删除', '取消'],
             cancelId: 1
         });
 
         if (comfirmTrash) {
-            trash(item);
+            trash(region, bucketName, prefix, [object.key]);
         }
     }
 
@@ -90,9 +93,9 @@ class File extends Component {
     }
 
     render() {
-        const {item} = this.props;
-        const ext = item.key.split('.').pop().toLowerCase();
-        const fileName = item.key.replace(/(.*\/)(.*)$/, '$2');
+        const {key} = this.props.object;
+        const ext = key.split('.').pop().toLowerCase();
+        const fileName = key.replace(/(.*\/)(.*)$/, '$2');
 
         return (
             <div onContextMenu={evt => this._onContextMenu(evt)}

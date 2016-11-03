@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import Q from 'q';
 import {BosClient} from 'bce-sdk-js';
 import GlobalConfig from '../../main/ConfigManager';
 
@@ -42,6 +43,44 @@ export class Client extends BosClient {
 
     listRawObjects(...args) {
         return super.listObjects(...args);
+    }
+
+    listAllObjects(bucketName, prefix) {
+        let objects = [];
+        const deferred = Q.defer();
+
+        const fetchObjects = marker => {
+            this.listRawObjects(bucketName, {prefix, marker}).then(
+                res => {
+                    const {isTruncated, contents, nextMarker} = res.body;
+                    const keys = contents.map(item => item.key);
+                    objects = [...objects, ...keys];
+
+                    if (isTruncated) {
+                        fetchObjects(nextMarker);
+                    } else {
+                        deferred.resolve(objects);
+                    }
+                },
+                err => deferred.reject(err)
+            );
+        };
+
+        fetchObjects();
+
+        return deferred.promise;
+    }
+
+
+    deleteAllObjects(bucketName, keys = []) {
+        const taskQueues = [];
+
+        while (keys.length > 0) {
+            const deferred = this.deleteMultipleObjects(bucketName, keys.splice(0, 1000));
+            taskQueues.push(deferred);
+        }
+
+        return Q.allSettled(taskQueues);
     }
 
     uploadPartFromFile(...args) {

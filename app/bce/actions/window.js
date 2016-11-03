@@ -6,8 +6,12 @@
  */
 
 import Q from 'q';
+import debug from 'debug';
+
 import {API_TYPE} from '../middleware/api';
 import {getRegionClient} from '../api/client';
+
+const logger = debug('bce-client:operation');
 
 export const LIST_BUCKET_REQUEST = 'LIST_BUCKET_REQUEST';
 export const LIST_BUCKET_SUCCESS = 'LIST_BUCKET_SUCCESS';
@@ -56,35 +60,38 @@ export const DELETE_OBJECT_REQUEST = 'DELETE_OBJECT_REQUEST';
 export const DELETE_OBJECT_SUCCESS = 'DELETE_OBJECT_SUCCESS';
 export const DELETE_OBJECT_FAILURE = 'DELETE_OBJECT_FAILURE';
 
-export function deleteObject(prefix) {
+export function deleteObject(region, bucketName, prefix, objects = []) {
     return (dispatch, getState) => {
-        const {auth, navigator} = getState();
-        const {region, bucket, folder} = navigator;
+        const {auth} = getState();
         const client = getRegionClient(region, auth);
 
-        client.listRawObjects(bucket, {prefix}).then(
-            response => {
-                const {contents} = response.body;
-                const keys = contents.map(item => item.key);
+        objects.forEach(key => {
+            client.listAllObjects(bucketName, key).then(
+                keys => {
+                    logger(
+                        'Delete bucketName = %s, prefix = %s, keys = %s',
+                        bucketName, prefix, keys.join(',')
+                    );
 
-                const deferred = dispatch({
-                    [API_TYPE]: {
-                        types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
-                        method: 'deleteMultipleObjects',
-                        args: [bucket, [...keys]]
+                    const deferred = dispatch({
+                        [API_TYPE]: {
+                            types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
+                            method: 'deleteAllObjects',
+                            args: [bucketName, keys]
+                        }
+                    });
+
+                    if (Q.isPromise(deferred)) {
+                        deferred.finally(() => dispatch(
+                            listObjects(bucketName, prefix)
+                        ));
                     }
-                });
-
-                if (Q.isPromise(deferred)) {
-                    deferred.finally(() => dispatch(
-                        listObjects(bucket, folder)
-                    ));
-                }
-            },
-            response => dispatch({
-                type: DELETE_OBJECT_FAILURE,
-                error: response.body
-            })
-        );
+                },
+                error => dispatch({
+                    error,
+                    type: DELETE_OBJECT_FAILURE
+                })
+            );
+        });
     };
 }
