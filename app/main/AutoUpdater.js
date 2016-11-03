@@ -52,7 +52,10 @@ export default class OSXUpdater {
 
                 if (response.statusCode === 200) {
                     const {name, url} = JSON.parse(body);
-                    return this.notify(UPDATE_ERROR, {releaseName: name, url});
+                    return this.notify(UPDATE_ERROR, {
+                        releaseName: name,
+                        url: 'https://cloud.baidu.com/doc/BOS/BOSCLI.html#BOS.E6.A1.8C.E9.9D.A2'
+                    });
                 }
             });
         });
