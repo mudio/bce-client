@@ -18,11 +18,16 @@
 }
 
 .text {
-    width: 90px;
+    display: inline-flex;
+    width: 90%;
+    height: 30px;
     font-size: 12px;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    justify-content: center;
+    align-items: baseline;
     overflow: hidden;
     text-align: center;
-    text-overflow: ellipsis;
 }
 
 .bucketicon {
