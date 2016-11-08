@@ -68,16 +68,17 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
         objects.forEach(key => {
             client.listAllObjects(bucketName, key).then(
                 keys => {
+                    const removeKeys = keys.map(item => item.key);
                     logger(
                         'Delete bucketName = %s, prefix = %s, keys = %s',
-                        bucketName, prefix, keys.join(',')
+                        bucketName, prefix, removeKeys
                     );
 
                     const deferred = dispatch({
                         [API_TYPE]: {
                             types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
                             method: 'deleteAllObjects',
-                            args: [bucketName, keys]
+                            args: [bucketName, removeKeys]
                         }
                     });
 
