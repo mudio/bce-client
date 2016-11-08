@@ -7,23 +7,13 @@
 
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
 
-import {remote} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import {remote} from 'electron';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './File.css';
 import * as ExplorerActons from '../../actions/explorer';
-
-let extMap = {normal: 'fa-file-text'};
-const imgIcon = 'fa-file-image-o';
-const imgTag = ['jpg', 'jpge', 'bmp', 'png', 'icon', 'ico', 'psd', 'icns'];
-
-const zipIcon = 'fa-file-zip-o';
-const zipTag = ['rar', 'zip', '7z', 'tar', 'bz'];
-
-extMap = imgTag.reduce((context, tag) => Object.assign(context, {[tag]: imgIcon}), extMap);
-extMap = zipTag.reduce((context, tag) => Object.assign(context, {[tag]: zipIcon}), extMap);
 
 class File extends Component {
     static propTypes = {
@@ -101,7 +91,7 @@ class File extends Component {
             <div onContextMenu={evt => this._onContextMenu(evt)}
                 className={styles.container}
             >
-                <i className={`fa fa-4x ${extMap[ext] || extMap.normal}`} />
+                <i className={`${styles.fileicon} asset-normal asset-${ext}`} />
                 <span className={styles.text} title={fileName}>{fileName}</span>
             </div>
         );

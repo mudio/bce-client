@@ -1,0 +1,85 @@
+
+.asset-normal {
+    background: url(./assets/icon/normal.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-bucket {
+    background: url(./assets/icon/bucket.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-png, .asset-jpg, .asset-jpge, .asset-bmp, .asset-ico, .asset-icns {
+    background: url(./assets/icon/img.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-psd, .asset-ai {
+    background: url(./assets/icon/ps.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-mp4, asset-flv, asset-mkv, asset-rmvb, asset-avi asset-ogg {
+    background: url(./assets/icon/video.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-mp3 {
+    background: url(./assets/icon/audio.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-folder {
+    background: url(./assets/icon/folder.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-ppt, .asset-pptx {
+    background: url(./assets/icon/ppt.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-doc, .asset-docs {
+    background: url(./assets/icon/word.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-xls, .asset-xlsx {
+    background: url(./assets/icon/excel.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-pdf {
+    background: url(./assets/icon/pdf.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-zip, .asset-rar, .asset-7z, .asset-tar, .asset-gz {
+    background: url(./assets/icon/zip.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-exe, .asset-dll, .asset-msi, .asset-bat, .asset-sh {
+    background: url(./assets/icon/exe.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-js, .asset-py, .asset-c, .asset-h, .asset-cpp, .asset-go, .asset-java, .asset-class, .asset-pyc, .asset-es, .asset-es6, .asset-html, .asset-css, .asset-less, .asset-sass, .asset-xml, .asset-htm, .asset-yml, .asset-json {
+    background: url(./assets/icon/code.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-apk {
+    background: url(./assets/icon/android.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-torrent {
+    background: url(./assets/icon/bt.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-txt, .asset-log {
+    background: url(./assets/icon/text.png) center no-repeat;
+    background-size: contain;
+}

@@ -3,7 +3,7 @@
     display: flex;
     width: 100px;
     height: 100px;
-    color: #6accf8;
+    color: #666;
     cursor: pointer;
     border-radius: 5px;
     flex-flow: column nowrap;
@@ -23,4 +23,10 @@
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
+}
+
+.bucketicon {
+    display: flex;
+    width: 60px;
+    height: 60px;
 }

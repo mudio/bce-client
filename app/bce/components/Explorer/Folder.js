@@ -90,7 +90,7 @@ class Folder extends Component {
                 onContextMenu={evt => this._onContextMenu(evt)}
                 onDoubleClick={() => onDoubleClick(folder.key)}
             >
-                <i className={`fa fa-4x fa-folder ${styles.folder}`} />
+                <i className={`${styles.foldericon} asset-folder`} />
                 <span className={styles.text} title={normalize(folder.key)}>
                     {normalize(folder.key)}
                 </span>

@@ -7,7 +7,7 @@ body {
     position: relative;
     overflow-y: hidden;
     border-radius: 3px;
-    font-family: Helvetica, "Helvetica Neue", "Microsoft YaHei", Arial, serif;
+    font-family: "Helvetica Neue", Helvetica, "Microsoft YaHei", Arial, serif;
 }
 
 button, input, textarea, a, p, i, span, h1, h2, h3, li,

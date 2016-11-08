@@ -14,6 +14,7 @@ import {Router, hashHistory} from 'react-router';
 import {syncHistoryWithStore} from 'react-router-redux';
 
 import './app.global.css';
+import './mime.global.css';
 import routes from './routes';
 import configureStore from './store/configureStore';
 

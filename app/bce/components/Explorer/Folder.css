@@ -3,13 +3,12 @@
     display: flex;
     width: 100px;
     height: 100px;
-    color: #108cee;
+    color: #666;
     cursor: pointer;
     border-radius: 5px;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
-    flex-flow: row wrap;
     -webkit-user-select: none;
 }
 
@@ -18,16 +17,20 @@
 }
 
 .text {
-    width: 90px;
+    display: inline-flex;
+    width: 90%;
+    height: 30px;
     font-size: 12px;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    justify-content: center;
+    align-items: baseline;
     overflow: hidden;
     text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.folder {
-    background-image: -webkit-gradient(linear, 0 0, 0 bottom, from(rgba(106, 204, 248, 1)), to(rgba(91, 188, 237, 1)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.foldericon {
+    display: flex;
+    width: 60px;
+    height: 60px;
 }

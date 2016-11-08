@@ -25,7 +25,7 @@ export default class Bucket extends Component {
             <div className={styles.container}
                 onDoubleClick={() => onDoubleClick(item.name)}
             >
-                <i className="fa fa-database fa-4x" />
+                <i className={`${styles.bucketicon} asset-bucket`} />
                 <span className={styles.text} alt={item.creationDate}>{item.name}</span>
             </div>
         );
