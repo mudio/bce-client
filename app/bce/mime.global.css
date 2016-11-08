@@ -59,8 +59,13 @@
     background-size: contain;
 }
 
-.asset-exe, .asset-dll, .asset-msi, .asset-bat, .asset-sh {
+.asset-exe, .asset-dll, .asset-msi {
     background: url(./assets/icon/exe.png) center no-repeat;
+    background-size: contain;
+}
+
+.asset-bat, .asset-sh, .asset-cmd {
+    background: url(./assets/icon/sh.png) center no-repeat;
     background-size: contain;
 }
 

@@ -2,7 +2,7 @@
 .container {
     display: flex;
     width: 100px;
-    height: 100px;
+    min-height: 100px;
     color: #666;
     cursor: pointer;
     border-radius: 5px;
@@ -13,24 +13,24 @@
 }
 
 .container:hover {
-    background-color: rgba(223, 223, 223, 0.3);
+    background-color: #f3f5f9;
 }
 
 .text {
     display: inline-flex;
     width: 90%;
-    height: 30px;
     font-size: 12px;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    justify-content: center;
-    align-items: baseline;
     overflow: hidden;
+    line-height: 15px;
     text-align: center;
+    align-items: baseline;
+    word-break: break-all;
+    justify-content: center;
 }
 
 .foldericon {
     display: flex;
     width: 60px;
     height: 60px;
+    flex-shrink: 0;
 }
