@@ -8,8 +8,10 @@
 import Q from 'q';
 import debug from 'debug';
 
+import URL from '../utils/URL';
 import {API_TYPE} from '../middleware/api';
 import {getRegionClient} from '../api/client';
+import {createUploadTask} from './uploader';
 
 const logger = debug('bce-client:operation');
 
@@ -95,4 +97,35 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
             () => dispatch(listObjects(bucketName, prefix))
         );
     };
+}
+
+export const UPDATE_NAV = 'UPDATE_NAV';
+
+export function updateNavigator(nav) {
+    return dispatch => {
+        const URLObj = new URL(nav);
+        const region = URLObj.getRegion();
+        const bucket = URLObj.getBucket();
+        const folder = URLObj.getFolder();
+
+        dispatch({type: UPDATE_NAV, nav: {region, bucket, folder}});
+
+        if (!bucket) {
+            dispatch(listBuckets(region));
+        } else {
+            dispatch(listObjects(bucket, folder));
+        }
+    };
+}
+
+export function refresh(bucketName, prefix) {
+    return dispatch => dispatch(listObjects(bucketName, prefix));
+}
+
+export function uploadFile(...args) {
+    return createUploadTask(...args);
+}
+
+export function listMore(...args) {
+    return listMoreObjects(...args);
 }

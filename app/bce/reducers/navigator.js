@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {UPDATE_NAV} from '../actions/explorer';
+import {UPDATE_NAV} from '../actions/window';
 import {REGION_BJ} from '../utils/Region';
 
 const defalutState = {region: REGION_BJ, bucket: '', folder: ''};

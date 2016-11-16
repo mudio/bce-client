@@ -18,7 +18,7 @@ import Folder from './Folder';
 import styles from './Window.css';
 import Selection from '../Common/Selection';
 import {TRANS_FINISH} from '../../utils/TransferStatus';
-import * as ExplorerActions from '../../actions/explorer';
+import * as WindowActions from '../../actions/window';
 
 class Window extends Component {
     static propTypes = {
@@ -263,7 +263,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ExplorerActions, dispatch);
+    return bindActionCreators(WindowActions, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Window);
