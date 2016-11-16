@@ -1,37 +1,32 @@
 
 .container {
     display: flex;
-    width: 100px;
-    min-height: 100px;
+    width: 90px;
     color: #666;
-    cursor: pointer;
-    border-radius: 5px;
-    flex-flow: column nowrap;
-    justify-content: center;
+    min-height: 80px;
     align-items: center;
+    justify-content: center;
+    flex-flow: column nowrap;
     -webkit-user-select: none;
-}
-
-.container:hover {
-    background-color: #f3f5f9;
 }
 
 .text {
     display: inline-flex;
+    flex: auto;
     width: 90%;
     font-size: 12px;
-    margin-top: 5px;
     overflow: hidden;
     text-align: center;
     line-height: 15px;
-    align-items: baseline;
+    align-items: center;
     word-break: break-all;
     justify-content: center;
 }
 
 .fileicon {
     display: flex;
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
     flex-shrink: 0;
+    margin-top: 5px;
 }

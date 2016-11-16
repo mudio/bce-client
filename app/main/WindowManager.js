@@ -11,7 +11,7 @@ import {app, BrowserWindow} from 'electron';
 import AutoUpdater from './AutoUpdater';
 
 export default class WindowManager {
-    constructor(show = false, width = 1024, height = 680) {
+    constructor(show = false, width = 960, height = 680) {
         this._window = new BrowserWindow({
             show,
             width,

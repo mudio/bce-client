@@ -16,6 +16,7 @@ import File from './File';
 import Bucket from './Bucket';
 import Folder from './Folder';
 import styles from './Window.css';
+import Selection from '../Common/Selection';
 import ContextMenu from './ContextMenu';
 import {TRANS_FINISH} from '../../utils/TransferStatus';
 import * as ExplorerActions from '../../actions/explorer';
@@ -95,22 +96,6 @@ class Window extends Component {
         return false;
     }
 
-    onDragOver(evt) {
-        evt.preventDefault();
-    }
-
-    onMouseDown() {
-        // TODO: 拖拽全选开启
-    }
-
-    onMouseUp() {
-        // TODO: 拖拽全选结束
-    }
-
-    onMouseMove() {
-        // TOOD: 拖拽中
-    }
-
     onScroll() {
         const {scrollTop, scrollHeight, clientHeight} = this.refs.main;
         const {bucketName, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
@@ -121,7 +106,12 @@ class Window extends Component {
         }
     }
 
-    getLoading() {
+    redirect(bucket = '', folder = '') {
+        const {nav, updateNavigator} = this.props;
+        updateNavigator({region: nav.region, bucket, folder});
+    }
+
+    renderLoading() {
         if (this.props.isFetching) {
             return (
                 <span className={styles.loading}>
@@ -132,7 +122,7 @@ class Window extends Component {
         }
     }
 
-    getError() {
+    renderError() {
         const {isFetching, hasError} = this.props;
 
         if (!isFetching && hasError) {
@@ -145,7 +135,7 @@ class Window extends Component {
         }
     }
 
-    getEmpty() {
+    renderEmpty() {
         const {isFetching, hasError, buckets, folders, objects} = this.props;
 
         if (!isFetching
@@ -161,7 +151,7 @@ class Window extends Component {
         }
     }
 
-    getBuckets() {
+    renderBuckets() {
         const {buckets} = this.props;
 
         return buckets.map(
@@ -174,42 +164,38 @@ class Window extends Component {
         );
     }
 
-    getFolders() {
+    renderFolders() {
         const {bucketName, prefix, folders, nav} = this.props;
 
-        return folders.map(
-            (item, index) => (
-                <Folder key={index}
-                    region={nav.region}
-                    folder={item}
-                    prefix={prefix}
-                    bucketName={bucketName}
-                    onDownload={(...args) => this.onDownload(...args)}
-                    onContextMenu={(...args) => this.onContextMenu(...args)}
-                    onDoubleClick={folder => this.redirect(bucketName, folder)}
-                />
-            )
-        );
+        return folders.map(folder => (
+            <Folder key={folder.key}
+                region={nav.region}
+                folder={folder}
+                prefix={prefix}
+                bucketName={bucketName}
+                onDownload={(...args) => this.onDownload(...args)}
+                onContextMenu={(...args) => this.onContextMenu(...args)}
+                onDoubleClick={_folder => this.redirect(bucketName, _folder)}
+            />
+        ));
     }
 
-    getObejcts() {
+    renderObejcts() {
         const {bucketName, prefix, objects, nav} = this.props;
 
-        return objects.map(
-            (object, index) => (
-                <File key={index}
-                    region={nav.region}
-                    object={object}
-                    prefix={prefix}
-                    bucketName={bucketName}
-                    onDownload={(...args) => this.onDownload(...args)}
-                    onContextMenu={(...args) => this.onContextMenu(...args)}
-                />
-            )
-        );
+        return objects.map(object => (
+            <File key={object.key}
+                region={nav.region}
+                object={object}
+                prefix={prefix}
+                bucketName={bucketName}
+                onDownload={(...args) => this.onDownload(...args)}
+                onContextMenu={(...args) => this.onContextMenu(...args)}
+            />
+        ));
     }
 
-    getMore() {
+    renderMore() {
         const {isFetching, isTruncated, bucketName, prefix, nextMarker, listMore} = this.props;
 
         // 数据正在加载，并且没有加载完
@@ -237,11 +223,6 @@ class Window extends Component {
         }
     }
 
-    redirect(bucket = '', folder = '') {
-        const {nav, updateNavigator} = this.props;
-        updateNavigator({region: nav.region, bucket, folder});
-    }
-
     render() {
         return (
             <div ref="main"
@@ -249,18 +230,17 @@ class Window extends Component {
                 onDragOver={evt => this.onDragOver(evt)}
                 onDrop={evt => this.onDrop(evt)}
                 onClick={() => this.refs._contextMenu.hide()}
-                onMouseUp={evt => this.onMouseUp(evt)}
-                onMouseDown={evt => this.onMouseDown(evt)}
-                onMouseMove={evt => this.onMouseMove(evt)}
                 onScroll={evt => this.onScroll(evt)}
             >
-                {this.getLoading()}
-                {this.getError()}
-                {this.getEmpty()}
-                {this.getBuckets()}
-                {this.getFolders()}
-                {this.getObejcts()}
-                {this.getMore()}
+                {this.renderLoading()}
+                {this.renderError()}
+                {this.renderEmpty()}
+                {this.renderBuckets()}
+                <Selection enabled>
+                    {this.renderFolders()}
+                    {this.renderObejcts()}
+                </Selection>
+                {this.renderMore()}
                 <ContextMenu ref="_contextMenu" />
             </div>
         );

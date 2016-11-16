@@ -1,8 +1,8 @@
 
 .container {
+    height: 40px;
     display: flex;
     flex-shrink: 0;
-    height: 40px;
     -webkit-app-region: drag;
     border-bottom: 1px solid #f3f5f9;
 }

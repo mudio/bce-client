@@ -2,11 +2,9 @@
 .container {
     flex: auto;
     display: flex;
-    padding: 10px;
     overflow-y: auto;
     position: relative;
     flex-flow: row wrap;
-    align-items: baseline;
     align-content: flex-start;
 }
 
