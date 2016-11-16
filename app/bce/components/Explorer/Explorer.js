@@ -61,7 +61,6 @@ export default class Explorer extends Component {
         case MENU_DOWNLOAD_COMMAND:
             return this._download(region, bucketName, prefix, keys);
         default:
-            return;
         }
     }
 

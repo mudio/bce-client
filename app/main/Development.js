@@ -7,7 +7,7 @@
 
 export default class Development {
     get installExtensions() {
-        return async () => { // eslint-disable-line arrow-parens
+        return async () => {
             if (process.env.NODE_ENV === 'development') {
                 const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
 
@@ -16,7 +16,7 @@ export default class Development {
                     'REDUX_DEVTOOLS'
                 ];
                 const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-                for (const name of extensions) {
+                for (const name of extensions) { // eslint-disable-line no-restricted-syntax
                     try {
                         await installer.default(installer[name], forceDownload);
                     } catch (e) { } // eslint-disable-line

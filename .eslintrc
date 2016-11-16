@@ -16,7 +16,6 @@
     "arrow-parens": ["off"],
     "object-curly-spacing": [2, "never"],
     "import/no-extraneous-dependencies": 0,
-    "import/no-unresolved": [2, { "ignore": ["electron"] }],
     "no-use-before-define": "off",
     "react/jsx-no-bind": 0,
     "react/jsx-indent": [2, 4],
