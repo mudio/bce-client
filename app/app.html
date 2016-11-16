@@ -4,12 +4,6 @@
         <meta charset="utf-8">
         <title>BOS</title>
         <script>
-            const base = (process.env.HOT ? '../' : './');
-            const font = document.createElement('link');
-            font.rel = 'stylesheet';
-            font.href = base + 'node_modules/font-awesome/css/font-awesome.min.css';
-            document.write(font.outerHTML);
-
             if (!process.env.HOT) {
                 const style = document.createElement('link');
                 style.rel = 'stylesheet';

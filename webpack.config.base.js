@@ -3,6 +3,7 @@
 */
 
 import path from 'path';
+import {dependencies as externals} from './static/package.json';
 
 export default {
     module: {
@@ -33,5 +34,5 @@ export default {
 
     plugins: [],
 
-    externals: []
+    externals: Object.keys(externals || {})
 };

@@ -8,7 +8,7 @@ import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
 
-    devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
 
     entry: ['babel-polyfill', './app/main'],
 
@@ -28,10 +28,10 @@ export default merge(baseConfig, {
 
         // Add source map support for stack traces in node
         // https://github.com/evanw/node-source-map-support
-        new webpack.BannerPlugin(
-            'require("source-map-support").install();',
-            {raw: true, entryOnly: false}
-        ),
+        // new webpack.BannerPlugin(
+        //     'require("source-map-support").install();',
+        //     {raw: true, entryOnly: false}
+        // ),
 
         // NODE_ENV should be production so that modules do not perform certain development checks
         new webpack.DefinePlugin({
@@ -55,10 +55,5 @@ export default merge(baseConfig, {
     node: {
         __dirname: false,
         __filename: false
-    },
-
-    externals: [
-        'font-awesome',
-        'source-map-support'
-    ]
+    }
 });

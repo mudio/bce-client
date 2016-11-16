@@ -13,10 +13,11 @@ export default merge(baseConfig, {
 
     debug: true,
 
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
 
     entry: [
         'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+        'babel-polyfill',
         './app/bce/index'
     ],
 
@@ -45,7 +46,13 @@ export default merge(baseConfig, {
                 loaders: [
                     'url-loader'
                 ]
-            }
+            },
+
+            {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
+            {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
+            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
+            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
+            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'}
         ]
     },
 

@@ -11,12 +11,12 @@ import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
 
-    devtool: 'source-map',
+    devtool: 'cheap-module-source-map',
 
-    entry: './app/bce/index',
+    entry: ['babel-polyfill', './app/bce/index'],
 
     output: {
-        publicPath: '../../static/'
+        publicPath: './'
     },
 
     module: {
@@ -45,7 +45,13 @@ export default merge(baseConfig, {
                 loaders: [
                     'url-loader'
                 ]
-            }
+            },
+
+            {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
+            {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
+            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
+            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
+            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'}
         ]
     },
 
