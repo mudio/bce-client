@@ -6,7 +6,11 @@
  */
 
 import {createDownloadTask} from './downloader';
-import {deleteObject} from './window';
+import {deleteObject, updateNavigator as redirect} from './window';
+
+export function updateNavigator(...args) {
+    return redirect(...args);
+}
 
 export function copy() {
 
