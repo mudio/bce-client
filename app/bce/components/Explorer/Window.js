@@ -17,7 +17,6 @@ import Bucket from './Bucket';
 import Folder from './Folder';
 import styles from './Window.css';
 import Selection from '../Common/Selection';
-import ContextMenu from './ContextMenu';
 import {TRANS_FINISH} from '../../utils/TransferStatus';
 import * as ExplorerActions from '../../actions/explorer';
 
@@ -48,11 +47,14 @@ class Window extends Component {
         folders: PropTypes.array.isRequired,
         // 文件集合，这里存放多次请求的response
         objects: PropTypes.array.isRequired,
+        // 上下文支持命令
+        commands: PropTypes.array.isRequired,
         // func
         updateNavigator: PropTypes.func.isRequired,
         uploadFile: PropTypes.func.isRequired,
         refresh: PropTypes.func.isRequired,
         listMore: PropTypes.func.isRequired,
+        onCommand: PropTypes.func.isRequired,
         // 检测刷新
         uploadTask: PropTypes.shape({
             objects: PropTypes.array.isRequired,
@@ -71,22 +73,7 @@ class Window extends Component {
         }
     }
 
-    onContextMenu(context, x, y) {
-        const rect = this.refs.main.getBoundingClientRect();
-        const contextMenu = this.refs._contextMenu;
-        const menuRect = contextMenu.getRect();
-
-        let offsetX = x - rect.left;
-        const offsetY = y - rect.top;
-
-        if (document.body.clientWidth - x <= menuRect.width) {
-            offsetX -= menuRect.width;
-        }
-
-        contextMenu.popup(context, offsetX, offsetY + this.refs.main.scrollTop);
-    }
-
-    onDrop(evt) {
+    _onDrop(evt) {
         evt.preventDefault();
         evt.stopPropagation();
         const {nav, uploadFile} = this.props;
@@ -96,7 +83,7 @@ class Window extends Component {
         return false;
     }
 
-    onScroll() {
+    _onScroll() {
         const {scrollTop, scrollHeight, clientHeight} = this.refs.main;
         const {bucketName, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
         const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
@@ -104,6 +91,13 @@ class Window extends Component {
         if (!isFetching && isTruncated && bucketName && allowListMore) {
             listMore(bucketName, prefix, nextMarker);
         }
+    }
+
+    _onCommand(cmd, config) {
+        const {bucketName, prefix, nav} = this.props;
+        const region = nav.region;
+
+        return this.props.onCommand(cmd, Object.assign({region, bucketName, prefix}, config));
     }
 
     redirect(bucket = '', folder = '') {
@@ -173,8 +167,6 @@ class Window extends Component {
                 folder={folder}
                 prefix={prefix}
                 bucketName={bucketName}
-                onDownload={(...args) => this.onDownload(...args)}
-                onContextMenu={(...args) => this.onContextMenu(...args)}
                 onDoubleClick={_folder => this.redirect(bucketName, _folder)}
             />
         ));
@@ -189,8 +181,6 @@ class Window extends Component {
                 object={object}
                 prefix={prefix}
                 bucketName={bucketName}
-                onDownload={(...args) => this.onDownload(...args)}
-                onContextMenu={(...args) => this.onContextMenu(...args)}
             />
         ));
     }
@@ -227,21 +217,20 @@ class Window extends Component {
         return (
             <div ref="main"
                 className={styles.container}
-                onDragOver={evt => this.onDragOver(evt)}
-                onDrop={evt => this.onDrop(evt)}
-                onClick={() => this.refs._contextMenu.hide()}
-                onScroll={evt => this.onScroll(evt)}
+                onDrop={evt => this._onDrop(evt)}
+                onScroll={evt => this._onScroll(evt)}
             >
                 {this.renderLoading()}
                 {this.renderError()}
                 {this.renderEmpty()}
                 {this.renderBuckets()}
-                <Selection enabled>
+                <Selection commands={this.props.commands}
+                    onCommand={(...args) => this._onCommand(...args)}
+                >
                     {this.renderFolders()}
                     {this.renderObejcts()}
                 </Selection>
                 {this.renderMore()}
-                <ContextMenu ref="_contextMenu" />
             </div>
         );
     }

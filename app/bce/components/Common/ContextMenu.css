@@ -4,7 +4,6 @@
     width: 120px;
     position: absolute;
     background: #fff;
-    visibility: hidden;
     flex-flow: column nowrap;
     box-shadow: 0 3px 10px rgba(0,0,0,.2);
 }

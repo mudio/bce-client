@@ -37,13 +37,6 @@ export function uploadFile(...args) {
     return createUploadTask(...args);
 }
 
-export const MENU_COPY_TYPE = Symbol('COPY');
-export const MENU_MOVE_TYPE = Symbol('MOVE');
-export const MENU_VIEW_TYPE = Symbol('VIEW');
-export const MENU_SHARE_TYPE = Symbol('SHARE');
-export const MENU_RENAME_TYPE = Symbol('RENAME');
-export const MENU_DOWNLOAD_TYPE = Symbol('DOWNLOAD');
-
 export function copy() {
 
 }

@@ -47,37 +47,39 @@ export function downloadCancel(uuids = []) {
     };
 }
 
-export function createDownloadTask(key, path) {
+export function createDownloadTask(keys = [], path) {
     return (dispatch, getState) => {
         const {auth, navigator} = getState();
         const {region, bucket, folder} = navigator;
         const client = getRegionClient(region, auth);
 
-        client.listAllObjects(bucket, key).then(
-            contents => {
-                const uuids = contents.map(item => {
-                    // 创建任务uuid
-                    const uuid = getUuid();
-                    const localDir = `${path}/${item.key.replace(folder, '')}`;
-                    const extra = {region, bucket, object: item.key, path: localDir};
+        keys.forEach(
+            key => client.listAllObjects(bucket, key).then(
+                contents => {
+                    const uuids = contents.map(item => {
+                        // 创建任务uuid
+                        const uuid = getUuid();
+                        const localDir = `${path}/${item.key.replace(folder, '')}`;
+                        const extra = {region, bucket, object: item.key, path: localDir};
 
-                    // 这里用object替换key，免得与React.Component.key冲突
-                    delete item.key; // eslint-disable-line no-param-reassign
+                        // 这里用object替换key，免得与React.Component.key冲突
+                        delete item.key; // eslint-disable-line no-param-reassign
 
-                    dispatch({
-                        type: TRANS_DOWNLOAD_NEW,
-                        item: Object.assign(extra, item, {uuid})
+                        dispatch({
+                            type: TRANS_DOWNLOAD_NEW,
+                            item: Object.assign(extra, item, {uuid})
+                        });
+
+                        return uuid;
                     });
 
-                    return uuid;
-                });
-
-                dispatch(downloadStart(uuids));
-            },
-            response => dispatch({
-                type: TRANS_DOWNLOAD_ERROR,
-                error: response.body
-            })
+                    dispatch(downloadStart(uuids));
+                },
+                response => dispatch({
+                    type: TRANS_DOWNLOAD_ERROR,
+                    error: response.body
+                })
+            )
         );
     };
 }

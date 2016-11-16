@@ -13,16 +13,21 @@ import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './Selection.css';
+import ContextMenu from './ContextMenu';
 
 export default class Selection extends Component {
     static propTypes = {
         enabled: PropTypes.bool,
+        commands: PropTypes.array,
+        children: PropTypes.node.isRequired,
         onSelectionChange: PropTypes.func,
-        children: PropTypes.node.isRequired
+        onCommand: PropTypes.func.isRequired
     };
 
     static defaultProps = {
+        commands: [],
         enabled: true,
+        onCommand: _.noop,
         onSelectionChange: _.noop
     };
 
@@ -33,21 +38,13 @@ export default class Selection extends Component {
             startPoint: null,
             endPoint: null,
             selectionBox: null,
-            selectedItems: {},
-            appendMode: false
+            appendMode: false,
+            contextMenu: null
         };
     }
 
     componentWillMount() {
         this.selectedChildren = {};
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const nextState = {};
-        if (!nextProps.enabled) {
-            nextState.selectedItems = {};
-        }
-        this.setState(nextState);
     }
 
     componentDidUpdate() {
@@ -81,13 +78,13 @@ export default class Selection extends Component {
         this._mousemove = evt => this._onMouseMove(evt);
         this._mouseup = evt => this._onMouseUp(evt);
 
-        window.document.addEventListener('mousemove', this._mousemove);
-        window.document.addEventListener('mouseup', this._mouseup);
+        document.addEventListener('mousemove', this._mousemove);
+        document.addEventListener('mouseup', this._mouseup);
     }
 
     _onMouseUp() {
-        window.document.removeEventListener('mousemove', this._mousemove);
-        window.document.removeEventListener('mouseup', this._mouseup);
+        document.removeEventListener('mousemove', this._mousemove);
+        document.removeEventListener('mouseup', this._mouseup);
 
         this.setState({
             mouseDown: false,
@@ -111,6 +108,25 @@ export default class Selection extends Component {
                 selectionBox: this._calculateSelectionBox(this.state.startPoint, endPoint)
             });
         }
+    }
+
+    _onContextMenu(evt, key) {
+        const {pageX, pageY} = evt;
+        const rect = this.refs.selection.getBoundingClientRect();
+
+        if (!_.has(this.selectedChildren, key)) {
+            this.selectedChildren = {};
+            this.selectItem(key, true);
+        }
+
+        this.setState({
+            contextMenu: {
+                pageX,
+                pageY,
+                offsetX: pageX - rect.left,
+                offsetY: pageY - rect.top
+            }
+        });
     }
 
     _boxIntersects(boxA, boxB) {
@@ -165,15 +181,17 @@ export default class Selection extends Component {
 
     _onSelectItem(evt, key) {
         const {enabled} = this.props;
-        const {ctrlKey, altKey, shiftKey} = evt;
+        const {ctrlKey, shiftKey} = evt;
 
-        if (enabled && (ctrlKey || altKey || shiftKey)) {
+        if (enabled && (ctrlKey || shiftKey || evt.target.classList.contains(styles.checkbox))) {
             evt.preventDefault();
             evt.stopPropagation();
             this.selectItem(key, !_.has(this.selectedChildren, key));
         } else {
             this.clearSelection();
         }
+
+        this.setState({contextMenu: null});
     }
 
     _onKeyDown(evt) {
@@ -208,23 +226,22 @@ export default class Selection extends Component {
     }
 
     renderChildren() {
-        let index = 0;
         const nodes = _.flatten(this.props.children);
 
         return nodes.map(child => {
-            const tmpKey = _.isNull(child.key) ? index++ : child.key; // eslint-disable-line no-plusplus
-            const isSelected = _.has(this.selectedChildren, tmpKey);
+            const isSelected = _.has(this.selectedChildren, child.key);
             const tmpChild = React.cloneElement(
                 child,
-                {ref: tmpKey, isSelected, selectionParent: this}
+                {ref: child.key, isSelected, selectionParent: this}
             );
 
             return (
-                <div key={tmpKey}
-                    onClick={evt => this._onSelectItem(evt, tmpKey)}
+                <div key={child.key}
+                    onContextMenu={evt => this._onContextMenu(evt, child.key)}
+                    onClick={evt => this._onSelectItem(evt, child.key)}
                     className={classnames(styles.selectionItem, {[styles.selected]: isSelected})}
                 >
-                    <i className={classnames('fa', 'fa-check-circle', {[styles.checkbox]: true})} />
+                    <i className={classnames('fa', 'fa-check-circle', styles.checkbox)} />
                     {tmpChild}
                 </div>
             );
@@ -240,16 +257,34 @@ export default class Selection extends Component {
         );
     }
 
+    renderContextMenu() {
+        const {enabled, commands, onCommand} = this.props;
+        const {contextMenu} = this.state;
+
+        if (!enabled || _.isNull(contextMenu)) {
+            return null;
+        }
+
+        return (
+            <ContextMenu ref="_contextMenu"
+                {...contextMenu}
+                commands={commands}
+                onCommand={cmd => onCommand(cmd, {keys: Object.keys(this.selectedChildren)})}
+            />
+        );
+    }
+
     render() {
         return (
-            <div ref="selection"
-                tabIndex="0"
-                onKeyDown={evt => this._onKeyDown(evt)}
+            <div ref="selection" tabIndex="0"
                 className={styles.selection}
+                onClick={evt => this._onSelectItem(evt)}
+                onKeyDown={evt => this._onKeyDown(evt)}
                 onMouseDown={evt => this._onMouseDown(evt)}
             >
                 {this.renderChildren()}
                 {this.renderSelectionBox()}
+                {this.renderContextMenu()}
             </div>
         );
     }

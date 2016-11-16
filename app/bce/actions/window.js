@@ -65,8 +65,8 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
         const {auth} = getState();
         const client = getRegionClient(region, auth);
 
-        objects.forEach(key => {
-            client.listAllObjects(bucketName, key).then(
+        const allTasks = objects.map(
+            key => client.listAllObjects(bucketName, key).then(
                 keys => {
                     const removeKeys = keys.map(item => item.key);
                     logger(
@@ -82,17 +82,17 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
                         }
                     });
 
-                    if (Q.isPromise(deferred)) {
-                        deferred.finally(() => dispatch(
-                            listObjects(bucketName, prefix)
-                        ));
-                    }
+                    return deferred;
                 },
                 error => dispatch({
                     error,
                     type: DELETE_OBJECT_FAILURE
                 })
-            );
-        });
+            )
+        );
+
+        Q.allSettled(allTasks).finally(
+            () => dispatch(listObjects(bucketName, prefix))
+        );
     };
 }
