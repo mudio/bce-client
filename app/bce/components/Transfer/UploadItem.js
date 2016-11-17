@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './UploadItem.css';
@@ -39,7 +40,9 @@ export default class UploadItem extends Component {
         }
 
         return (
-            <span className={`${styles.loader} ${klass}`} style={{width: `${width}%`}} />
+            <span className={styles.progress}>
+                <span className={classnames(styles.loader, klass)} style={{width: `${width}%`}} />
+            </span>
         );
     }
 
@@ -67,18 +70,21 @@ export default class UploadItem extends Component {
 
     render() {
         const {region, bucket, object} = this.props;
+        const ext = object.split('.').pop().toLowerCase();
 
         return (
             <div className={styles.container}>
-                <div className={styles.content}>
-                    <i className={`fa fa-file-text fa-3x fa-fw ${styles.icon}`} />
-                    <div className={styles.summary}>
-                        <div>{region}://{bucket}/{object}</div>
-                        <div>{this.getSize()}</div>
+                <i className={`${styles.fileicon} asset-normal asset-${ext}`} />
+                <div className={styles.summary}>
+                    <div>
+                        {region}://{bucket}/{object}
                     </div>
-                    {this.getStatus()}
+                    <div>
+                        {this.getSize()}
+                    </div>
                 </div>
                 {this.getLoader()}
+                {this.getStatus()}
             </div>
         );
     }

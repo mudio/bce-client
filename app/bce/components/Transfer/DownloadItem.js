@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './DownloadItem.css';
@@ -39,20 +40,25 @@ export default class DownloadItem extends Component {
         }
 
         return (
-            <span className={`${styles.loader} ${klass}`} style={{width: `${width}%`}} />
+            <span className={styles.progress}>
+                <span className={classnames(styles.loader, klass)} style={{width: `${width}%`}} />
+            </span>
         );
     }
 
     getSize() {
         const size = this.props.size;
+        let defaultText = `${(size / 1024).toFixed(2)}KB`;
 
         if (size > 1024 * 1024 * 1024) {
-            return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;
+            defaultText = `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;
         } else if (size > 1024 * 1024 && size < 1024 * 1024 * 1024) {
-            return `${(size / 1024 / 1024).toFixed(2)}MB`;
+            defaultText = `${(size / 1024 / 1024).toFixed(2)}MB`;
         }
 
-        return `${(size / 1024).toFixed(2)}KB`;
+        return (
+            <span className={styles.size}>{defaultText}</span>
+        );
     }
 
     getStatus() {
@@ -67,22 +73,23 @@ export default class DownloadItem extends Component {
 
     render() {
         const {region, bucket, object, path} = this.props;
+        const ext = object.split('.').pop().toLowerCase();
 
         return (
             <div className={styles.container}>
-                <div className={styles.content}>
-                    <i className={`fa fa-file-text fa-3x fa-fw ${styles.icon}`} />
-                    <div className={styles.summary}>
-                        <div>{region}://{bucket}/{object}</div>
-                        <div>
-                            {path}
-                            <span className={styles.seperation}>|</span>
-                            {this.getSize()}
-                        </div>
+                <i className={`${styles.fileicon} asset-normal asset-${ext}`} />
+                <div className={styles.summary}>
+                    <div title={path} className={styles.title}>
+                        {object.split('/').pop()}
+                        <span className={styles.seperation}>|</span>
+                        {this.getSize()}
                     </div>
-                    {this.getStatus()}
+                    <div>
+                        {region}://{bucket}/{object}
+                    </div>
                 </div>
                 {this.getLoader()}
+                {this.getStatus()}
             </div>
         );
     }

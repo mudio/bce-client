@@ -75,14 +75,15 @@
 }
 
 .badge {
-    padding: 1px 5px;
-    border-radius: 10px;
-    background: #727995;
-    display: inline-flex;
-    line-height: normal;
     color: #eee;
-    font-weight: bold;
+    font-size: 10px;
     margin-left: 5px;
+    padding: 1px 5px;
+    font-weight: bold;
+    border-radius: 10px;
+    line-height: normal;
+    display: inline-flex;
+    background: #727995;
 }
 
 .active .badge {
