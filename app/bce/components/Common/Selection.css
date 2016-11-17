@@ -2,6 +2,7 @@
 .selection {
     flex: auto;
     display: flex;
+    outline: none;
     flex-flow: row wrap;
     align-items: flex-start;
     align-content: flex-start;

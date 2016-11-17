@@ -145,16 +145,25 @@ class Window extends Component {
         }
     }
 
-    renderBuckets() {
+    renderContents() {
         const {buckets} = this.props;
 
-        return buckets.map(
-            (item, index) => (
+        if (buckets.length > 0) {
+            return buckets.map((item, index) => (
                 <Bucket key={index}
                     item={item}
                     onDoubleClick={bucket => this.redirect(bucket)}
                 />
-            )
+            ));
+        }
+
+        return (
+            <Selection commands={this.props.commands}
+                onCommand={(...args) => this._onCommand(...args)}
+            >
+                {this.renderFolders()}
+                {this.renderObejcts()}
+            </Selection>
         );
     }
 
@@ -223,13 +232,7 @@ class Window extends Component {
                 {this.renderLoading()}
                 {this.renderError()}
                 {this.renderEmpty()}
-                {this.renderBuckets()}
-                <Selection commands={this.props.commands}
-                    onCommand={(...args) => this._onCommand(...args)}
-                >
-                    {this.renderFolders()}
-                    {this.renderObejcts()}
-                </Selection>
+                {this.renderContents()}
                 {this.renderMore()}
             </div>
         );

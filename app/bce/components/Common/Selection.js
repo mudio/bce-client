@@ -54,9 +54,12 @@ export default class Selection extends Component {
     }
 
     clearSelection() {
-        this.selectedChildren = {};
-        this.props.onSelectionChange.call(null, []);
-        this.forceUpdate();
+        const keys = Object.keys(this.selectedChildren);
+        if (keys.length > 0) {
+            this.selectedChildren = {};
+            this.props.onSelectionChange.call(null, []);
+            this.forceUpdate();
+        }
     }
 
     _onMouseDown(e) {
@@ -65,7 +68,7 @@ export default class Selection extends Component {
         }
 
         const nextState = {};
-        if (e.ctrlKey || e.altKey || e.shiftKey) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey) {
             nextState.appendMode = true;
         }
         nextState.mouseDown = true;
@@ -98,6 +101,8 @@ export default class Selection extends Component {
 
     _onMouseMove(e) {
         e.preventDefault();
+        e.stopPropagation();
+
         if (this.state.mouseDown) {
             const endPoint = {
                 x: e.pageX,
@@ -180,6 +185,7 @@ export default class Selection extends Component {
     }
 
     _onSelectItem(evt, key) {
+        evt.stopPropagation();
         const {enabled} = this.props;
         const {ctrlKey, shiftKey} = evt;
 
@@ -211,7 +217,6 @@ export default class Selection extends Component {
         }
 
         this.props.onSelectionChange.call(null, _.keys(this.selectedChildren));
-        this.forceUpdate();
     }
 
     selectAll() {
