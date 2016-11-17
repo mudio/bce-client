@@ -44,7 +44,7 @@
     background-size: contain;
 }
 
-.asset-xls, .asset-xlsx {
+.asset-xls, .asset-xlsx, .asset-csv {
     background: url(./assets/icon/excel.png) center no-repeat;
     background-size: contain;
 }
@@ -54,7 +54,7 @@
     background-size: contain;
 }
 
-.asset-zip, .asset-rar, .asset-7z, .asset-tar, .asset-gz {
+.asset-zip, .asset-rar, .asset-7z, .asset-tar, .asset-gz, .asset-asar {
     background: url(./assets/icon/zip.png) center no-repeat;
     background-size: contain;
 }
@@ -69,7 +69,7 @@
     background-size: contain;
 }
 
-.asset-js, .asset-py, .asset-c, .asset-h, .asset-cpp, .asset-go, .asset-java, .asset-class, .asset-pyc, .asset-es, .asset-es6, .asset-html, .asset-css, .asset-less, .asset-sass, .asset-xml, .asset-htm, .asset-yml, .asset-json {
+.asset-js, .asset-py, .asset-c, .asset-h, .asset-cpp, .asset-go, .asset-java, .asset-class, .asset-pyc, .asset-es, .asset-es6, .asset-html, .asset-css, .asset-less, .asset-sass, .asset-xml, .asset-htm, .asset-yml, .asset-json, .asset-cs, .asset-md {
     background: url(./assets/icon/code.png) center no-repeat;
     background-size: contain;
 }
