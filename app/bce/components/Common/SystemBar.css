@@ -2,8 +2,8 @@
 .darwinBar {
     width: 40px;
     display: flex;
-    color: #8692b2;
     cursor: pointer;
+    color: #8692b2;
     align-items: center;
     justify-content: center;
 }

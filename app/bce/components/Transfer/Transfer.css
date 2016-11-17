@@ -20,14 +20,10 @@
 
 .nocontent {
     color: #ddd;
-    width: 200px;
-    height: 120px;
-    top: calc(50% - 100px);
-    left: calc(50% - 50px);
     display: flex;
-    position: absolute;
-    align-items: center;
+    align-self: center;
     flex-flow: column nowrap;
+    margin-top: calc(50% - 200px);
 }
 
 .nocontent::before {
