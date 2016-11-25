@@ -8,10 +8,11 @@
 /* eslint no-underscore-dangle: [2, { allow: ["_credentials", "_store"] }] */
 
 import fs from 'fs';
-import mkdirp from 'mkdirp';
 import P from 'path';
-import debug from 'debug';
 import async from 'async';
+import mkdirp from 'mkdirp';
+
+import {info} from '../utils/Logger';
 import {getRegionClient} from '../api/client';
 import {TRANS_WATING} from '../utils/TransferStatus';
 
@@ -27,7 +28,6 @@ export const DOWNLOAD_NOTIFY_FINISH = 'DOWNLOAD_NOTIFY_FINISH'; // 任务完成�
 export const DOWNLOAD_NOTIFY_ERROR = 'DOWNLOAD_NOTIFY_ERROR'; // 任务完成了
 
 const _credentials = {};
-const logger = debug('bce-client:download');
 let _store = null;
 
 const queue = async.queue(
@@ -56,7 +56,7 @@ function startTask(downloadTasks = [], uuids = []) {
     waitTasks.forEach(task => {
         if (queueUuids.indexOf(task.uuid) > -1) {
             // 任务去重
-            logger('Ignore duplicate task, uuid = %s', task.uuid);
+            info('Ignore duplicate task, uuid = %s', task.uuid);
             return;
         }
 
@@ -129,7 +129,7 @@ function fetchFileFromServer(task, done) {
         );
     });
 
-    logger('Start uuid = %s, bucket = %s, key = %s', uuid, bucket, object);
+    info('Start uuid = %s, bucket = %s, key = %s', uuid, bucket, object);
     client.sendRequest('GET', {
         key: object,
         outputStream,
@@ -139,12 +139,12 @@ function fetchFileFromServer(task, done) {
     .then(
         () => {
             clearInterval(timer);
-            logger('Finish uuid = %s, bucket = %s, key = %s', uuid, bucket, object);
+            info('Finish uuid = %s, bucket = %s, key = %s', uuid, bucket, object);
             done();
         },
         ex => {
             clearInterval(timer);
-            logger('Finish uuid = %s, bucket = %s, key = %s, error = %s', uuid, bucket, object, ex);
+            info('Finish uuid = %s, bucket = %s, key = %s, error = %s', uuid, bucket, object, ex);
             done(ex);
         }
     );

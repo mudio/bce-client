@@ -5,23 +5,35 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-export const TRANS_WATING = 'TRANS_WATING';
-export const TRANS_RUNNING = 'TRANS_RUNNING';
-export const TRANS_FINISH = 'TRANS_FINISH';
-export const TRANS_SUSPEND = 'TRANS_SUSPEND';
-export const TRANS_ERROR = 'TRANS_ERROR';
+export const UploadStatus = {
+    Indexing: 'Indexing',
+    Unstarted: 'Unstarted',
+    Staring: 'Staring',
+    Waiting: 'Waiting',
+    Running: 'Running',
+    Suspend: 'Suspend',
+    Removing: 'Removing',
+    Finish: 'Finish',
+    Error: 'Error'
+};
 
 export function getText(code) {
     switch (code) {
-    case TRANS_WATING:
+    case UploadStatus.Indexing:
+        return '索引中';
+    case UploadStatus.Unstarted:
+        return '未开始';
+    case UploadStatus.Staring:
+        return '启动中';
+    case UploadStatus.Waiting:
         return '等待中';
-    case TRANS_RUNNING:
-        return '传输中';
-    case TRANS_FINISH:
+    case UploadStatus.Running:
+        return '运行中';
+    case UploadStatus.Finish:
         return '已完成';
-    case TRANS_SUSPEND:
-        return '暂停中';
-    case TRANS_ERROR:
+    case UploadStatus.Suspend:
+        return '已暂停';
+    case UploadStatus.Error:
         return '错误';
     default:
         return code;

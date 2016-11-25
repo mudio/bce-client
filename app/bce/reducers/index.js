@@ -12,7 +12,8 @@ import auth from './auth';
 import update from './updater';
 import explorer from './explorer';
 import navigator from './navigator';
-import {downloads, uploads} from './transfer';
+import downloads from './downloader';
+import uploads from './uploader';
 
 const rootReducer = combineReducers({
     auth,

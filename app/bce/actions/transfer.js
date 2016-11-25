@@ -5,8 +5,17 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-export const TRANS_CLEAR_FINISH = 'TRANS_CLEAR_FINISH';
+import {TransCategory} from '../utils/BosType';
+import {UploadNotify, DownloadNotify} from '../utils/TransferNotify';
 
 export function clearFinish(transType) {
-    return {type: TRANS_CLEAR_FINISH, transType};
+    if (transType === TransCategory.Upload) {
+        return {type: UploadNotify.ClearFinish};
+    }
+
+    return {type: DownloadNotify.ClearFinish};
+}
+
+export function todo() {
+
 }

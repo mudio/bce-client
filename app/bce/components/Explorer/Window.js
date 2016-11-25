@@ -17,7 +17,7 @@ import Bucket from './Bucket';
 import Folder from './Folder';
 import styles from './Window.css';
 import Selection from '../Common/Selection';
-import {TRANS_FINISH} from '../../utils/TransferStatus';
+import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';
 
 class Window extends Component {
@@ -245,10 +245,10 @@ function mapStateToProps(state) {
     const uploadTask = uploads.reduce((context, task) => {
         if (task.region === navigator.region
             && task.bucket === navigator.bucket
-            && task.object.startsWith(navigator.folder)
-            && task.status !== TRANS_FINISH) {
+            && task.prefix.startsWith(navigator.folder)
+            && task.status !== UploadStatus.Finish) {
             // 上传文件一定在当前目录或者子目录下
-            const prefixs = task.object.split('/');
+            const prefixs = task.prefix.split('/');
 
             if (prefixs.length > 1 && context.folders.indexOf(prefixs[0]) === -1) {
                 context.folders.push(prefixs[0]);

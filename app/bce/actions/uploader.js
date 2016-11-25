@@ -5,100 +5,117 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {
-    UPLOAD_TYPE,
-    UPLOAD_COMMAND_START,
-    UPLOAD_COMMAND_CANCEL,
-    UPLOAD_COMMAND_SUSPEND
-} from '../middleware/uploader';
+/* eslint object-property-newline: 0 */
+
+import path from 'path';
+import walk from 'fs-walk';
+
 import getUuid from '../utils/Uuid';
+import {error} from '../utils/Logger';
+import {TransType} from '../utils/BosType';
+import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 
-export const TRANS_UPLOAD_REMOVE = 'TRANS_UPLOAD_REMOVE';
-export const TRANS_UPLOAD_FINISH = 'TRANS_UPLOAD_FINISH';
-export const TRANS_UPLOAD_PROGRESS = 'TRANS_UPLOAD_PROGRESS';
-export const TRANS_UPLOAD_NEW = 'TRANS_UPLOAD_NEW';
-export const TRANS_UPLOAD_ERROR = 'TRANS_UPLOAD_ERROR';
-
-export function uploadStart(uuids = []) {
+export function uploadStart(taskIds = []) {
     return {
-        [UPLOAD_TYPE]: {
-            command: UPLOAD_COMMAND_START,  // 开始任务
-            uuids                       // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+        [UploadCommandType]: {
+            command: UploadNotify.Start,   // 开始任务
+            taskIds                         // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function uploadSuspend(uuids = []) {
+export function uploadRemove(taskIds = []) {
     return {
-        [UPLOAD_TYPE]: {
-            command: UPLOAD_COMMAND_SUSPEND,  // 暂停任务
-            uuids                       // 如果为空，全部挂起， 不为空，挂起指定任务
+        [UploadCommandType]: {
+            command: UploadNotify.Remove,    // 删除任务
+            taskIds                          // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function uploadCancel(uuids = []) {
+export function uploadRepair(taskIds = []) {
     return {
-        [UPLOAD_TYPE]: {
-            command: UPLOAD_COMMAND_CANCEL,  // 取消任务
-            uuids                       // 不为空，取消指定任务
+        [UploadCommandType]: {
+            command: UploadNotify.Repair,    // 删除任务
+            taskIds                          // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function prepareUploadTask(filePath, fileSize, region, bucket, object) {
+export function createUploadTask(dataTransferItem = [], region, bucket, prefix) {
     return dispatch => {
-        // 创建一个uuid来标识任务
-        const uuid = getUuid();
-        // 新建一个上传任务
-        dispatch({type: TRANS_UPLOAD_NEW, uuid, region, bucket, object, filePath, fileSize});
-        // 立即开始这个任务，如果排队则自动等待
-        dispatch(uploadStart([uuid]));
-    };
-}
-
-export function createUploadTask(dataTransferItem = [], region, bucket, key) {
-    return dispatch => {
-        // 参考：https://dev.w3.org/2009/dap/file-system/file-dir-sys.html
-        function getAllEntries(directoryReader, callback) {
-            let allEntries = [];
-
-            function readEntries() {
-                directoryReader.readEntries(entries => {
-                    if (entries.length === 0) {
-                        callback(allEntries);
-                    } else {
-                        const iterator = Array.prototype.slice.call(entries, 0);
-                        allEntries = allEntries.concat(iterator);
-                        readEntries();
-                    }
-                });
-            }
-
-            readEntries();
-        }
-
-        // 文件准备上传，文件夹递归遍历
-        function entryHandle(entry, relativePath = '') {
-            if (entry.isFile) {
-                entry.file(
-                    file => dispatch(
-                        prepareUploadTask(file.path, file.size, region, bucket, relativePath + file.name)
-                    )
-                );
-            } else if (entry.isDirectory) {
-                getAllEntries(
-                    entry.createReader(),
-                    entries => entries.forEach(item => entryHandle(item, `${relativePath}${entry.name}/`))
-                );
-            }
-        }
-
         // 支持拖拽多个文件，包括文件、文件夹
-        for (let index = 0; index < dataTransferItem.length; index++) { // eslint-disable-line no-plusplus
+        for (let index = 0; index < dataTransferItem.length; index += 1) {
             const item = dataTransferItem[index];
             const entry = item.webkitGetAsEntry();
-            entryHandle(entry, key);
+            // 创建一个uuid来标识任务
+            const uuid = getUuid();
+
+            if (entry.isFile) {
+                entry.file(file => {
+                    const key = getUuid();
+                    // 准备任务
+                    dispatch({
+                        uuid,
+                        name: file.name,
+                        basedir: file.path,
+                        type: UploadNotify.Prepare,
+                        category: TransType.File,
+                        region, bucket, prefix
+                    });
+                    // 存储文件信息
+                    localStorage.setItem(key, JSON.stringify({
+                        path: file.path,
+                        relative: file.name,
+                        totalSize: file.size
+                    }));
+                    // 建立一个新任务
+                    dispatch({type: UploadNotify.New, uuid, keys: [key], totalSize: file.size});
+                    // 立即开始这个任务
+                    dispatch(uploadStart([uuid]));
+                });
+            } else {
+                const keys = [];
+                let totalSize = 0;
+                const filePath = item.getAsFile().path;
+                // 准备任务
+                dispatch({
+                    uuid,
+                    name: entry.name,
+                    basedir: filePath,
+                    type: UploadNotify.Prepare,
+                    category: TransType.Directory,
+                    region, bucket, prefix, totalSize
+                });
+
+                walk.files(filePath, (basedir, filename, stat, next) => {
+                    const key = getUuid();
+                    const absolutePath = path.join(basedir, filename);
+                    const relativePath = absolutePath.replace(filePath, entry.fullPath);
+
+                    // 存储任务
+                    localStorage.setItem(key, JSON.stringify({
+                        relative: relativePath,
+                        path: absolutePath,
+                        totalSize: stat.size
+                    }));
+
+                    keys.push(key);
+                    totalSize += stat.size;
+
+                    next();
+                }, err => {
+                    if (err) {
+                        error('walk %s error = %s', entry.name, err.message);
+                        dispatch({type: UploadNotify.Remove, uuid});
+                    }
+                    // 建立一个新任务
+                    dispatch({type: UploadNotify.New, uuid, totalSize, keys});
+                    // 立即开始这个任务
+                    dispatch(uploadStart([uuid]));
+                });
+                // end walk
+            }
         }
     };
 }

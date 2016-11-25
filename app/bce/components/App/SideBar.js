@@ -14,9 +14,9 @@ import React, {Component, PropTypes} from 'react';
 import Version from './Version';
 import styles from './SideBar.css';
 import BrowserLink from '../Common/BrowserLink';
-import {TRANS_FINISH} from '../../utils/TransferStatus';
 import {regions, getLocalText} from '../../utils/Region';
-import {TransUploadType, TransDownloadType} from '../../utils/BosType';
+import {TransCategory} from '../../utils/BosType';
+import {UploadStatus, DownloadStatus} from '../../utils/TransferStatus';
 
 class SideBar extends Component {
     static propTypes = {
@@ -51,7 +51,7 @@ class SideBar extends Component {
                             </Link>
                         ))
                     }
-                    <Link to={`/transfer/${TransDownloadType}`}
+                    <Link to={`/transfer/${TransCategory.Download}`}
                         className={`${styles.item} ${styles.download}`}
                         activeClassName={styles.active}
                     >
@@ -60,7 +60,7 @@ class SideBar extends Component {
                             donwloadCount > 0 ? <span className={styles.badge}>{donwloadCount}</span> : ''
                         }
                     </Link>
-                    <Link to={`/transfer/${TransUploadType}`}
+                    <Link to={`/transfer/${TransCategory.Upload}`}
                         className={`${styles.item} ${styles.upload}`}
                         activeClassName={styles.active}
                     >
@@ -91,8 +91,8 @@ class SideBar extends Component {
 }
 
 function mapStateToProps(state) {
-    const uploadCount = state.uploads.filter(item => item.status !== TRANS_FINISH).length;
-    const donwloadCount = state.downloads.filter(item => item.status !== TRANS_FINISH).length;
+    const uploadCount = state.uploads.filter(item => item.status !== UploadStatus.Finish).length;
+    const donwloadCount = state.downloads.filter(item => item.status !== DownloadStatus.Finish).length;
 
     return {
         uploadCount,

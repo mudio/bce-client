@@ -5,20 +5,17 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import debug from 'debug';
 import {app} from 'electron';
 
+import {mainLogger} from './bce/utils/Logger';
 import MenuManager from './main/MenuManager';
 import Development from './main/Development';
 import WindowManager from './main/WindowManager';
 import Win32Installer from './main/Win32SquirrelEventsHandle';
 
 const developer = new Development();
-const logger = debug('bce-client:main');
 const win32Installer = new Win32Installer();
 let windowManager = null;
-
-logger('startup');
 
 if (!win32Installer.handleStartupEvent()) {
     const shouldQuit = app.makeSingleInstance(() => {
@@ -34,7 +31,7 @@ if (!win32Installer.handleStartupEvent()) {
     developer.showDevTools();
 
     app.on('ready', async () => { // eslint-disable-line arrow-parens
-        logger('ready');
+        mainLogger('main ready');
         await developer.installExtensions();
 
         windowManager = new WindowManager();

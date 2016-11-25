@@ -9,5 +9,12 @@ export const BucketType = 'BucketType';
 export const FolderType = 'FolderType';
 export const ObjectType = 'ObjectType';
 
-export const TransUploadType = 'TransUploadType';
-export const TransDownloadType = 'TransDownloadType';
+export const TransType = {
+    File: 'File',
+    Directory: 'Directory'
+};
+
+export const TransCategory = {
+    Upload: 'Upload',
+    Download: 'Download'
+};

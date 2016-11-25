@@ -39,13 +39,10 @@ export default merge(baseConfig, {
                 )
             },
 
-            // Extract all .png
-            {
-                test: /\.png$/,
-                loaders: [
-                    'url-loader'
-                ]
-            },
+            // image
+            {test: /\.png$/, loaders: ['url-loader']},
+            // worker
+            {test: /\.worker\.js$/, loaders: ['worker-loader', 'babel-loader']},
 
             {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
             {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},

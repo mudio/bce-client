@@ -5,86 +5,196 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import electron from 'electron';
 import classnames from 'classnames';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './UploadItem.css';
-import {getText, TRANS_ERROR, TRANS_FINISH} from '../../utils/TransferStatus';
+import {TransType} from '../../utils/BosType';
+import {getText, UploadStatus} from '../../utils/TransferStatus';
+import {uploadRemove, uploadStart, uploadRepair} from '../../actions/uploader';
+
+const {shell} = electron;
 
 export default class UploadItem extends Component {
     static propTypes = {
-        filePath: PropTypes.string.isRequired,
-        fileSize: PropTypes.number.isRequired,
+        error: PropTypes.string,
+        uuid: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         region: PropTypes.string.isRequired,
         bucket: PropTypes.string.isRequired,
-        object: PropTypes.string.isRequired,
+        prefix: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
-        loaded: PropTypes.number.isRequired,
-        error: PropTypes.string
+        basedir: PropTypes.string.isRequired,
+        category: PropTypes.string.isRequired,
+        totalSize: PropTypes.number.isRequired,
+        offsetSize: PropTypes.number.isRequired,
+        errorQueue: PropTypes.array.isRequired,
+        waitingQueue: PropTypes.array.isRequired,
+        completeQueue: PropTypes.array.isRequired,
+        dispatch: PropTypes.func.isRequired
     };
 
     getLoader() {
-        let klass = '';
-        const {loaded, fileSize, status} = this.props;
-        let width = 100 * loaded / fileSize; // eslint-disable-line no-mixed-operators
+        const {totalSize, offsetSize = 0, status} = this.props;
 
-        switch (status) { // eslint-disable-line default-case
-        case TRANS_ERROR: {
-            klass = styles.error;
-            break;
-        }
-        case TRANS_FINISH: {
-            width = 100;
-            break;
-        }
-        }
+        const klass = classnames(
+            styles.loader,
+            {[styles.error]: status === UploadStatus.Error}
+        );
+
+        const width = 100 * offsetSize / totalSize; // eslint-disable-line no-mixed-operators
 
         return (
-            <span className={styles.progress}>
-                <span className={classnames(styles.loader, klass)} style={{width: `${width}%`}} />
-            </span>
+            <div>
+                <span className={styles.progress}>
+                    <span className={classnames(styles.loader, klass)} style={{width: `${width}%`}} />
+                </span>
+                {this.getStatus()}
+            </div>
         );
     }
 
     getSize() {
-        const size = this.props.fileSize || 0;
+        const {totalSize = 0, offsetSize = 0} = this.props;
+        const unitKB = 1024;
+        const unitMB = 1024 * 1024;
+        const unitGB = 1024 * 1024 * 1024;
 
-        if (size > 1024 * 1024 * 1024) {
-            return `${(size / 1024 / 1024 / 1024).toFixed(2)}GB`;
-        } else if (size > 1024 * 1024 && size < 1024 * 1024 * 1024) {
-            return `${(size / 1024 / 1024).toFixed(2)}MB`;
+        function humanSize(size = 0) {
+            if (size >= unitGB) {
+                return `${(size / unitGB).toFixed(0)}GB`;
+            } else if (size >= unitMB && size < unitGB) {
+                return `${(size / unitMB).toFixed(0)}MB`;
+            }
+            return `${(size / unitKB).toFixed(0)}KB`;
         }
 
-        return `${(size / 1024).toFixed(2)}KB`;
+        return `${humanSize(offsetSize)}  /  ${humanSize(totalSize)}`;
     }
 
     getStatus() {
-        const {status, error} = this.props;
+        const {
+            status,
+            totalSize,
+            offsetSize = 0,
+            errorQueue,
+            waitingQueue,
+            completeQueue
+        } = this.props;
+        const progress = ~~(100 * offsetSize / totalSize); // eslint-disable-line
 
-        if (error) {
-            return (<div className={styles.status}>{error}</div>);
+        switch (status) {
+        case UploadStatus.Indexing:
+            return (
+                <div className={styles.status}>
+                    <i className="fa fa-spinner fa-pulse" />
+                    {getText(status)}
+                </div>
+            );
+        case UploadStatus.Running: {
+            return (
+                <div className={styles.status}>{progress}%</div>
+            );
         }
+        case UploadStatus.Error: {
+            const errTip = `已完成任务：${completeQueue.length}个\n未完成任务：${waitingQueue.length}个\n运行错误数：${errorQueue.length}个`;
+            return (
+                <div className={classnames(styles.status, styles.error)}>
+                    <i className="fa fa-exclamation-triangle" title={errTip} />
+                    {progress}%
+                </div>
+            );
+        }
+        default:
+            return (<div className={styles.status}>{getText(status)}</div>);
+        }
+    }
 
-        return (<div className={styles.status}>{getText(status)}</div>);
+    _onTrash() {
+        const {uuid, name, dispatch} = this.props;
+
+        const remote = electron.remote;
+
+        const comfirmTrash = !remote.dialog.showMessageBox(
+            remote.getCurrentWindow(),
+            {
+                message: `您确定删除 ${name} 吗?`,
+                title: '删除提示',
+                buttons: ['删除', '取消'],
+                cancelId: 1
+            }
+        );
+
+        if (comfirmTrash) {
+            dispatch(uploadRemove([uuid]));
+        }
+    }
+
+    _onStart() {
+        const {uuid, status, dispatch} = this.props;
+
+        if (status === UploadStatus.Suspend
+            || status === UploadStatus.Error) {
+            dispatch(uploadStart([uuid]));
+        }
+    }
+
+    _onRepair() {
+        const {uuid, dispatch} = this.props;
+        dispatch(uploadRepair([uuid]));
+    }
+
+    renderOperation() {
+        const {basedir, status} = this.props;
+
+        const customOperation = () => {
+            switch (status) {
+            case UploadStatus.Error:
+                return (<i className="fa fa-wrench fa-fw" title="修复任务" onClick={() => this._onRepair()} />);
+            case UploadStatus.Suspend:
+                return (<i className="fa fa-play fa-fw" title="开始任务" onClick={() => this._onStart()} />);
+            case UploadStatus.Running:
+            case UploadStatus.Waiting:
+                return (<i className="fa fa-pause fa-fw" title="暂停任务" />);
+            default:
+                return null;
+            }
+        };
+
+        return (
+            <div className={styles.operation} >
+                {customOperation()}
+                <i className="fa fa-folder-open" title="打开目录" onClick={() => shell.showItemInFolder(basedir)} />
+                <i className="fa fa-trash" title="删除任务" onClick={() => this._onTrash()} />
+            </div>
+        );
     }
 
     render() {
-        const {region, bucket, object} = this.props;
-        const ext = object.split('.').pop().toLowerCase();
+        const {region, bucket, prefix, name, category} = this.props;
+        let style = '';
+
+        if (category === TransType.Directory) {
+            style = classnames(styles.fileicon, 'asset-folder');
+        } else {
+            const ext = name.split('.').pop().toLowerCase();
+            style = classnames(styles.fileicon, 'asset-normal', `asset-${ext}`);
+        }
 
         return (
             <div className={styles.container}>
-                <i className={`${styles.fileicon} asset-normal asset-${ext}`} />
+                <i className={style} />
                 <div className={styles.summary}>
                     <div>
-                        {region}://{bucket}/{object}
+                        {region}://{bucket}/{prefix}{name}
                     </div>
                     <div>
                         {this.getSize()}
                     </div>
                 </div>
                 {this.getLoader()}
-                {this.getStatus()}
+                {this.renderOperation()}
             </div>
         );
     }

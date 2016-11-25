@@ -9,10 +9,10 @@ import React, {Component, PropTypes} from 'react';
 
 import Header from './Header';
 import styles from './Transfer.css';
+import SideBar from '../App/SideBar';
 import UploadItem from './UploadItem';
 import DownloadItem from './DownloadItem';
-import SideBar from '../App/SideBar';
-import {TransUploadType, TransDownloadType} from '../../utils/BosType';
+import {TransCategory} from '../../utils/BosType';
 
 export default class Transfer extends Component {
     static propTypes = {
@@ -21,19 +21,21 @@ export default class Transfer extends Component {
         }),
         uploads: PropTypes.array.isRequired,
         downloads: PropTypes.array.isRequired,
-        clearFinish: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired
     };
 
     getCategoryContent() {
-        const {uploads, downloads} = this.props;
+        const {uploads, downloads, dispatch} = this.props;
         const {transType} = this.props.params;
 
-        if (transType === TransUploadType) {
+        if (transType === TransCategory.Upload) {
             return (
                 <div className={styles.content}>
                     {
                         uploads.map(
-                            item => (<UploadItem key={item.uuid} {...item} />)
+                            item => (
+                                <UploadItem key={item.uuid} {...item} dispatch={dispatch} />
+                            )
                         )
                     }
                     {
@@ -42,7 +44,7 @@ export default class Transfer extends Component {
                     }
                 </div>
             );
-        } else if (transType === TransDownloadType) {
+        } else if (transType === TransCategory.Download) {
             return (
                 <div className={styles.content}>
                     {
@@ -59,24 +61,14 @@ export default class Transfer extends Component {
         }
     }
 
-    clearFinish() {
-        const {clearFinish} = this.props;
-        const {transType} = this.props.params;
-
-        return clearFinish(transType);
-    }
-
-    createTask() {
-    }
-
     render() {
+        const {dispatch, params} = this.props;
+
         return (
             <div className={styles.container}>
                 <SideBar />
                 <div className={styles.body}>
-                    <Header createTask={evt => this.createTask(evt)}
-                        clearFinish={evt => this.clearFinish(evt)}
-                    />
+                    <Header dispatch={dispatch} transType={params.transType} />
                     {this.getCategoryContent()}
                 </div>
             </div>

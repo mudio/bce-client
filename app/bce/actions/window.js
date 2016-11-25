@@ -6,14 +6,12 @@
  */
 
 import Q from 'q';
-import debug from 'debug';
 
 import URL from '../utils/URL';
+import {info} from '../utils/Logger';
 import {API_TYPE} from '../middleware/api';
 import {getRegionClient} from '../api/client';
 import {createUploadTask} from './uploader';
-
-const logger = debug('bce-client:operation');
 
 export const LIST_BUCKET_REQUEST = 'LIST_BUCKET_REQUEST';
 export const LIST_BUCKET_SUCCESS = 'LIST_BUCKET_SUCCESS';
@@ -39,7 +37,7 @@ export function listObjects(bucketName, prefix = '') {
         [API_TYPE]: {
             types: [LIST_OBJECT_REQUEST, LIST_OBJECT_SUCCESS, LIST_OBJECT_FAILURE],
             method: 'listObjects',
-            args: [bucketName, {delimiter: '/', prefix, maxKeys: 200}]
+            args: [bucketName, {delimiter: '/', prefix, maxKeys: 1000}]
         }
     };
 }
@@ -71,7 +69,7 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
             key => client.listAllObjects(bucketName, key).then(
                 keys => {
                     const removeKeys = keys.map(item => item.key);
-                    logger(
+                    info(
                         'Delete bucketName = %s, prefix = %s, keys = %s',
                         bucketName, prefix, removeKeys
                     );

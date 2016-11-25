@@ -93,10 +93,13 @@ export class Client extends BosClient {
     }
 }
 
-export function getRegionClient(region, auth) {
+export function getRegionClient(region) {
+    const {auth} = window.globalStore.getState();
+    const {ak, sk} = auth;
+
     if (region) {
-        return new Client(region, auth);
+        return new Client(region, {ak, sk});
     }
 
-    throw new Error('Not found region client.');
+    throw new Error('Not found region.');
 }

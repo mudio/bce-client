@@ -1,0 +1,17 @@
+/**
+ * Uitls - File Transfer Config
+ *
+ * @file TransferConfig.js
+ * @author mudio(job.mudio@gmail.com)
+ */
+
+export const UploadConfig = {
+
+    TaskLimit: 5,               // 最多跑五个任务
+    RateLimit: 200,             // kb/s 暂不支持
+    PartLimit: 4,               // 最高并行片数
+    PartSize: 5 * 1024 * 1024  // 20MB
+};
+
+export const DownloadConfig = {
+};

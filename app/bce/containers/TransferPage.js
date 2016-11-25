@@ -5,10 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import Transfer from '../components/Transfer/Transfer';
-import * as TransferActons from '../actions/transfer';
 
 function mapStateToProps(state) {
     return {
@@ -17,8 +15,4 @@ function mapStateToProps(state) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(TransferActons, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Transfer);
+export default connect(mapStateToProps)(Transfer);
