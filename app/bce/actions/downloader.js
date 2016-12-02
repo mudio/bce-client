@@ -5,81 +5,70 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {getRegionClient} from '../api/client';
-import {
-    DOWNLOAD_TYPE,
-    DOWNLOAD_COMMAND_START,
-    DOWNLOAD_COMMAND_CANCEL,
-    DOWNLOAD_COMMAND_SUSPEND
-} from '../middleware/downloader';
 import getUuid from '../utils/Uuid';
+import {getRegionClient} from '../api/client';
+import {DownloadNotify, DownloadType} from '../utils/TransferNotify';
 
-export const TRANS_DOWNLOAD_REMOVE = 'TRANS_DOWNLOAD_REMOVE';
-export const TRANS_DOWNLOAD_FINISH = 'TRANS_DOWNLOAD_FINISH';
-export const TRANS_DOWNLOAD_PROGRESS = 'TRANS_DOWNLOAD_PROGRESS';
-export const TRANS_DOWNLOAD_NEW = 'TRANS_DOWNLOAD_NEW';
-export const TRANS_DOWNLOAD_ERROR = 'TRANS_DOWNLOAD_ERROR';
-
-export function downloadStart(uuids = []) {
+export function downloadStart(taskIds = []) {
     return {
-        [DOWNLOAD_TYPE]: {
-            command: DOWNLOAD_COMMAND_START,    // 开始任务
-            uuids                               // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+        [DownloadType]: {
+            command: DownloadNotify.Start,      // 开始任务
+            taskIds                             // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function downloadSuspend(uuids = []) {
+export function downloadRemove(taskIds = []) {
     return {
-        [DOWNLOAD_TYPE]: {
-            command: DOWNLOAD_COMMAND_SUSPEND,  // 暂停任务
-            uuids                               // 如果为空，全部挂起， 不为空，挂起指定任务
+        [DownloadType]: {
+            command: DownloadNotify.Remove,    // 删除任务
+            taskIds                            // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }
 
-export function downloadCancel(uuids = []) {
-    return {
-        [DOWNLOAD_TYPE]: {
-            command: DOWNLOAD_COMMAND_CANCEL,   // 取消任务
-            uuids                               // 不为空，取消指定任务
-        }
-    };
-}
+export function createDownloadTask(region, bucket, prefix, keys, basedir) {
+    return dispatch => {
+        const client = getRegionClient(region);
 
-export function createDownloadTask(keys = [], path) {
-    return (dispatch, getState) => {
-        const {auth, navigator} = getState();
-        const {region, bucket, folder} = navigator;
-        const client = getRegionClient(region, auth);
+        keys.forEach(object => {
+            const uuid = getUuid();
+            const name = object.replace(prefix, '');
+            // 初始化任务
+            dispatch({
+                uuid, region, bucket, prefix, name, basedir, type: DownloadNotify.Init
+            });
 
-        keys.forEach(
-            key => client.listAllObjects(bucket, key).then(
+            client.listAllObjects(bucket, object).then(
                 contents => {
-                    const uuids = contents.map(item => {
+                    let totalSize = 0;
+                    const metaKeys = contents.map(item => {
                         // 创建任务uuid
-                        const uuid = getUuid();
-                        const localDir = `${path}/${item.key.replace(folder, '')}`;
-                        const extra = {region, bucket, object: item.key, path: localDir};
+                        const metaKey = getUuid();
+                        const metaFile = {
+                            offsetSize: 0,
+                            finish: false,
+                            eTag: item.eTag,
+                            totalSize: item.size,
+                            relative: item.key.replace(prefix, ''),
+                        };
 
-                        // 这里用object替换key，免得与React.Component.key冲突
-                        delete item.key; // eslint-disable-line no-param-reassign
+                        totalSize += item.size;
 
-                        dispatch({
-                            type: TRANS_DOWNLOAD_NEW,
-                            item: Object.assign(extra, item, {uuid})
-                        });
+                        localStorage.setItem(metaKey, JSON.stringify(metaFile));
 
-                        return uuid;
+                        return metaKey;
                     });
-
-                    dispatch(downloadStart(uuids));
+                    // 建立新任务
+                    dispatch({type: DownloadNotify.New, uuid, keys: metaKeys, totalSize});
+                    // 立即开始这个任务
+                    dispatch(downloadStart([uuid]));
                 },
                 response => dispatch({
-                    type: TRANS_DOWNLOAD_ERROR,
+                    type: DownloadNotify.Error,
                     error: response.body
                 })
-            )
-        );
+            );
+        });
     };
 }

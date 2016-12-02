@@ -16,21 +16,34 @@ import {UploadStatus} from '../utils/TransferStatus';
 import {UploadNotify} from '../utils/TransferNotify';
 
 export default class UploadQueue extends EventEmitter {
+    static TaskProperties = [
+        'uuid', 'name', 'basedir', 'region', 'bucket', 'prefix', 'status',
+        'waitingQueue', 'errorQueue', 'completeQueue'
+    ];
+
+    static MetaProperties = [
+        'path', 'relative', 'totalSize', 'finish'
+    ];
+
     constructor(task) {
         super();
 
+        // 检查任务
+        if (!this._checkProperties(task, UploadQueue.TaskProperties)) {
+            throw new TypeError(`task ${task.uuid} must has properties: ${UploadQueue.TaskProperty.join('、')}`);
+        }
         // 保存任务
         this._task = task;
         // 设置事件触发器
         this.dispatch = window.globalStore.dispatch;
         // 起始状态必须为Waiting
         if (this._task.status !== UploadStatus.Waiting) {
-            throw new Error(`Upload task = ${task.uuid} status must be Waiting!`);
+            throw new TypeError(`Upload task = ${task.uuid} status must be Waiting!`);
         }
 
         // 初始化队列
         this._queue = async.queue(
-            (...args) => this._upload(...args), UploadConfig.TaskLimit
+            (...args) => this._upload(...args), UploadConfig.MetaLimit
         );
         // 事件绑定
         this._queue.empty = () => this.emit('empty');
@@ -55,6 +68,13 @@ export default class UploadQueue extends EventEmitter {
         // 通知任务开始，状态设置为Running
         this.dispatch({type: UploadNotify.Launch, uuid: this._task.uuid});
     }
+    // 属性检查，属性太多代码写着写着就忘记了
+    _checkProperties(task, properties = []) {
+        return properties.reduce(
+            (hasProperty, property) => hasProperty && (property in task),
+            true
+        );
+    }
 
     // 通知任务状态变化
     _finally(err, metaKey, item) {
@@ -77,25 +97,32 @@ export default class UploadQueue extends EventEmitter {
         }
     }
 
+    // 最多分片1000片，除了最后一片其他片大小相等且大于等于UploadConfig.PartSize
     _decompose(uuid, region, bucket, object, metaFile) {
-        const {uploadId, partNumberOffset, path, totalSize, offsetSize = 0} = metaFile;
-        const parts = [];
+        const {uploadId, path, totalSize, parts} = metaFile;
+        const minPartSize = Math.ceil(totalSize / 1000);
+        const averagePartSize = Math.max(UploadConfig.PartSize, minPartSize);
+        const partNumbers = parts.map(part => +part.partNumber);
 
-        let leftSize = totalSize - offsetSize;
-        let offset = offsetSize;
-        let partNumber = partNumberOffset + 1;
+        // 分片集合
+        const uploadParts = [];
+
+        let leftSize = totalSize;
+        let offset = 0;
+        let partNumber = 1;
 
         while (leftSize > 0) {
-            const partSize = Math.min(leftSize, UploadConfig.PartSize);
+            const partSize = Math.min(leftSize, averagePartSize);
 
-            parts.push({uuid, uploadId, region, bucket, object, path, partNumber, partSize, start: offset});
+            uploadParts.push({uuid, uploadId, region, bucket, object, path, partNumber, partSize, start: offset});
 
             leftSize -= partSize;
             offset += partSize;
             partNumber += 1;
         }
 
-        return parts;
+        // 排除已上传的part
+        return uploadParts.filter(part => partNumbers.indexOf(part.partNumber) === -1);
     }
 
     _uploadPartFile(part, callback) {
@@ -138,6 +165,12 @@ export default class UploadQueue extends EventEmitter {
 
         try {
             metaFile = JSON.parse(localStorage.getItem(metaKey));
+
+            if (!this._checkProperties(metaFile, UploadQueue.MetaProperties)) {
+                throw new TypeError(
+                    `MetaFile ${metaFile.uuid} must has properties: ${UploadQueue.MetaProperties.join('、')}`
+                );
+            }
         } catch (ex) {
             done(ex);
         }
@@ -169,6 +202,7 @@ export default class UploadQueue extends EventEmitter {
                 return client.listParts(bucket, object, metaFile.uploadId).then(
                     res => resolve({
                         uploadId: metaFile.uploadId,
+                        // 服务端存储的parts不一定是连续的，有可能是[1,2,3,5]
                         parts: res.body.parts.sort(part => part.partNumber)
                     }),
                     reject
@@ -181,24 +215,27 @@ export default class UploadQueue extends EventEmitter {
         });
 
         workFlowPromise.then(
-            (uploadId, parts) => {
+            res => {
+                const {uploadId, parts} = res;
                 // 3. 保存metaFile信息, 分解任务
-                const start = parts.reduce((total, part) => total + part.size, 0);
-                const partNumberOffset = +start.slice(-1).partNumber;
-                metaFile = object.assign(metaFile, {uploadId, partNumberOffset, offsetSize: start});
+                metaFile = Object.assign(metaFile, {uploadId, parts});
                 const tasks = this._decompose(uuid, region, bucket, object, metaFile);
 
-                async.mapLimit(
-                    tasks, UploadConfig.PartLimit, this._uploadPartFile,
+                async.mapLimit(tasks, UploadConfig.PartLimit,
+                    (...args) => this._uploadPartFile(...args),
                     (err, allResponse = []) => {
                         // 统计已完成parts
                         const uploadedParts = _.compact(allResponse);
+                        const finishParts = [...parts, ...uploadedParts];
 
                         // 4. 如果没有错误，则完成上传
                         if (!err) {
-                            const finishParts = [...parts, ...uploadedParts].map(
+                            finishParts.map(
                                 part => Object({partNumber: part.partNumber, eTag: part.ETag})
+                            ).sort(
+                                part => part.partNumber
                             );
+
                             client.completeMultipartUpload(
                                 bucket, object, uploadId, finishParts
                             ).then(
@@ -214,7 +251,7 @@ export default class UploadQueue extends EventEmitter {
                                 }
                             );
                         } else {
-                            metaFile.offsetSize = start + uploadedParts.reduce(
+                            metaFile.offsetSize = finishParts.reduce(
                                 (total, item) => total + item.partSize, 0
                             );
 

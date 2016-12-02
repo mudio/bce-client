@@ -14,7 +14,7 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import api from '../middleware/api';
 import rootReducer from '../reducers';
 import upload from '../middleware/uploader';
-import {download} from '../middleware/downloader';
+import download from '../middleware/downloader';
 
 const logger = createLogger({
     level: 'info',

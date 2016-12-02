@@ -38,22 +38,16 @@
 
 .summary div {
     display: flex;
-    line-height: 24px;
+    line-height: 20px;
 }
 
 .fileicon {
-    margin: 0 20px 0 10px;
-    width: 48px;
-    height: 48px;
+    margin: 0 10px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.title {
-    cursor: pointer;
-    color: #444c63;
-    font-size: 14px;
 }
 
 .size {
@@ -61,13 +55,37 @@
     color: #8692b2;
 }
 
-.seperation {
-    padding: 0 10px;
-    color: #8692b2;
-}
 
 .status {
     color: #8692b2;
-    flex-shrink: 0;
-    margin: 0 10px 0 20px;
+    padding-top: 5px;
+    text-align: right;
+}
+
+.status i {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.status.error {
+    color: rgba(255, 49, 34, 0.5);
+}
+
+.operation {
+    display: flex;
+    color: #ccc;
+    font-size: 14px;
+    min-width: 60px;
+    padding-left: 20px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.operation i:hover {
+    cursor: pointer;
+    color: #2eacfc;
+}
+
+.operation i:last-child:hover {
+    color: rgba(255, 49, 34, 0.5);
 }

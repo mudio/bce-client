@@ -84,7 +84,7 @@ export default function uploads(state = [], action) {
                 return Object.assign(item, {
                     errorQueue,
                     waitingQueue,
-                    status: UploadStatus.Waiting
+                    status: UploadStatus.Running
                 });
             }
 

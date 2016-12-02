@@ -67,7 +67,8 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                     localStorage.setItem(key, JSON.stringify({
                         path: file.path,
                         relative: file.name,
-                        totalSize: file.size
+                        totalSize: file.size,
+                        finish: false
                     }));
                     // 建立一个新任务
                     dispatch({type: UploadNotify.New, uuid, keys: [key], totalSize: file.size});
@@ -97,7 +98,8 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                     localStorage.setItem(key, JSON.stringify({
                         relative: relativePath,
                         path: absolutePath,
-                        totalSize: stat.size
+                        totalSize: stat.size,
+                        finish: false
                     }));
 
                     keys.push(key);

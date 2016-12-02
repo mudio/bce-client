@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import ErrorCode from './error';
+import ErrorCode from '../utils/ErrorCode';
 import {getRegionClient} from '../api/client';
 
 export const API_TYPE = Symbol('Call API');

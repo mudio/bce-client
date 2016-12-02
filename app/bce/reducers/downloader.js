@@ -5,42 +5,135 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {error as errLogger} from '../utils/Logger';
 import {DownloadStatus} from '../utils/TransferStatus';
 import {DownloadNotify} from '../utils/TransferNotify';
 
 export default function downloads(state = [], action) {
     switch (action.type) {
-    case DownloadNotify.New: {
-        const task = Object.assign({status: DownloadStatus.Waiting, loaded: 0}, action.item);
-        return state.concat([task]);
+    case DownloadNotify.Init: {
+        const task = Object.assign({
+            offsetSize: 0,
+            errorQueue: [],
+            waitingQueue: [],
+            completeQueue: [],
+            status: DownloadStatus.Init
+        }, action);
+
+        delete task.type;
+
+        return [task, ...state];
     }
-    case DownloadNotify.Progress: {
+    case DownloadNotify.New: {
         return state.map(item => {
-            const {increaseSize, id} = action;
-            if (item.id === id) {
-                return Object.assign({}, item, {
-                    loaded: item.loaded + increaseSize,
+            if (item.uuid === action.uuid) {
+                return Object.assign(item, {
+                    totalSize: action.totalSize,
+                    status: DownloadStatus.Unstarted,
+                    waitingQueue: action.keys
+                });
+            }
+
+            return item;
+        });
+    }
+    case DownloadNotify.Start:
+        return state.map(item => {
+            if (action.taskIds.indexOf(item.uuid) > -1) {
+                return Object.assign(item, {status: DownloadStatus.Waiting});
+            }
+
+            return item;
+        });
+    case DownloadNotify.Launch:
+        return state.map(item => {
+            if (action.uuid === item.uuid) {
+                const errorQueue = [];
+                const waitingQueue = [...item.waitingQueue, ...item.errorQueue];
+                // Launch会把未完成、错误的重跑
+                return Object.assign(item, {
+                    errorQueue,
+                    waitingQueue,
                     status: DownloadStatus.Running
                 });
             }
-            return Object.assign({}, item);
+
+            return item;
+        });
+    case DownloadNotify.Progress: {
+        return state.map(item => {
+            const {increaseSize, uuid} = action;
+
+            if (item.uuid === uuid) {
+                return Object.assign(item, {
+                    offsetSize: item.offsetSize + increaseSize,
+                });
+            }
+
+            return item;
         });
     }
     case DownloadNotify.Finish: {
         return state.map(item => {
-            if (item.id === action.id) {
-                return Object.assign({}, item, {status: DownloadStatus.Finish, loaded: item.size});
+            if (item.uuid === action.uuid) {
+                if (action.metaKey) {
+                    const waitingQueue = item.waitingQueue.filter(key => key !== action.metaKey);
+                    const completeQueue = [action.metaKey, ...item.completeQueue];
+                    Object.assign(item, {waitingQueue, completeQueue});
+                }
+
+                if (item.waitingQueue.length === 0 && item.errorQueue.length === 0) {
+                    Object.assign(item, {status: DownloadStatus.Finish, offsetSize: item.totalSize});
+                }
             }
-            return Object.assign({}, item);
+
+            return item;
         });
     }
     case DownloadNotify.Error: {
         return state.map(item => {
-            const {id, error} = action;
-            if (item.id === id) {
-                return Object.assign({}, item, {status: DownloadStatus.Error, error});
+            const {uuid, metaKey, error} = action;
+
+            if (item.uuid === uuid) {
+                if (metaKey) {
+                    const waitingQueue = item.waitingQueue.filter(key => key !== metaKey);
+                    const errorQueue = [metaKey, ...item.errorQueue];
+                    Object.assign(item, {waitingQueue, errorQueue});
+                }
+
+                Object.assign(item, {status: DownloadStatus.Error, error});
             }
-            return Object.assign({}, item);
+
+            return item;
+        });
+    }
+    case DownloadNotify.Remove: {
+        return state.filter(item => {
+            if (action.taskIds.indexOf(item.uuid) > -1) {
+                const {waitingQueue, completeQueue, errorQueue} = item;
+                errorQueue.forEach(key => localStorage.removeItem(key));
+                completeQueue.forEach(key => localStorage.removeItem(key));
+                waitingQueue.forEach(key => localStorage.removeItem(key));
+            }
+
+            return action.taskIds.indexOf(item.uuid) === -1;
+        });
+    }
+    case DownloadNotify.ClearFinish: {
+        return state.filter(item => {
+            if (item.status === DownloadStatus.Finish) {
+                const {waitingQueue, completeQueue, errorQueue} = item;
+
+                if (waitingQueue.length > 0 || errorQueue.length > 0) {
+                    errLogger('Invoke CleanrFinish error, WaitingQueue or ErrorQueue not empty');
+                }
+
+                errorQueue.forEach(key => localStorage.removeItem(key));
+                completeQueue.forEach(key => localStorage.removeItem(key));
+                waitingQueue.forEach(key => localStorage.removeItem(key));
+            }
+
+            return item.status !== DownloadStatus.Finish;
         });
     }
     default:

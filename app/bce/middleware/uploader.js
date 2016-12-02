@@ -5,12 +5,13 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import WorkFlow from './WorkFlow';
 import {warn} from '../utils/Logger';
-import UploadWorkFlow from './UploadWorkFlow';
+import UploadQueue from './UploadQueue';
 import {UploadStatus} from '../utils/TransferStatus';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 
-const _workflow = new UploadWorkFlow();
+const _workflow = new WorkFlow(UploadQueue);
 
 function startTask(store, taskIds = []) {
     const {dispatch} = store;

@@ -72,7 +72,7 @@ export default class Explorer extends Component {
             return;
         }
         // 不支持选择多个文件夹，所以只取第一个
-        this.props.download(keys, path[0]);
+        this.props.download(region, bucketName, prefix, keys, path[0]);
     }
 
     _trash(region, bucketName, prefix, keys) {

@@ -11,8 +11,8 @@ import {hashHistory} from 'react-router';
 import {routerMiddleware} from 'react-router-redux';
 import rootReducer from '../reducers';
 import api from '../middleware/api';
-import {upload} from '../middleware/uploader';
-import {download} from '../middleware/downloader';
+import upload from '../middleware/uploader';
+import download from '../middleware/downloader';
 
 const router = routerMiddleware(hashHistory);
 

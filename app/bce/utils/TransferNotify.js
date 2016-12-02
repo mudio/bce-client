@@ -6,8 +6,10 @@
  */
 
 export const _uploadType = 'UploadCommand';
-
 export const UploadCommandType = Symbol.for(_uploadType);
+
+export const _downloadType = 'DownloadCommand';
+export const DownloadType = Symbol.for(_downloadType);
 
 export const UploadNotify = {
     New: 'upload_notify_new',
@@ -16,12 +18,20 @@ export const UploadNotify = {
     Repair: 'upload_notify_repair',
     Finish: 'upload_notify_finish',
     Remove: 'upload_notify_remove',
-    Launch: 'upload_notify_Launch',
+    Launch: 'upload_notify_launch',
     Prepare: 'upload_notify_prepare',
     Progress: 'upload_notify_progress',
     ClearFinish: 'upload_notify_clear_finish'
 };
 
 export const DownloadNotify = {
-
+    New: 'download_notify_new',
+    Init: 'download_notify_init',
+    Start: 'download_notify_start',
+    Error: 'download_notify_error',
+    Launch: 'download_notify_launch',
+    Remove: 'download_notify_remove',
+    Finish: 'download_notify_finish',
+    Progress: 'download_notify_progress',
+    ClearFinish: 'download_notify_clear_finish'
 };
