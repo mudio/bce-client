@@ -82,6 +82,10 @@
     color: #2eacfc;
 }
 
-.operation i:last-child:hover {
+.operation .trash:hover {
     color: rgba(255, 49, 34, 0.5);
+}
+
+.operation .hidden {
+    display: none;
 }

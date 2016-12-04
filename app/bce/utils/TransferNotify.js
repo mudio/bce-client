@@ -15,12 +15,13 @@ export const UploadNotify = {
     New: 'upload_notify_new',
     Start: 'upload_notify_start',
     Error: 'upload_notify_error',
-    Repair: 'upload_notify_repair',
     Finish: 'upload_notify_finish',
     Remove: 'upload_notify_remove',
     Launch: 'upload_notify_launch',
     Prepare: 'upload_notify_prepare',
     Progress: 'upload_notify_progress',
+    Suspended: 'upload_notify_suspended',
+    Suspending: 'upload_notify_suspending',
     ClearFinish: 'upload_notify_clear_finish'
 };
 

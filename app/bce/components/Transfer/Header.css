@@ -38,3 +38,7 @@
     background: #f06a6a;
     border-color: #f06a6a;
 }
+
+.start, .pause {
+    display: none;
+}

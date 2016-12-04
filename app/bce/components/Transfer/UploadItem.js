@@ -12,7 +12,7 @@ import React, {Component, PropTypes} from 'react';
 import styles from './UploadItem.css';
 import {TransType} from '../../utils/BosType';
 import {getText, UploadStatus} from '../../utils/TransferStatus';
-import {uploadRemove, uploadStart, uploadRepair} from '../../actions/uploader';
+import {uploadRemove, uploadStart, uploadSuspend} from '../../actions/uploader';
 
 const {shell} = electron;
 
@@ -134,39 +134,67 @@ export default class UploadItem extends Component {
     _onStart() {
         const {uuid, status, dispatch} = this.props;
 
-        if (status === UploadStatus.Suspend
+        if (status === UploadStatus.Suspended
             || status === UploadStatus.Error) {
             dispatch(uploadStart([uuid]));
         }
     }
 
-    _onRepair() {
-        const {uuid, dispatch} = this.props;
-        dispatch(uploadRepair([uuid]));
+    _onSuspend() {
+        const {uuid, status, dispatch} = this.props;
+
+        if (status === UploadStatus.Running
+            || status === UploadStatus.Waiting) {
+            dispatch(uploadSuspend([uuid]));
+        }
     }
 
     renderOperation() {
         const {basedir, status} = this.props;
 
-        const customOperation = () => {
-            switch (status) {
-            case UploadStatus.Error:
-                return (<i className="fa fa-wrench fa-fw" title="修复任务" onClick={() => this._onRepair()} />);
-            case UploadStatus.Suspend:
-                return (<i className="fa fa-play fa-fw" title="开始任务" onClick={() => this._onStart()} />);
-            case UploadStatus.Running:
-            case UploadStatus.Waiting:
-                return (<i className="fa fa-pause fa-fw" title="暂停任务" />);
-            default:
-                return null;
-            }
+        const start = () => {
+            const className = classnames(
+                'fa', 'fa-play', 'fa-fw',
+                {[styles.hidden]: status !== UploadStatus.Error && status !== UploadStatus.Suspended}
+            );
+
+            return (
+                <i className={className} title="开始任务" onClick={() => this._onStart()} />
+            );
+        };
+
+        const pause = () => {
+            const className = classnames(
+                'fa', 'fa-pause', 'fa-fw',
+                {[styles.hidden]: status !== UploadStatus.Running && status !== UploadStatus.Waiting}
+            );
+
+            return (
+                <i className={className} title="暂停任务" onClick={() => this._onSuspend()} />
+            );
+        };
+
+        const trash = () => {
+            const hidden = status !== UploadStatus.Error
+                && status !== UploadStatus.Finish
+                && status !== UploadStatus.Suspended;
+
+            const className = classnames(
+                'fa', 'fa-trash', 'fa-fw', styles.trash,
+                {[styles.hidden]: hidden}
+            );
+
+            return (
+                <i className={className} title="删除任务" onClick={() => this._onTrash()} />
+            );
         };
 
         return (
             <div className={styles.operation} >
-                {customOperation()}
+                {start()}
+                {pause()}
                 <i className="fa fa-folder-open" title="打开目录" onClick={() => shell.showItemInFolder(basedir)} />
-                <i className="fa fa-trash" title="删除任务" onClick={() => this._onTrash()} />
+                {trash()}
             </div>
         );
     }

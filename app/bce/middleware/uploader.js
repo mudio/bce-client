@@ -34,19 +34,12 @@ function startTask(store, taskIds = []) {
     });
 }
 
-function repairTask(uploadTasks, taskIds = []) {
-    uploadTasks.forEach(item => {
-        if (taskIds.indexOf(item.uuid) > -1 && item.status === UploadStatus.Error) {
-            // 如果状态不是错误态，则给出⚠️
-            if (item.status !== UploadStatus.Error) {
-                warn('Attempt to repair %s task', item.status);
-            }
-            // 复制一份
-            // const metaKeys = [...item.errorQueue];
-            // 修复任务
-            // dispatch({type: UploadNotify.Repair, uuid: item.uuid});
-        }
-    });
+function suspendTask(store, taskIds = []) {
+    const {dispatch} = store;
+
+    _workflow.suspend(taskIds);
+
+    return dispatch({type: UploadNotify.Suspending, taskIds});
 }
 
 export default function upload(store) {
@@ -62,8 +55,8 @@ export default function upload(store) {
         switch (command) {
         case UploadNotify.Start:
             return startTask(store, taskIds);
-        case UploadNotify.Repair:
-            return repairTask(store, taskIds);
+        case UploadNotify.Suspending:
+            return suspendTask(store, taskIds);
         default:
             warn('Invalid MiddleWare Command %s', command);
             return next({type: command, taskIds});

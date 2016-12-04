@@ -15,6 +15,8 @@ export const UploadStatus = {
     Removing: 'upload_removing',
     Indexing: 'upload_indexing',
     Unstarted: 'upload_unstarted',
+    Suspended: 'upload_suspended',
+    Suspending: 'upload_suspending'
 };
 
 const uploadStatusTextMap = {
@@ -27,6 +29,8 @@ const uploadStatusTextMap = {
     [UploadStatus.Removing]: '删除中',
     [UploadStatus.Indexing]: '索引中',
     [UploadStatus.Unstarted]: '未开始',
+    [UploadStatus.Suspended]: '已暂停',
+    [UploadStatus.Suspending]: '暂停中'
 };
 
 export const DownloadStatus = {

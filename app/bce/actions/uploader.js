@@ -33,11 +33,11 @@ export function uploadRemove(taskIds = []) {
     };
 }
 
-export function uploadRepair(taskIds = []) {
+export function uploadSuspend(taskIds = []) {
     return {
         [UploadCommandType]: {
-            command: UploadNotify.Repair,    // 删除任务
-            taskIds                          // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+            command: UploadNotify.Suspending,   // 暂停任务
+            taskIds                             // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };
 }

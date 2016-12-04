@@ -18,9 +18,9 @@ export default class File extends Component {
         bucketName: PropTypes.string.isRequired,
         object: PropTypes.shape({
             key: PropTypes.string.isRequired,
-            lastModified: PropTypes.string.isRequired,
-            ETag: PropTypes.string,
-            Size: PropTypes.number
+            eTag: PropTypes.string.isRequired,
+            size: PropTypes.number.isRequired,
+            lastModified: PropTypes.string.isRequired
         })
     };
 

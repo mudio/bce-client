@@ -90,12 +90,18 @@ export default function uploads(state = [], action) {
 
             return item;
         });
-    case UploadNotify.Repair:
+    case UploadNotify.Suspending:
         return state.map(item => {
-            if (item.uuid === action.uuid) {
-                const waitingQueue = [...item.waitingQueue, ...item.errorQueue];
-                const errorQueue = [];
-                return Object.assign(item, {waitingQueue, errorQueue, status: UploadStatus.Running});
+            if (action.taskIds.indexOf(item.uuid) > -1) {
+                return Object.assign(item, {status: UploadStatus.Suspending});
+            }
+
+            return item;
+        });
+    case UploadNotify.Suspended:
+        return state.map(item => {
+            if (action.taskId === item.uuid) {
+                return Object.assign(item, {status: UploadStatus.Suspended});
             }
 
             return item;

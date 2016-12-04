@@ -48,9 +48,9 @@ export default class UploadQueue extends EventEmitter {
         // 事件绑定
         this._queue.empty = () => this.emit('empty');
         this._queue.drain = () => this.emit('drain');
-        this._queue.error = () => this.emit('error');
+        this._queue.error = () => this._error();
         this._queue.saturated = () => this.emit('saturated');
-        this._queue.unsaturated = () => this.emit('unsaturated');
+        this._queue.unsaturated = this.emit('unsaturated');
         // 等待任务放入队列中
         task.waitingQueue.forEach(
             metaKey => this._queue.push(
@@ -68,6 +68,7 @@ export default class UploadQueue extends EventEmitter {
         // 通知任务开始，状态设置为Running
         this.dispatch({type: UploadNotify.Launch, uuid: this._task.uuid});
     }
+
     // 属性检查，属性太多代码写着写着就忘记了
     _checkProperties(task, properties = []) {
         return properties.reduce(
@@ -80,7 +81,7 @@ export default class UploadQueue extends EventEmitter {
     _finally(err, metaKey, item) {
         const {uuid, region, bucket, prefix, name} = item;
 
-        if (err) {
+        if (err instanceof Error) {
             error(
                 'Failed Region = %s, Bucket = %s, Prefix = %s, Name = %s, Error = %s',
                 region, bucket, prefix, prefix, name, err.message
@@ -129,6 +130,16 @@ export default class UploadQueue extends EventEmitter {
         const {uuid, uploadId, region, bucket, object, path, partNumber, partSize, start} = part;
         const client = getRegionClient(region);
 
+        // 如果任务暂停了，就暂停上传分片
+        if (this._queue.paused) {
+            info(
+                'Suspend uuid = %s, PartNumber = %s, Part = %s',
+                uuid, partNumber, JSON.stringify(part)
+            );
+
+            return callback(new Error('Suspend'));
+        }
+
         info(
             'Start uuid = %s, PartNumber = %s, Part = %s',
             uuid, partNumber, JSON.stringify(part)
@@ -175,11 +186,11 @@ export default class UploadQueue extends EventEmitter {
             done(ex);
         }
 
-        const {path, relative, totalSize, offsetSize = 0} = metaFile;
+        const {path, relative, totalSize} = metaFile;
         const object = prefix ? `/${prefix}${relative}` : relative;
 
         // 1. 判断上传大小，如果小于PartLimit *  PartSize 就别分片了
-        if (totalSize - offsetSize <= UploadConfig.PartLimit * UploadConfig.PartSize) {
+        if (totalSize <= UploadConfig.PartLimit * UploadConfig.PartSize) {
             // 上传完了交给最后的处理逻辑
             return client.putObjectFromFile(bucket, object, path).then(
                 () => {
@@ -200,11 +211,7 @@ export default class UploadQueue extends EventEmitter {
         const workFlowPromise = new Promise((resolve, reject) => {
             if (metaFile.uploadId) {
                 return client.listParts(bucket, object, metaFile.uploadId).then(
-                    res => resolve({
-                        uploadId: metaFile.uploadId,
-                        // 服务端存储的parts不一定是连续的，有可能是[1,2,3,5]
-                        parts: res.body.parts.sort(part => part.partNumber)
-                    }),
+                    res => resolve(res.body),
                     reject
                 );
             }
@@ -233,7 +240,7 @@ export default class UploadQueue extends EventEmitter {
                             finishParts.map(
                                 part => Object({partNumber: part.partNumber, eTag: part.ETag})
                             ).sort(
-                                part => part.partNumber
+                                (lhs, rhs) => lhs.partNumber > rhs
                             );
 
                             client.completeMultipartUpload(
@@ -266,5 +273,23 @@ export default class UploadQueue extends EventEmitter {
             },
             done
         );
+    }
+
+    _error() {
+        if (this._queue.paused && this._queue.running() === 0) {
+            const {uuid} = this._task;
+
+            this.emit('suspend');
+            // 任务已暂停
+            this.dispatch({taskId: uuid, type: UploadNotify.Suspended});
+        } else {
+            this.emit('error');
+        }
+    }
+
+    // 挂起任务
+    suspend() {
+        // 暂停队列，不在提交新任务
+        this._queue.pause();
     }
 }
