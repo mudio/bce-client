@@ -25,7 +25,7 @@ class Window extends Component {
         nav: PropTypes.shape({
             region: PropTypes.string.isRequired,
             bucket: PropTypes.string,
-            folder: PropTypes.string
+            prefix: PropTypes.string
         }),
         // 当前BucketName
         bucketName: PropTypes.string,
@@ -50,7 +50,7 @@ class Window extends Component {
         // 上下文支持命令
         commands: PropTypes.array.isRequired,
         // func
-        updateNavigator: PropTypes.func.isRequired,
+        redirect: PropTypes.func.isRequired,
         uploadFile: PropTypes.func.isRequired,
         refresh: PropTypes.func.isRequired,
         listMore: PropTypes.func.isRequired,
@@ -69,7 +69,7 @@ class Window extends Component {
 
         if (objectIntersectionLen !== uploadTask.objects.length
             || folderIntersectionLen !== uploadTask.folders.length) {
-            refresh(nav.bucket, nav.folder);
+            refresh(nav.bucket, nav.prefix);
         }
     }
 
@@ -77,8 +77,12 @@ class Window extends Component {
         evt.preventDefault();
         evt.stopPropagation();
         const {nav, uploadFile} = this.props;
+        const {region, bucket, prefix} = nav;
 
-        uploadFile(evt.dataTransfer.items, nav.region, nav.bucket, nav.folder);
+        const prefixes = prefix.split('/');
+        prefixes.splice(-1, 1, '');
+
+        uploadFile(evt.dataTransfer.items, region, bucket, prefixes.join('/'));
 
         return false;
     }
@@ -101,8 +105,8 @@ class Window extends Component {
     }
 
     redirect(bucket = '', folder = '') {
-        const {nav, updateNavigator} = this.props;
-        updateNavigator({region: nav.region, bucket, folder});
+        const {nav, redirect} = this.props;
+        redirect(nav.region, bucket, folder);
     }
 
     renderLoading() {
@@ -245,7 +249,7 @@ function mapStateToProps(state) {
     const uploadTask = uploads.reduce((context, task) => {
         if (task.region === navigator.region
             && task.bucket === navigator.bucket
-            && task.prefix.startsWith(navigator.folder)
+            && task.prefix.startsWith(navigator.prefix)
             && task.status !== UploadStatus.Finish) {
             // 上传文件一定在当前目录或者子目录下
             const prefixs = task.prefix.split('/');

@@ -5,10 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import Explorer from '../components/Explorer/Explorer';
-import * as ExplorerActons from '../actions/explorer';
 
 function mapStateToProps(state) {
     return {
@@ -16,8 +14,4 @@ function mapStateToProps(state) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ExplorerActons, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Explorer);
+export default connect(mapStateToProps)(Explorer);

@@ -7,7 +7,6 @@
 
 import Q from 'q';
 
-import URL from '../utils/URL';
 import {info} from '../utils/Logger';
 import {API_TYPE} from '../middleware/api';
 import {getRegionClient} from '../api/client';
@@ -94,25 +93,6 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
         Q.allSettled(allTasks).finally(
             () => dispatch(listObjects(bucketName, prefix))
         );
-    };
-}
-
-export const UPDATE_NAV = 'UPDATE_NAV';
-
-export function updateNavigator(nav) {
-    return dispatch => {
-        const URLObj = new URL(nav);
-        const region = URLObj.getRegion();
-        const bucket = URLObj.getBucket();
-        const folder = URLObj.getFolder();
-
-        dispatch({type: UPDATE_NAV, nav: {region, bucket, folder}});
-
-        if (!bucket) {
-            dispatch(listBuckets(region));
-        } else {
-            dispatch(listObjects(bucket, folder));
-        }
     };
 }
 

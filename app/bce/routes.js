@@ -15,8 +15,8 @@ import TransferPage from './containers/TransferPage';
 export default (
     <Route path="/" component={App}>
         <IndexRoute component={LoginPage} />
-        <Route path="/region/:region" component={ExplorerPage} />
-        <Route path="/transfer/:transType" component={TransferPage} />
         <Route path="/login" component={LoginPage} />
+        <Route path="/region" component={ExplorerPage} />
+        <Route path="/transfer/:transType" component={TransferPage} />
     </Route>
 );

@@ -14,7 +14,6 @@ import React, {Component, PropTypes} from 'react';
 import Version from './Version';
 import styles from './SideBar.css';
 import BrowserLink from '../Common/BrowserLink';
-import {regions, getLocalText} from '../../utils/Region';
 import {TransCategory} from '../../utils/BosType';
 import {UploadStatus, DownloadStatus} from '../../utils/TransferStatus';
 
@@ -39,18 +38,9 @@ class SideBar extends Component {
                     </svg>
                 </div>
                 <div className={styles.body}>
-                    {
-                        regions.map(r => (
-                            <Link
-                                to={`/region/${r}`}
-                                className={`${styles.item} ${styles.region}`}
-                                activeClassName={styles.active}
-                                key={`/region/${r}`}
-                            >
-                                {getLocalText(r)}
-                            </Link>
-                        ))
-                    }
+                    <Link to={'/region'} className={`${styles.item} ${styles.region}`} activeClassName={styles.active} >
+                        所有文件
+                    </Link>
                     <Link to={`/transfer/${TransCategory.Download}`}
                         className={`${styles.item} ${styles.download}`}
                         activeClassName={styles.active}

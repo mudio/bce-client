@@ -11,9 +11,8 @@ import {hashHistory} from 'react-router';
 import React, {Component, PropTypes} from 'react';
 
 import styles from './Login.css';
-import {REGION_BJ} from '../utils/Region';
-import GlobalConfig from '../../main/ConfigManager';
 import SystemBar from './Common/SystemBar';
+import GlobalConfig from '../../main/ConfigManager';
 
 const VALID_AUTH = 'VALID_AUTH';
 const INVALID_PIN = 'INVALID_PIN';
@@ -42,7 +41,7 @@ export default class Login extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.auth.isAuth && !this.props.auth.isAuth) {
-            hashHistory.push(`/region/${REGION_BJ}`);
+            hashHistory.push('/region');
         }
     }
 
@@ -113,7 +112,7 @@ export default class Login extends Component {
         const pin = this.refs.pin.value.trim();
         if (auth.isAuth && auth.pin) {
             if (pin === auth.pin) {
-                return hashHistory.push(`/region/${REGION_BJ}`);
+                return hashHistory.push('/region');
             }
             return this.setState({innerErrorType: INVALID_PIN});
         }

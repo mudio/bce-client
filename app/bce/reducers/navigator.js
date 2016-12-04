@@ -5,15 +5,17 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {UPDATE_NAV} from '../actions/window';
+import {UPDATE_NAV} from '../actions/explorer';
 import {REGION_BJ} from '../utils/Region';
 
-const defalutState = {region: REGION_BJ, bucket: '', folder: ''};
+const defalutState = {region: REGION_BJ, bucket: '', prefix: ''};
 
-export default function region(state = defalutState, action) {
-    switch (action.type) {
+export default function navigator(state = defalutState, action) {
+    const {type, region, bucket, prefix} = action;
+
+    switch (type) {
     case UPDATE_NAV:
-        return Object.assign({}, state, action.nav);
+        return Object.assign({}, state, {region, bucket, prefix});
     default:
         return state;
     }

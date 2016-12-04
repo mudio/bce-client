@@ -11,7 +11,6 @@ import {remote} from 'electron';
 import React, {Component, PropTypes} from 'react';
 
 import Url from './Url';
-import Tool from './Tool';
 import Window from './Window';
 import styles from './Explorer.css';
 import SideBar from '../App/SideBar';
@@ -21,34 +20,27 @@ import {
     MENU_DOWNLOAD_COMMAND
 } from '../../actions/context';
 
-
-const ICON_MODEL = 'icon_model';
-const LIST_MODEL = 'list_model';
+import {redirect, trash} from '../../actions/explorer';
+import {createDownloadTask} from '../../actions/downloader';
 
 export default class Explorer extends Component {
     static propTypes = {
         nav: PropTypes.shape({
             region: PropTypes.string.isRequired,
             bucket: PropTypes.string,
-            folder: PropTypes.string
+            prefix: PropTypes.string
         }),
-        params: React.PropTypes.shape({
-            region: React.PropTypes.string
-        }),
-        updateNavigator: PropTypes.func.isRequired,
-        download: PropTypes.func.isRequired,
-        trash: PropTypes.func.isRequired,
+        dispatch: PropTypes.func.isRequired
     };
 
     componentDidMount() {
-        const {updateNavigator} = this.props;
-        updateNavigator({region: this.props.params.region});
+        const {dispatch, nav} = this.props;
+        dispatch(redirect(nav.region, nav.bucket, nav.prefix));
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.params.region !== this.props.params.region) {
-            const {updateNavigator} = nextProps;
-            updateNavigator({region: nextProps.params.region});
+        if (nextProps.nav.region !== this.props.nav.region) {
+            redirect(nextProps.nav.region);
         }
     }
 
@@ -72,7 +64,9 @@ export default class Explorer extends Component {
             return;
         }
         // 不支持选择多个文件夹，所以只取第一个
-        this.props.download(region, bucketName, prefix, keys, path[0]);
+        this.props.dispatch(
+            createDownloadTask(region, bucketName, prefix, keys, path[0])
+        );
     }
 
     _trash(region, bucketName, prefix, keys) {
@@ -87,22 +81,24 @@ export default class Explorer extends Component {
         );
 
         if (comfirmTrash) {
-            return this.props.trash(region, bucketName, prefix, keys);
+            this.props.dispatch(
+                trash(region, bucketName, prefix, keys)
+            );
         }
     }
 
     render() {
-        const {nav, updateNavigator} = this.props;
+        const {nav, dispatch} = this.props;
 
         return (
             <div className={styles.container}>
                 <SideBar />
                 <div className={styles.body}>
-                    <Url nav={nav} updateNavigator={updateNavigator} />
-                    <Tool models={[ICON_MODEL, LIST_MODEL]} />
+                    <Url redirect={(...args) => dispatch(redirect(...args))} />
                     <Window nav={nav}
-                        commands={[MENU_DOWNLOAD_COMMAND, MENU_TRASH_COMMAND]}
                         onCommand={(...args) => this._onCommand(...args)}
+                        redirect={(...args) => dispatch(redirect(...args))}
+                        commands={[MENU_DOWNLOAD_COMMAND, MENU_TRASH_COMMAND]}
                     />
                 </div>
             </div>
