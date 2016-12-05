@@ -14,7 +14,7 @@ import {DownloadStatus} from '../utils/TransferStatus';
 function mapStateToProps(state) {
     return {
         category: TransCategory.Download,
-        uploads: state.downloads.filter(task => task.status !== DownloadStatus.Finish)
+        downloads: state.downloads.filter(task => task.status !== DownloadStatus.Finish)
     };
 }
 

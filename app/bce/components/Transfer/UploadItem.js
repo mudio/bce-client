@@ -177,7 +177,8 @@ export default class UploadItem extends Component {
         const trash = () => {
             const hidden = status !== UploadStatus.Error
                 && status !== UploadStatus.Finish
-                && status !== UploadStatus.Suspended;
+                && status !== UploadStatus.Suspended
+                && status !== UploadStatus.Suspending;
 
             const className = classnames(
                 'fa', 'fa-trash', 'fa-fw', styles.trash,

@@ -135,28 +135,49 @@ export default class DownloadItem extends Component {
         const {name, basedir, status} = this.props;
         const localDir = path.join(basedir, name);
 
-        const customOperation = () => {
-            switch (status) {
-            case DownloadStatus.Error:
-                return (<i className="fa fa-wrench fa-fw" title="修复任务" onClick={() => this._onRepair()} />);
-            case DownloadStatus.Suspend:
-                return (<i className="fa fa-play fa-fw" title="开始任务" onClick={() => this._onStart()} />);
-            case DownloadStatus.Running:
-            case DownloadStatus.Waiting:
-                return (<i className="fa fa-pause fa-fw" title="暂停任务" />);
-            case DownloadStatus.Finish:
-                return (
-                    <i className="fa fa-folder-open" title="打开目录" onClick={() => shell.showItemInFolder(localDir)} />
-                );
-            default:
-                return null;
-            }
+        const start = () => {
+            const className = classnames(
+                'fa', 'fa-play', 'fa-fw',
+                {[styles.hidden]: status !== DownloadStatus.Error && status !== DownloadStatus.Suspended}
+            );
+
+            return (
+                <i className={className} title="开始任务" onClick={() => this._onStart()} />
+            );
+        };
+
+        const pause = () => {
+            const className = classnames(
+                'fa', 'fa-pause', 'fa-fw',
+                {[styles.hidden]: status !== DownloadStatus.Running && status !== DownloadStatus.Waiting}
+            );
+
+            return (
+                <i className={className} title="暂停任务" onClick={() => this._onSuspend()} />
+            );
+        };
+
+        const trash = () => {
+            const hidden = status !== DownloadStatus.Error
+                && status !== DownloadStatus.Finish
+                && status !== DownloadStatus.Suspended;
+
+            const className = classnames(
+                'fa', 'fa-trash', 'fa-fw', styles.trash,
+                {[styles.hidden]: hidden}
+            );
+
+            return (
+                <i className={className} title="删除任务" onClick={() => this._onTrash()} />
+            );
         };
 
         return (
             <div className={styles.operation} >
-                {customOperation()}
-                <i className="fa fa-trash" title="删除任务" onClick={() => this._onTrash()} />
+                {start()}
+                {pause()}
+                <i className="fa fa-folder-open" title="打开目录" onClick={() => shell.showItemInFolder(localDir)} />
+                {trash()}
             </div>
         );
     }

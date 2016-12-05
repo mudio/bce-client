@@ -78,7 +78,7 @@ export default class Transfer extends Component {
             <div className={styles.content}>
                 {
                     uploads.map(item => (
-                        <DownloadItem key={item.uuid} {...item} dispatch={dispatch} />
+                        <UploadItem key={item.uuid} {...item} dispatch={dispatch} />
                     ))
                 }
                 {

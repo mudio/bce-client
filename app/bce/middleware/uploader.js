@@ -28,7 +28,9 @@ function startTask(store, taskIds = []) {
     }
     // 没有指定taskids
     return uploads.forEach(item => {
-        if (item.status === UploadStatus.Waiting) {
+        if (item.status === UploadStatus.Waiting
+            || item.status === UploadStatus.Error
+            || item.status === UploadStatus.Suspended) {
             _workflow.push(item);
         }
     });

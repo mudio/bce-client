@@ -12,6 +12,9 @@ import styles from './Header.css';
 import SystemBar from '../Common/SystemBar';
 import {TransCategory} from '../../utils/BosType';
 import {clearFinish} from '../../actions/transfer';
+import {uploadStart, uploadSuspend} from '../../actions/uploader';
+import {downloadStart, downloadSuspend} from '../../actions/downloader';
+
 
 export default class Header extends Component {
     static propTypes = {
@@ -24,6 +27,26 @@ export default class Header extends Component {
         dispatch(clearFinish());
     }
 
+    _onSuspned() {
+        const {dispatch, category} = this.props;
+
+        if (category === TransCategory.Upload) {
+            dispatch(uploadSuspend());
+        } else {
+            dispatch(downloadSuspend());
+        }
+    }
+
+    _onStart() {
+        const {dispatch, category} = this.props;
+
+        if (category === TransCategory.Upload) {
+            dispatch(uploadStart());
+        } else {
+            dispatch(downloadStart());
+        }
+    }
+
     renderCategory() {
         const {category} = this.props;
 
@@ -32,11 +55,15 @@ export default class Header extends Component {
         case TransCategory.Download:
             return (
                 <div className={styles.body}>
-                    <div className={classnames(styles.btn, styles.start)} >
+                    <div className={classnames(styles.btn, styles.start)}
+                        onClick={() => this._onStart()}
+                    >
                         <i className="fa fa-play fa-fw" title="开始全部" />
                         开始全部
                     </div>
-                    <div className={classnames(styles.btn, styles.pause)} >
+                    <div className={classnames(styles.btn, styles.pause)}
+                        onClick={() => this._onSuspned()}
+                    >
                         <i className="fa fa-pause fa-fw" title="暂停全部" />
                         暂停全部
                     </div>

@@ -11,7 +11,6 @@ export const UploadStatus = {
     Staring: 'upload_staring',
     Waiting: 'upload_waiting',
     Running: 'upload_running',
-    Suspend: 'upload_suspend',
     Removing: 'upload_removing',
     Indexing: 'upload_indexing',
     Unstarted: 'upload_unstarted',
@@ -21,7 +20,7 @@ export const UploadStatus = {
 
 const uploadStatusTextMap = {
     [UploadStatus.Error]: '错误',
-    [UploadStatus.Finish]: '已完成',
+    [UploadStatus.Finish]: '上传完成',
     [UploadStatus.Staring]: '启动中',
     [UploadStatus.Waiting]: '等待中',
     [UploadStatus.Running]: '运行中',

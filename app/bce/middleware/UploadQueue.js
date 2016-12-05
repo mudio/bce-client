@@ -37,8 +37,10 @@ export default class UploadQueue extends EventEmitter {
         // 设置事件触发器
         this.dispatch = window.globalStore.dispatch;
         // 起始状态必须为Waiting
-        if (this._task.status !== UploadStatus.Waiting) {
-            throw new TypeError(`Upload task = ${task.uuid} status must be Waiting!`);
+        if (this._task.status !== UploadStatus.Waiting
+            && this._task.status !== UploadStatus.Error
+            && this._task.status !== UploadStatus.Suspended) {
+            throw new TypeError(`Upload task = ${task.uuid} status must be Waiting、Suspended、Error!`);
         }
 
         // 初始化队列
@@ -95,6 +97,10 @@ export default class UploadQueue extends EventEmitter {
             );
             // 完成任务
             this.dispatch({uuid, metaKey, type: UploadNotify.Finish});
+        }
+
+        if (this._queue.paused) {
+            this.emit('paused');
         }
     }
 
@@ -276,12 +282,8 @@ export default class UploadQueue extends EventEmitter {
     }
 
     _error() {
-        if (this._queue.paused && this._queue.running() === 0) {
-            const {uuid} = this._task;
-
-            this.emit('suspend');
-            // 任务已暂停
-            this.dispatch({taskId: uuid, type: UploadNotify.Suspended});
+        if (this._queue.paused) {
+            this.emit('paused');
         } else {
             this.emit('error');
         }
@@ -289,7 +291,22 @@ export default class UploadQueue extends EventEmitter {
 
     // 挂起任务
     suspend() {
+        const {uuid} = this._task;
         // 暂停队列，不在提交新任务
         this._queue.pause();
+        // 未完成任务数量
+        let leftWorkerCount = this._queue.running();
+
+        this.on('paused', () => {
+            leftWorkerCount -= 1;
+            if (leftWorkerCount <= 0) {
+                this.emit('suspend');
+                // 任务已暂停
+                this.dispatch({taskId: uuid, type: UploadNotify.Suspended});
+                // 释放资源
+                this._queue.kill();
+                delete this._queue;
+            }
+        });
     }
 }

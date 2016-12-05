@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import _ from 'lodash';
 import async from 'async';
 import {EventEmitter} from 'events';
 
@@ -49,16 +50,22 @@ export default class WorkFlow extends EventEmitter {
     }
 
     suspend(taskIds = []) {
-        taskIds.forEach(id => {
-            const queue = this._handle[id];
+        if (taskIds.length > 0) {
+            taskIds.forEach(id => {
+                const queue = this._handle[id];
 
-            if (queue) {
-                queue.suspend();
+                if (queue) {
+                    queue.suspend();
 
-                delete this._handle[id];
-            } else {
-                error('Attempt to suspend invalid task id = %s', id);
-            }
-        });
+                    delete this._handle[id];
+                } else {
+                    error('Attempt to suspend invalid task id = %s', id);
+                }
+            });
+        } else {
+            _.forEach(this._handle, queue => queue.suspend());
+
+            this._handle = {};
+        }
     }
 }

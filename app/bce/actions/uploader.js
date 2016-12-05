@@ -18,7 +18,7 @@ import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 export function uploadStart(taskIds = []) {
     return {
         [UploadCommandType]: {
-            command: UploadNotify.Start,   // 开始任务
+            command: UploadNotify.Start,    // 开始任务
             taskIds                         // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
     };

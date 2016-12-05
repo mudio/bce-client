@@ -23,6 +23,7 @@
     height: inherit;
     border-radius: 4px;
     background: #2eacfc;
+    transition: width .5s;
 }
 
 .loader.error {
@@ -88,4 +89,8 @@
 
 .operation i:last-child:hover {
     color: rgba(255, 49, 34, 0.5);
+}
+
+.operation .hidden {
+    display: none;
 }
