@@ -175,12 +175,19 @@ class Url extends Component {
         const {redirect, region} = this.props;
         const {value, history} = this.state;
         const {bucket, prefix = ''} = this._format(value);
-        const prefixs = prefix.split('/');
+        let prefixs = prefix.split('/');
 
         this.setState({history: [{region, bucket, prefix}, ...history]});
 
         if (prefixs.length >= 2) {
-            return redirect(region, bucket, prefixs.slice(0, prefixs.length - 2).join('/'));
+            prefixs = prefixs.slice(0, prefixs.length - 2);
+
+            if (prefixs.length === 0) {
+                return redirect(region, bucket, '');
+            }
+
+            prefixs.push('');
+            return redirect(region, bucket, prefixs.join('/'));
         }
 
         redirect(region);
