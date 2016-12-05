@@ -10,6 +10,7 @@ import React, {Component, PropTypes} from 'react';
 
 import styles from './Header.css';
 import SystemBar from '../Common/SystemBar';
+import {TransCategory} from '../../utils/BosType';
 import {clearFinish} from '../../actions/transfer';
 
 export default class Header extends Component {
@@ -19,13 +20,17 @@ export default class Header extends Component {
     };
 
     _onClearFinish() {
-        const {dispatch, category} = this.props;
-        dispatch(clearFinish(category));
+        const {dispatch} = this.props;
+        dispatch(clearFinish());
     }
 
-    render() {
-        return (
-            <div className={styles.container}>
+    renderCategory() {
+        const {category} = this.props;
+
+        switch (category) {
+        case TransCategory.Upload:
+        case TransCategory.Download:
+            return (
                 <div className={styles.body}>
                     <div className={classnames(styles.btn, styles.start)} >
                         <i className="fa fa-play fa-fw" title="开始全部" />
@@ -35,6 +40,11 @@ export default class Header extends Component {
                         <i className="fa fa-pause fa-fw" title="暂停全部" />
                         暂停全部
                     </div>
+                </div>
+            );
+        case TransCategory.Complete:
+            return (
+                <div className={styles.body}>
                     <div className={classnames(styles.btn, styles.clear)}
                         onClick={() => this._onClearFinish()}
                     >
@@ -42,6 +52,15 @@ export default class Header extends Component {
                         清除已完成
                     </div>
                 </div>
+            );
+        default:
+            return null;
+        }
+    }
+    render() {
+        return (
+            <div className={styles.container}>
+                {this.renderCategory()}
                 <SystemBar />
             </div>
         );

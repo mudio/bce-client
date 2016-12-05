@@ -207,8 +207,8 @@ class Url extends Component {
                 </div>
                 <div className={styles.url}>
                     <span className={styles.region}>
-                        <i className="fa fa-anchor fa-fw" />
                         {getLocalText(region)}
+                        <i className="fa fa-caret-down fa-fw" />
                     </span>
                     <input className={styles.input}
                         value={value}

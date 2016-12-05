@@ -66,7 +66,7 @@ class SideBar extends Component {
                         className={`${styles.item} ${styles.complete}`}
                         activeClassName={styles.active}
                     >
-                        <i className=" fa fa-check-circle-o" />
+                        <i className=" fa fa-check-square-o" />
                         传输完成
                         {
                             completeCount > 0 ? <span className={styles.badge}>{completeCount}</span> : ''

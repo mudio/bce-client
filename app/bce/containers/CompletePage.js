@@ -14,8 +14,8 @@ import {DownloadStatus, UploadStatus} from '../utils/TransferStatus';
 function mapStateToProps(state) {
     return {
         category: TransCategory.Complete,
-        uploads: state.uploads.filter(task => task.status !== UploadStatus.Finish),
-        downloads: state.downloads.filter(task => task.status !== DownloadStatus.Finish)
+        uploads: state.uploads.filter(task => task.status === UploadStatus.Finish),
+        downloads: state.downloads.filter(task => task.status === DownloadStatus.Finish)
     };
 }
 
