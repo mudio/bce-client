@@ -154,13 +154,12 @@ class Url extends Component {
     backward() {
         const {redirect, region} = this.props;
         const {value, history} = this.state;
-        const {bucket, prefix} = this._format(value);
+        const {bucket, prefix = ''} = this._format(value);
+        const prefixs = prefix.split('/');
 
         this.setState({history: [{region, bucket, prefix}, ...history]});
 
-        if (prefix) {
-            // 返回上一级
-            const prefixs = prefix.split('/');
+        if (prefixs.length >= 2) {
             return redirect(region, bucket, prefixs.slice(0, prefixs.length - 2).join('/'));
         }
 

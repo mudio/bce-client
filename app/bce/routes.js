@@ -7,16 +7,22 @@
 
 import React from 'react';
 import {Route, IndexRoute} from 'react-router';
+
 import App from './containers/App';
-import ExplorerPage from './containers/ExplorerPage';
 import LoginPage from './containers/LoginPage';
-import TransferPage from './containers/TransferPage';
+import UploadPage from './containers/UploadPage';
+import DownloadPage from './containers/DownloadPage';
+import CompletePage from './containers/CompletePage';
+import ExplorerPage from './containers/ExplorerPage';
+
 
 export default (
     <Route path="/" component={App}>
         <IndexRoute component={LoginPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/region" component={ExplorerPage} />
-        <Route path="/transfer/:transType" component={TransferPage} />
+        <Route path="/upload" component={UploadPage} />
+        <Route path="/download" component={DownloadPage} />
+        <Route path="/complete" component={CompletePage} />
     </Route>
 );

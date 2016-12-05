@@ -15,12 +15,12 @@ import {clearFinish} from '../../actions/transfer';
 export default class Header extends Component {
     static propTypes = {
         dispatch: PropTypes.func.isRequired,
-        transType: PropTypes.string.isRequired
+        category: PropTypes.string.isRequired
     };
 
     _onClearFinish() {
-        const {dispatch, transType} = this.props;
-        dispatch(clearFinish(transType));
+        const {dispatch, category} = this.props;
+        dispatch(clearFinish(category));
     }
 
     render() {

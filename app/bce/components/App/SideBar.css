@@ -107,3 +107,18 @@
 .tool>a:hover {
     color: #2eacfc;
 }
+
+.complete:before {
+    content:  '';
+    display: none;
+}
+
+.complete i {
+    display: flex;
+    width: 23px;
+    height: 20px;
+    font-size: 20px;
+    margin-right: 10px;
+    align-items: center;
+    justify-content: center;
+}

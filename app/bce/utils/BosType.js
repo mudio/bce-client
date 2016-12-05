@@ -16,5 +16,6 @@ export const TransType = {
 
 export const TransCategory = {
     Upload: 'Upload',
-    Download: 'Download'
+    Download: 'Download',
+    Complete: 'Complete'
 };

@@ -14,17 +14,17 @@ import React, {Component, PropTypes} from 'react';
 import Version from './Version';
 import styles from './SideBar.css';
 import BrowserLink from '../Common/BrowserLink';
-import {TransCategory} from '../../utils/BosType';
 import {UploadStatus, DownloadStatus} from '../../utils/TransferStatus';
 
 class SideBar extends Component {
     static propTypes = {
         uploadCount: PropTypes.number.isRequired,
-        donwloadCount: PropTypes.number.isRequired
+        downloadCount: PropTypes.number.isRequired,
+        completeCount: PropTypes.number.isRequired
     };
 
     render() {
-        const {uploadCount, donwloadCount} = this.props;
+        const {uploadCount, downloadCount, completeCount} = this.props;
 
         return (
             <div className={styles.container}>
@@ -38,25 +38,38 @@ class SideBar extends Component {
                     </svg>
                 </div>
                 <div className={styles.body}>
-                    <Link to={'/region'} className={`${styles.item} ${styles.region}`} activeClassName={styles.active} >
-                        所有文件
+                    <Link to={'/region'}
+                        className={`${styles.item} ${styles.region}`}
+                        activeClassName={styles.active}
+                    >
+                        全部文件
                     </Link>
-                    <Link to={`/transfer/${TransCategory.Download}`}
+                    <Link to={'/download'}
                         className={`${styles.item} ${styles.download}`}
                         activeClassName={styles.active}
                     >
                         下载队列
                         {
-                            donwloadCount > 0 ? <span className={styles.badge}>{donwloadCount}</span> : ''
+                            downloadCount > 0 ? <span className={styles.badge}>{downloadCount}</span> : ''
                         }
                     </Link>
-                    <Link to={`/transfer/${TransCategory.Upload}`}
+                    <Link to={'/upload'}
                         className={`${styles.item} ${styles.upload}`}
                         activeClassName={styles.active}
                     >
                         上传队列
                         {
                             uploadCount > 0 ? <span className={styles.badge}>{uploadCount}</span> : ''
+                        }
+                    </Link>
+                    <Link to={'/complete'}
+                        className={`${styles.item} ${styles.complete}`}
+                        activeClassName={styles.active}
+                    >
+                        <i className=" fa fa-check-circle-o" />
+                        传输完成
+                        {
+                            completeCount > 0 ? <span className={styles.badge}>{completeCount}</span> : ''
                         }
                     </Link>
                 </div>
@@ -81,13 +94,16 @@ class SideBar extends Component {
 }
 
 function mapStateToProps(state) {
-    const uploadCount = state.uploads.filter(item => item.status !== UploadStatus.Finish).length;
-    const donwloadCount = state.downloads.filter(item => item.status !== DownloadStatus.Finish).length;
+    const {uploads, downloads, routing} = state;
+
+    const uploadCount = uploads.filter(item => item.status !== UploadStatus.Finish).length;
+    const downloadCount = downloads.filter(item => item.status !== DownloadStatus.Finish).length;
 
     return {
+        routing,
         uploadCount,
-        donwloadCount,
-        routing: state.routing
+        downloadCount,
+        completeCount: uploads.length - uploadCount + downloads.length - downloadCount // eslint-disable-line
     };
 }
 
