@@ -70,9 +70,44 @@
     color: #fff;
     cursor: pointer;
     line-height: 22px;
+    position: relative;
     align-items: center;
     background: #2eacfc;
     padding: 0 5px 0 10px;
+}
+
+.range {
+    position: absolute;
+    left: 0;
+    top: 28px;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    display: none;
+    color: #8692b2;
+    list-style: none;
+    background: #fff;
+    width: calc(100% - 2px);
+    border: 1px solid #2eacfc;
+}
+
+.range li {
+    display: flex;
+    flex: auto;
+    height: 28px;
+    padding: 0 5px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in;
+}
+
+.range li:hover {
+    background: #deeff5;
+}
+
+.region:hover .range {
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 .match {

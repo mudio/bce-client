@@ -22,4 +22,4 @@ export function getLocalText(region) {
     }
 }
 
-export const regions = [REGION_BJ, REGION_GZ];
+export const regions = [REGION_BJ, REGION_GZ, REGION_HK];

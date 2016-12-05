@@ -14,6 +14,10 @@ import styles from './Url.css';
 import SystemBar from '../Common/SystemBar';
 import {getRegionClient} from '../../api/client';
 import {getLocalText} from '../../utils/Region';
+import GlobalConfig from '../../../main/ConfigManager';
+
+const endpoint = GlobalConfig.get('endpoint');
+const supportRegions = Object.keys(endpoint);
 
 class Url extends Component {
     static propTypes = {
@@ -144,6 +148,14 @@ class Url extends Component {
         }
     }
 
+    _selectReiong(selectRegion) {
+        const {region, redirect} = this.props;
+
+        if (region !== selectRegion) {
+            redirect(selectRegion);
+        }
+    }
+
     forward() {
         const {redirect} = this.props;
         const {region, bucket, prefix} = this.state.history.pop();
@@ -209,6 +221,13 @@ class Url extends Component {
                     <span className={styles.region}>
                         {getLocalText(region)}
                         <i className="fa fa-caret-down fa-fw" />
+                        <ul className={styles.range} >
+                            {
+                                supportRegions.map(
+                                    (r, i) => <li key={i} onClick={() => this._selectReiong(r)} >{getLocalText(r)}</li>
+                                )
+                            }
+                        </ul>
                     </span>
                     <input className={styles.input}
                         value={value}
