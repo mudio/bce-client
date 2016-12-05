@@ -127,7 +127,12 @@
 
 .match li {
     padding: 0 5px;
+    cursor: pointer;
     line-height: 20px;
+}
+
+.match li:hover {
+    background: #deeff5;
 }
 
 .selected {

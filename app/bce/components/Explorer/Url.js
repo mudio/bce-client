@@ -148,11 +148,19 @@ class Url extends Component {
         }
     }
 
-    _selectReiong(selectRegion) {
+    _selectRegion(selectRegion) {
         const {region, redirect} = this.props;
 
         if (region !== selectRegion) {
             redirect(selectRegion);
+        }
+    }
+
+    _selectMatched(selectIndex) {
+        const {records, index} = this.state;
+
+        if (selectIndex !== index) {
+            this.setState({value: records[selectIndex]});
         }
     }
 
@@ -189,7 +197,9 @@ class Url extends Component {
                             const klass = classnames({[styles.selected]: index === i});
 
                             return (
-                                <li key={i} className={klass}>{r}</li>
+                                <li key={i} className={klass} onMouseEnter={() => this._selectMatched(i)} >
+                                    {r}
+                                </li>
                             );
                         })
                     }
@@ -223,15 +233,16 @@ class Url extends Component {
                         <i className="fa fa-caret-down fa-fw" />
                         <ul className={styles.range} >
                             {
-                                supportRegions.map(
-                                    (r, i) => <li key={i} onClick={() => this._selectReiong(r)} >{getLocalText(r)}</li>
-                                )
+                                supportRegions.map((r, i) => (
+                                    <li key={i} onMouseDown={() => this._selectRegion(r)} >
+                                        {getLocalText(r)}
+                                    </li>
+                                ))
                             }
                         </ul>
                     </span>
                     <input className={styles.input}
                         value={value}
-
                         onBlur={() => this._onBlur()}
                         onChange={evt => this._onChange(evt)}
                         onKeyDown={evt => this._onKeyDown(evt)}
