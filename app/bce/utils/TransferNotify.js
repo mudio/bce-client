@@ -34,5 +34,7 @@ export const DownloadNotify = {
     Remove: 'download_notify_remove',
     Finish: 'download_notify_finish',
     Progress: 'download_notify_progress',
+    Suspended: 'download_notify_suspended',
+    Suspending: 'download_notify_suspending',
     ClearFinish: 'download_notify_clear_finish'
 };

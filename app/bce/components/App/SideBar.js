@@ -48,7 +48,7 @@ class SideBar extends Component {
                         className={`${styles.item} ${styles.download}`}
                         activeClassName={styles.active}
                     >
-                        下载队列
+                        正在下载
                         {
                             downloadCount > 0 ? <span className={styles.badge}>{downloadCount}</span> : ''
                         }
@@ -57,7 +57,7 @@ class SideBar extends Component {
                         className={`${styles.item} ${styles.upload}`}
                         activeClassName={styles.active}
                     >
-                        上传队列
+                        正在上传
                         {
                             uploadCount > 0 ? <span className={styles.badge}>{uploadCount}</span> : ''
                         }

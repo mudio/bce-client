@@ -83,7 +83,7 @@ export default class UploadQueue extends EventEmitter {
     _finally(err, metaKey, item) {
         const {uuid, region, bucket, prefix, name} = item;
 
-        if (err instanceof Error) {
+        if (err) {
             error(
                 'Failed Region = %s, Bucket = %s, Prefix = %s, Name = %s, Error = %s',
                 region, bucket, prefix, prefix, name, err.message

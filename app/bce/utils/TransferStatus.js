@@ -38,7 +38,9 @@ export const DownloadStatus = {
     Finish: 'download_finish',
     Waiting: 'download_waiting',
     Running: 'download_running',
-    Unstarted: 'download_unstarted'
+    Unstarted: 'download_unstarted',
+    Suspended: 'download_suspended',
+    Suspending: 'download_suspending'
 };
 
 const downloadStatusTextMap = {
@@ -47,7 +49,9 @@ const downloadStatusTextMap = {
     [DownloadStatus.Finish]: '下载完成',
     [DownloadStatus.Waiting]: '等待下载',
     [DownloadStatus.Running]: '下载中',
-    [DownloadStatus.Unstarted]: '未开始'
+    [DownloadStatus.Unstarted]: '未开始',
+    [DownloadStatus.Suspended]: '已暂停',
+    [DownloadStatus.Suspending]: '暂停中'
 };
 
 export function getText(code) {

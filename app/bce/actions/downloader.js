@@ -27,6 +27,15 @@ export function downloadRemove(taskIds = []) {
     };
 }
 
+export function downloadSuspend(taskIds = []) {
+    return {
+        [DownloadType]: {
+            command: DownloadNotify.Suspending,    // 删除任务
+            taskIds                            // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+        }
+    };
+}
+
 export function createDownloadTask(region, bucket, prefix, keys, basedir) {
     return dispatch => {
         const client = getRegionClient(region);

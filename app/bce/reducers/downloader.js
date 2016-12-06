@@ -73,6 +73,22 @@ export default function downloads(state = [], action) {
             return item;
         });
     }
+    case DownloadNotify.Suspending:
+        return state.map(item => {
+            if (action.taskIds.indexOf(item.uuid) > -1) {
+                return Object.assign(item, {status: DownloadStatus.Suspending});
+            }
+
+            return item;
+        });
+    case DownloadNotify.Suspended:
+        return state.map(item => {
+            if (action.taskId === item.uuid) {
+                return Object.assign(item, {status: DownloadStatus.Suspended});
+            }
+
+            return item;
+        });
     case DownloadNotify.Finish: {
         return state.map(item => {
             if (item.uuid === action.uuid) {

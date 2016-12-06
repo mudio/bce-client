@@ -12,7 +12,7 @@ import React, {Component, PropTypes} from 'react';
 
 import styles from './DownloadItem.css';
 import {getText, DownloadStatus} from '../../utils/TransferStatus';
-import {downloadRemove} from '../../actions/downloader';
+import {downloadStart, downloadRemove, downloadSuspend} from '../../actions/downloader';
 
 const {shell} = electron;
 
@@ -128,6 +128,24 @@ export default class DownloadItem extends Component {
 
         if (comfirmTrash) {
             dispatch(downloadRemove([uuid]));
+        }
+    }
+
+    _onSuspend() {
+        const {uuid, status, dispatch} = this.props;
+
+        if (status === DownloadStatus.Running
+            || status === DownloadStatus.Waiting) {
+            dispatch(downloadSuspend([uuid]));
+        }
+    }
+
+    _onStart() {
+        const {uuid, status, dispatch} = this.props;
+
+        if (status === DownloadStatus.Suspended
+            || status === DownloadStatus.Error) {
+            dispatch(downloadStart([uuid]));
         }
     }
 

@@ -39,7 +39,9 @@ export default class DownloadQueue extends EventEmitter {
         // 设置事件触发器
         this.dispatch = window.globalStore.dispatch;
         // 起始状态必须为Waiting
-        if (this._task.status !== DownloadStatus.Waiting) {
+        if (this._task.status !== DownloadStatus.Waiting
+            && this._task.status !== DownloadStatus.Error
+            && this._task.status !== DownloadStatus.Suspended) {
             throw new TypeError(`Download Task = ${task.uuid} status must be Waiting!`);
         }
 
@@ -50,7 +52,7 @@ export default class DownloadQueue extends EventEmitter {
         // 事件绑定
         this._queue.empty = () => this.emit('empty');
         this._queue.drain = () => this.emit('drain');
-        this._queue.error = () => this.emit('error');
+        this._queue.error = err => this._error(err);
         this._queue.saturated = () => this.emit('saturated');
         this._queue.unsaturated = () => this.emit('unsaturated');
         // 等待任务放入队列中
@@ -98,6 +100,10 @@ export default class DownloadQueue extends EventEmitter {
             // 完成任务
             this.dispatch({uuid, metaKey, type: DownloadNotify.Finish});
         }
+
+        if (this._queue.paused) {
+            this.emit('paused');
+        }
     }
 
     _downloadFile(uuid, region, bucket, object, localDir, position) {
@@ -106,7 +112,8 @@ export default class DownloadQueue extends EventEmitter {
 
         // 阻止对asar文件进行处理
         process.noAsar = true;
-        const outputStream = fs.createWriteStream(localDir);
+        // 追加文件模式
+        const outputStream = fs.createWriteStream(localDir, {flags: 'a'});
         process.noAsar = false;
 
         const ranges = [];
@@ -134,7 +141,11 @@ export default class DownloadQueue extends EventEmitter {
                         // 通知进度
                         this.dispatch({uuid, increaseSize: res.body.length, type: DownloadNotify.Progress});
                         // 完成map
-                        callback(null, res.body.length);
+                        if (this._queue.paused) {
+                            callback(new Error('suspend'));
+                        } else {
+                            callback(null, res.body.length);
+                        }
                     },
                     callback
                 );
@@ -197,5 +208,30 @@ export default class DownloadQueue extends EventEmitter {
                 uuid, region, bucket, object, localPath, {start: offsetSize, totalSize}
             )
         ).then(done, done);
+    }
+
+    _error(err) {
+        error('Download Error = %s', err.message);
+    }
+
+    // 挂起任务
+    suspend() {
+        const {uuid} = this._task;
+        // 暂停队列，不在提交新任务
+        this._queue.pause();
+        // 未完成任务数量
+        let leftWorkerCount = this._queue.running();
+
+        this.on('paused', () => {
+            leftWorkerCount -= 1;
+            if (leftWorkerCount <= 0) {
+                this.emit('suspend');
+                // 任务已暂停
+                this.dispatch({taskId: uuid, type: DownloadNotify.Suspended});
+                // 释放资源
+                this._queue.kill();
+                delete this._queue;
+            }
+        });
     }
 }

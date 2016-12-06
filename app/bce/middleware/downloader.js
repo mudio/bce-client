@@ -28,10 +28,20 @@ function startTask(store, taskIds = []) {
     }
     // 没有指定taskids
     return downloads.forEach(item => {
-        if (item.status === DownloadStatus.Waiting) {
+        if (item.status === DownloadStatus.Waiting
+            || item.status === DownloadStatus.Error
+            || item.status === DownloadStatus.Suspended) {
             _workflow.push(item);
         }
     });
+}
+
+function suspendTask(store, taskIds = []) {
+    const {dispatch} = store;
+
+    _workflow.suspend(taskIds);
+
+    return dispatch({type: DownloadNotify.Suspending, taskIds});
 }
 
 export default function download(store) {
@@ -47,6 +57,8 @@ export default function download(store) {
         switch (command) {
         case DownloadNotify.Start:
             return startTask(store, taskIds);
+        case DownloadNotify.Suspending:
+            return suspendTask(store, taskIds);
         default:
             warn('Not Expected Command: %s', command);
             return next({type: command, taskIds});
