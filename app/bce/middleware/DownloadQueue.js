@@ -107,58 +107,82 @@ export default class DownloadQueue extends EventEmitter {
     }
 
     _downloadFile(uuid, region, bucket, object, localDir, position) {
-        const {start, totalSize} = position;
+        const {totalSize} = position;
         const client = getRegionClient(region);
 
-        // 阻止对asar文件进行处理
-        process.noAsar = true;
-        // 追加文件模式
-        const outputStream = fs.createWriteStream(localDir, {flags: 'a'});
-        process.noAsar = false;
+        const _promise = new Promise((resolve, reject) => {
+            fs.stat(localDir, (err, stat) => {
+                let size = 0;
+                let option = {};
 
-        const ranges = [];
-        let offset = start;
-        let leftSize = totalSize - start;
-
-        while (leftSize > 0) {
-            const partSize = Math.min(leftSize, DownloadConfig.PartSize);
-
-            ranges.push(`${offset}-${offset + partSize - 1}`); // eslint-disable-line no-mixed-operators
-
-            leftSize -= partSize;
-            offset += partSize;
-        }
-
-        return new Promise((resolve, reject) => {
-            // 同步下载
-            async.mapSeries(ranges, (range, callback) => {
-                client.getObject(bucket, object, range).then(
-                    res => {
-                        // 写文件
-                        outputStream.write(res.body);
-                        // 显示调试信息
-                        info('Task uuid = %s range = %s bufferSize = %s', uuid, range, res.body.length);
-                        // 通知进度
-                        this.dispatch({uuid, increaseSize: res.body.length, type: DownloadNotify.Progress});
-                        // 完成map
-                        if (this._queue.paused) {
-                            callback(new Error('suspend'));
-                        } else {
-                            callback(null, res.body.length);
-                        }
-                    },
-                    callback
-                );
-            }, err => {
-                outputStream.end();
-
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
+                if (err && err.code !== 'ENOENT') {
+                    return reject(err);
                 }
+
+                if (stat) {
+                    option = {flags: 'a'};
+                    size = stat.size;
+                }
+
+                // 阻止对asar文件进行处理
+                process.noAsar = true;
+                const outputStream = fs.createWriteStream(localDir, option);
+                process.noAsar = false;
+
+                return resolve({outputStream, start: size});
             });
         });
+
+        _promise.then(stat => new Promise(
+            (resolve, reject) => {
+                const {outputStream, start} = stat;
+                const ranges = [];
+                let offset = start;
+                let leftSize = totalSize - start;
+
+                while (leftSize > 0) {
+                    const partSize = Math.min(leftSize, DownloadConfig.PartSize);
+
+                    ranges.push(`${offset}-${offset + partSize - 1}`); // eslint-disable-line no-mixed-operators
+
+                    leftSize -= partSize;
+                    offset += partSize;
+                }
+
+                // 同步下载
+                async.mapSeries(ranges, (range, callback) => {
+                    client.getObject(bucket, object, range).then(
+                        res => outputStream.write(res.body, err => {
+                            if (!err) {
+                                // 显示调试信息
+                                info('Task uuid = %s range = %s bufferSize = %s', uuid, range, res.body.length);
+                                // 通知进度
+                                this.dispatch({uuid, increaseSize: res.body.length, type: DownloadNotify.Progress});
+                                // 完成map
+                                if (this._queue.paused) {
+                                    callback(new Error('suspend'));
+                                } else {
+                                    callback(null, res.body.length);
+                                }
+                            } else {
+                                callback(err);
+                            }
+                        }),
+                        callback
+                    );
+                }, err => {
+                    outputStream.end();
+
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            }
+        ));
+
+        return _promise;
     }
 
     _mkdir(dirName) {
