@@ -34,9 +34,9 @@
 
 .item:before {
     content: '';
-    width: 23px;
+    width: 22px;
     height: 20px;
-    margin-right: 10px;
+    margin-right: 11px;
     background: url(../../assets/icon.png) no-repeat;
 }
 
@@ -47,16 +47,14 @@
 }
 
 .region:before {
-    background-position: -1px center;
+    background-position: -171px center;
 }
 
 .region.active:before {
-    background-position: -23px center;
+    background-position: -192px center;
 }
 
 .download:before {
-    width: 22px;
-    margin-right: 11px;
     background-position: -87px center;
 }
 
@@ -65,13 +63,19 @@
 }
 
 .upload:before {
-    width: 22px;
-    margin-right: 11px;
     background-position: -45px center;
 }
 
 .upload.active:before {
     background-position: -66px center;
+}
+
+.complete:before {
+    background-position: -129px center;
+}
+
+.complete.active:before {
+    background-position: -150px center;
 }
 
 .badge {
@@ -106,19 +110,4 @@
 
 .tool>a:hover {
     color: #2eacfc;
-}
-
-.complete:before {
-    content:  '';
-    display: none;
-}
-
-.complete i {
-    display: flex;
-    width: 23px;
-    height: 20px;
-    font-size: 20px;
-    margin-right: 10px;
-    align-items: center;
-    justify-content: center;
 }

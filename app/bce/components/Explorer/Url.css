@@ -53,27 +53,25 @@
     flex: auto;
     outline: none;
     padding: 0 5px;
+    font-size: 12px;
     color: #8692b2;
-    border-left: none;
-    border-top: 1px solid #f3f5f9;
-    border-right: 1px solid #f3f5f9;
-    border-bottom: 1px solid #f3f5f9;
+    border: none;
+    border-left: 1px solid #f3f5f9;
 }
 
 .input:focus, .input:hover {
-    border-color: #2eacfc;
+    color: #444c63;
 }
 
 .region {
     display: inline-flex;
-    width: 40px;
-    color: #fff;
+    color: #444c63;
     cursor: pointer;
     line-height: 22px;
     position: relative;
     align-items: center;
-    background: #2eacfc;
-    padding: 0 5px 0 10px;
+    padding: 0 5px;
+    border-radius: 3px 3px 0 0;
 }
 
 .range {
@@ -83,12 +81,14 @@
     margin: 0;
     padding: 0;
     z-index: 10;
+    width: 100%;
     display: none;
-    color: #8692b2;
+    color: #fff;
     list-style: none;
-    background: #fff;
-    width: calc(100% - 2px);
-    border: 1px solid #2eacfc;
+    overflow: hidden;
+    background: #444c63;
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.3);
 }
 
 .range li {
@@ -96,13 +96,20 @@
     flex: auto;
     height: 28px;
     padding: 0 5px;
+    cursor: pointer;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease-in-out;
 }
 
 .range li:hover {
-    background: #deeff5;
+    color: #2eacfc;
+    background: #333b51;
+}
+
+.region:hover {
+    color: #fff;
+    background: #444c63;
 }
 
 .region:hover .range {
@@ -112,31 +119,33 @@
 
 .match {
     position: absolute;
-    top: 28px;
+    top: 40px;
     padding: 0;
     margin: 0;
-    left: 54px;
+    left: 65px;
     z-index: 10;
     list-style: none;
     overflow-y: auto;
     max-height: 200px;
     background: #fff;
-    width: calc(100% - 56px);
-    border-left: 1px solid #2eacfc;
-    border-right: 1px solid #2eacfc;
-    border-bottom: 1px solid #2eacfc;
+    width: calc(100% - 66px);
+    border-left: 1px solid #f3f5f9;
+    border-right: 1px solid #f3f5f9;
+    border-bottom: 1px solid #f3f5f9;
 }
 
 .match li {
-    padding: 0 5px;
+    padding: 0 10px;
     cursor: pointer;
-    line-height: 20px;
+    line-height: 30px;
 }
 
 .match li:hover {
-    background: #deeff5;
+    color: #444c63;
+    background: #f3f5f9;
 }
 
 .selected {
-    background: #deeff5;
+    color: #444c63;
+    background: #f3f5f9;
 }
