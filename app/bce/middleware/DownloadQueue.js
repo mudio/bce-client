@@ -231,7 +231,7 @@ export default class DownloadQueue extends EventEmitter {
             () => this._downloadFile(
                 uuid, region, bucket, object, localPath, {start: offsetSize, totalSize}
             )
-        ).then(done, done);
+        ).then(() => done(), done);
     }
 
     _error(err) {
