@@ -105,8 +105,17 @@ class Url extends Component {
 
     _onKeyDown(event) {
         if (event.key === 'Enter') {
+            const {value} = this.state;
+            const {region, redirect} = this.props;
+            const {bucket, prefix} = this._format(value);
+
+            this.setState({records: [], index: -1});
+
+            if (bucket !== this.props.bucket || prefix !== this.props.prefix) {
+                redirect(region, bucket, prefix);
+            }
+
             this.invokeQuery();
-            this._onBlur();
         } else if (event.key === 'ArrowUp') {
             let {index} = this.state;
             const {records} = this.state;
@@ -137,15 +146,16 @@ class Url extends Component {
     }
 
     _onBlur() {
-        const {value} = this.state;
-        const {region, redirect} = this.props;
-        const {bucket, prefix} = this._format(value);
+        const {bucket, prefix} = this.props;
+        let value = '';
 
-        this.setState({records: [], index: -1});
-
-        if (bucket !== this.props.bucket || prefix !== this.props.prefix) {
-            redirect(region, bucket, prefix);
+        if (bucket && !prefix) {
+            value = `${bucket}/`;
+        } else if (prefix) {
+            value = `${bucket}/${prefix}`;
         }
+
+        this.setState({records: [], index: -1, value});
     }
 
     _selectRegion(selectRegion) {
@@ -157,10 +167,12 @@ class Url extends Component {
     }
 
     _selectMatched(selectIndex) {
-        const {records, index} = this.state;
+        const {records} = this.state;
+        const {region, redirect} = this.props;
+        const {bucket, prefix} = this._format(records[selectIndex]);
 
-        if (selectIndex !== index) {
-            this.setState({value: records[selectIndex]});
+        if (this.props.bucket !== bucket || this.props.prefix !== prefix) {
+            redirect(region, bucket, prefix);
         }
     }
 
@@ -202,9 +214,8 @@ class Url extends Component {
                     {
                         records.map((r, i) => {
                             const klass = classnames({[styles.selected]: index === i});
-
                             return (
-                                <li key={i} className={klass} onMouseEnter={() => this._selectMatched(i)} >
+                                <li key={i} className={klass} onMouseDown={() => this._selectMatched(i)} >
                                     {r}
                                 </li>
                             );
@@ -242,7 +253,7 @@ class Url extends Component {
                         <ul className={styles.range} >
                             {
                                 supportRegions.map((r, i) => (
-                                    <li key={i} onMouseDown={() => this._selectRegion(r)} >
+                                    <li key={i} onClick={() => this._selectRegion(r)} >
                                         {getLocalText(r)}
                                     </li>
                                 ))
