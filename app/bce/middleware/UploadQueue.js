@@ -17,8 +17,8 @@ import {UploadNotify} from '../utils/TransferNotify';
 
 export default class UploadQueue extends EventEmitter {
     static TaskProperties = [
-        'uuid', 'name', 'basedir', 'region', 'bucket', 'prefix', 'status',
-        'waitingQueue', 'errorQueue', 'completeQueue'
+        'uuid', 'name', 'basedir', 'region', 'bucket',
+        'prefix', 'status', 'keymap'
     ];
 
     static MetaProperties = [
@@ -53,15 +53,18 @@ export default class UploadQueue extends EventEmitter {
         this._queue.error = () => this._error();
         this._queue.saturated = () => this.emit('saturated');
         this._queue.unsaturated = this.emit('unsaturated');
+        // 获取keymap
+        const {keymap} = task;
+        const {waitingQueue, errorQueue} = JSON.parse(localStorage.getItem(keymap.key));
         // 等待任务放入队列中
-        task.waitingQueue.forEach(
+        waitingQueue.forEach(
             metaKey => this._queue.push(
                 {metaKey, ...task},
                 err => this._finally(err, metaKey, task)
             )
         );
         // 错误任务放入队列中
-        task.errorQueue.forEach(
+        errorQueue.forEach(
             metaKey => this._queue.push(
                 {metaKey, ...task},
                 err => this._finally(err, metaKey, task)

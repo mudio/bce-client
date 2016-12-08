@@ -178,7 +178,8 @@ export default class DownloadItem extends Component {
         const trash = () => {
             const hidden = status !== DownloadStatus.Error
                 && status !== DownloadStatus.Finish
-                && status !== DownloadStatus.Suspended;
+                && status !== DownloadStatus.Suspended
+                && status !== DownloadStatus.Suspending;
 
             const className = classnames(
                 'fa', 'fa-trash', 'fa-fw', styles.trash,

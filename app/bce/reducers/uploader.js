@@ -10,7 +10,9 @@ import {UploadNotify} from '../utils/TransferNotify';
 import {UploadStatus} from '../utils/TransferStatus';
 
 /**
+ * -----------------------------------------------
  * upload task model
+ * -----------------------------------------------
  *  - id                    自增主键
  *  - name                  任务名称
  *  - category              file / directory
@@ -20,28 +22,33 @@ import {UploadStatus} from '../utils/TransferStatus';
  *  - region                地区
  *  - bucket                bucket
  *  - prefix                bos绝对路径
- *  - waitingQueue: [id]    等待队列
- *  - completeQueue: []     完成队列
- *  - errorQueue: []        错误对垒
+ *  - keymap
+ *      - key               keymap key
+ *      - waiting           等待任务数
+ *      - error             错误任务数
+ *      - complete          完成任务数
  * -----------------------------------------------
- *      - relative          bos相对路径
- *      - path              文件路径
- *      - totalSize         任务大小
- *      - offsetSize        已上传大小
- *      - uploadId          上传任务ID   // option
- *      - parts             分片集合     // option
- *          - partNumber    片id
- *          - eTag          片md5
- *      - finish            是否完成
- *      - error             错误信息
+ * localStorage keymap model
+ * -----------------------------------------------
+ * - waitingQueue           meta key集合
+ * - errorQueue             meta key集合
+ * - completeQueue          meta key集合
+ * -----------------------------------------------
+ * localStorage meta model
+ * -----------------------------------------------
+ * - relative               bos相对路径
+ * - path                   文件路径
+ * - totalSize              任务大小
+ * - offsetSize             已上传大小
+ * - uploadId               上传任务ID
+ * - finish                 是否完成
+ * - error                  错误信息
  */
 
 const defaultProperty = {
     totalSize: 0,
     offsetSize: 0,
-    waitingQueue: [],
-    completeQueue: [],
-    errorQueue: []
+    keymap: {waiting: 0, error: 0, complete: 0}
 };
 
 export default function uploads(state = [], action) {
@@ -61,7 +68,7 @@ export default function uploads(state = [], action) {
                 return Object.assign(item, {
                     totalSize: action.totalSize,
                     status: UploadStatus.Unstarted,
-                    waitingQueue: action.keys
+                    keymap: action.keymap
                 });
             }
             return item;
@@ -78,13 +85,23 @@ export default function uploads(state = [], action) {
     case UploadNotify.Launch:
         return state.map(item => {
             if (action.uuid === item.uuid) {
-                const errorQueue = [];
-                const waitingQueue = [...item.waitingQueue, ...item.errorQueue];
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
                 // Launch会把未完成、错误的重跑
+                queueMap.waitingQueue = [...queueMap.waitingQueue, ...queueMap.errorQueue];
+                queueMap.errorQueue = [];
+                // 保存配置
+                localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+                // 同步启动状态
                 return Object.assign(item, {
-                    errorQueue,
-                    waitingQueue,
-                    status: UploadStatus.Running
+                    status: UploadStatus.Running,
+                    keymap: {
+                        key: keymap.key,
+                        error: queueMap.errorQueue.length,
+                        waiting: queueMap.waitingQueue.length,
+                        complete: queueMap.completeQueue.length
+                    }
                 });
             }
 
@@ -121,15 +138,29 @@ export default function uploads(state = [], action) {
     case UploadNotify.Finish:
         return state.map(item => {
             if (item.uuid === action.uuid) {
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
+                // 子任务完成
                 if (action.metaKey) {
-                    const waitingQueue = item.waitingQueue.filter(key => key !== action.metaKey);
-                    const completeQueue = [action.metaKey, ...item.completeQueue];
-                    Object.assign(item, {waitingQueue, completeQueue});
+                    queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== action.metaKey);
+                    queueMap.completeQueue = [action.metaKey, ...queueMap.completeQueue];
                 }
-
-                if (item.waitingQueue.length === 0 && item.errorQueue.length === 0) {
+                // 全部任务完成
+                if (queueMap.waitingQueue.length === 0 && queueMap.errorQueue.length === 0) {
                     Object.assign(item, {status: UploadStatus.Finish, offsetSize: item.totalSize});
                 }
+                // 保存配置
+                localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+                // 同步启动状态
+                return Object.assign(item, {
+                    keymap: {
+                        key: keymap.key,
+                        error: queueMap.errorQueue.length,
+                        waiting: queueMap.waitingQueue.length,
+                        complete: queueMap.completeQueue.length
+                    }
+                });
             }
 
             return item;
@@ -139,13 +170,27 @@ export default function uploads(state = [], action) {
             const {uuid, metaKey, error} = action;
 
             if (item.uuid === uuid) {
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
+                // 子任务错误
                 if (metaKey) {
-                    const waitingQueue = item.waitingQueue.filter(key => key !== metaKey);
-                    const errorQueue = [metaKey, ...item.errorQueue];
-                    Object.assign(item, {waitingQueue, errorQueue});
+                    queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
+                    queueMap.errorQueue = [metaKey, ...queueMap.errorQueue];
                 }
-
-                Object.assign(item, {status: UploadStatus.Error, error});
+                // 保存配置
+                localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+                // 同步启动状态
+                return Object.assign(item, {
+                    error,
+                    status: UploadStatus.Error,
+                    keymap: {
+                        key: keymap.key,
+                        error: queueMap.errorQueue.length,
+                        waiting: queueMap.waitingQueue.length,
+                        complete: queueMap.completeQueue.length
+                    }
+                });
             }
 
             return item;
@@ -154,10 +199,16 @@ export default function uploads(state = [], action) {
     case UploadNotify.Remove: {
         return state.filter(item => {
             if (action.taskIds.indexOf(item.uuid) > -1) {
-                const {waitingQueue, completeQueue, errorQueue} = item;
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
+                const {waitingQueue, completeQueue, errorQueue} = queueMap;
+                // 删除子任务
                 errorQueue.forEach(key => localStorage.removeItem(key));
                 completeQueue.forEach(key => localStorage.removeItem(key));
                 waitingQueue.forEach(key => localStorage.removeItem(key));
+                // 删除keymap
+                localStorage.removeItem(keymap.key);
             }
 
             return action.taskIds.indexOf(item.uuid) === -1;
@@ -166,15 +217,19 @@ export default function uploads(state = [], action) {
     case UploadNotify.ClearFinish: {
         return state.filter(item => {
             if (item.status === UploadStatus.Finish) {
-                const {waitingQueue, completeQueue, errorQueue} = item;
-
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
+                const {waitingQueue, completeQueue, errorQueue} = queueMap;
+                // 删除子任务
                 if (waitingQueue.length > 0 || errorQueue.length > 0) {
                     errLogger('Invoke CleanrFinish error, WaitingQueue or ErrorQueue not empty');
                 }
-
                 errorQueue.forEach(key => localStorage.removeItem(key));
                 completeQueue.forEach(key => localStorage.removeItem(key));
                 waitingQueue.forEach(key => localStorage.removeItem(key));
+                // 删除keymap
+                localStorage.removeItem(keymap.key);
             }
 
             return item.status !== UploadStatus.Finish;

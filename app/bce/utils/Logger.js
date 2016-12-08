@@ -14,4 +14,3 @@ export const error = logger('bce-client:error');
 
 export const mainLogger = logger('bce-client:main');
 export const renderLogger = logger('bce-client:render');
-export const workerLogger = logger('bce-client:worker');

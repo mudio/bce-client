@@ -53,7 +53,6 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
 
             if (entry.isFile) {
                 entry.file(file => {
-                    const key = getUuid();
                     // 准备任务
                     dispatch({
                         uuid,
@@ -63,15 +62,30 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                         category: TransType.File,
                         region, bucket, prefix
                     });
+
                     // 存储文件信息
+                    const key = getUuid();
                     localStorage.setItem(key, JSON.stringify({
                         path: file.path,
                         relative: file.name,
                         totalSize: file.size,
                         finish: false
                     }));
+
+                    // 建立keymap
+                    const keymapId = getUuid();
+                    localStorage.setItem(keymapId, JSON.stringify({
+                        errorQueue: [],
+                        completeQueue: [],
+                        waitingQueue: [key]
+                    }));
+
                     // 建立一个新任务
-                    dispatch({type: UploadNotify.New, uuid, keys: [key], totalSize: file.size});
+                    dispatch({
+                        type: UploadNotify.New, uuid, totalSize: file.size,
+                        keymap: {key: keymapId, waiting: 1, error: 0, complete: 0}
+                    });
+
                     // 立即开始这个任务
                     dispatch(uploadStart([uuid]));
                 });
@@ -110,9 +124,23 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                     if (err) {
                         error('walk %s error = %s', entry.name, err.message);
                         dispatch({type: UploadNotify.Remove, uuid});
+                        return;
                     }
+
+                    // 建立keymap
+                    const keymapId = getUuid();
+                    localStorage.setItem(keymapId, JSON.stringify({
+                        errorQueue: [],
+                        completeQueue: [],
+                        waitingQueue: keys
+                    }));
+
                     // 建立一个新任务
-                    dispatch({type: UploadNotify.New, uuid, totalSize, keys});
+                    dispatch({
+                        type: UploadNotify.New, uuid, totalSize,
+                        keymap: {key: keymapId, waiting: keys.length, error: 0, complete: 0}
+                    });
+
                     // 立即开始这个任务
                     dispatch(uploadStart([uuid]));
                 });

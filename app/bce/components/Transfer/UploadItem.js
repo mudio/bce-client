@@ -29,9 +29,12 @@ export default class UploadItem extends Component {
         category: PropTypes.string.isRequired,
         totalSize: PropTypes.number.isRequired,
         offsetSize: PropTypes.number.isRequired,
-        errorQueue: PropTypes.array.isRequired,
-        waitingQueue: PropTypes.array.isRequired,
-        completeQueue: PropTypes.array.isRequired,
+        keymap: PropTypes.shape({
+            key: PropTypes.string,
+            error: PropTypes.number.isRequired,
+            waiting: PropTypes.number.isRequired,
+            complete: PropTypes.number.isRequired,
+        }),
         dispatch: PropTypes.func.isRequired
     };
 
@@ -75,12 +78,10 @@ export default class UploadItem extends Component {
 
     getStatus() {
         const {
+            keymap,
             status,
             totalSize,
             offsetSize = 0,
-            errorQueue,
-            waitingQueue,
-            completeQueue
         } = this.props;
         const progress = ~~(100 * offsetSize / totalSize); // eslint-disable-line
 
@@ -98,7 +99,7 @@ export default class UploadItem extends Component {
             );
         }
         case UploadStatus.Error: {
-            const errTip = `已完成任务：${completeQueue.length}个\n未完成任务：${waitingQueue.length}个\n运行错误数：${errorQueue.length}个`;
+            const errTip = `已完成任务：${keymap.complete}个\n未完成任务：${keymap.waiting}个\n运行错误数：${keymap.error}个`;
             return (
                 <div className={classnames(styles.status, styles.error)}>
                     <i className="fa fa-exclamation-triangle" title={errTip} />
