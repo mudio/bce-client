@@ -30,14 +30,13 @@
       "contents": [
         {
           "x": 400,
-          "y": 150,
+          "y": 225,
           "type": "link",
           "path": "/Applications"
         },
         {
-          "x": 130,
-          "y": 150,
-          "type": "file"
+          "x": 150,
+          "y": 230
         }
       ]
     }
