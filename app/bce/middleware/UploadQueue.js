@@ -13,7 +13,7 @@ import {UploadConfig} from '../config';
 import {error, info} from '../utils/Logger';
 import {getRegionClient} from '../api/client';
 import {UploadStatus} from '../utils/TransferStatus';
-import {UploadNotify} from '../utils/TransferNotify';
+import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 
 export default class UploadQueue extends EventEmitter {
     static TaskProperties = [
@@ -32,6 +32,8 @@ export default class UploadQueue extends EventEmitter {
         if (!this._checkProperties(task, UploadQueue.TaskProperties)) {
             throw new TypeError(`task ${task.uuid} must has properties: ${UploadQueue.TaskProperty.join('、')}`);
         }
+        // 暂停状态
+        this._suspend = false;
         // 保存任务
         this._task = task;
         // 设置事件触发器
@@ -84,27 +86,63 @@ export default class UploadQueue extends EventEmitter {
 
     // 通知任务状态变化
     _finally(err, metaKey, item) {
-        const {uuid, region, bucket, prefix, name} = item;
+        const {uuid, region, bucket, prefix, name, keymap} = item;
+        const queueMap = JSON.parse(localStorage.getItem(keymap.key));
 
         if (err) {
             error(
                 'Failed Region = %s, Bucket = %s, Prefix = %s, Name = %s, Error = %s',
                 region, bucket, prefix, prefix, name, err.message
             );
+
+            // 子任务错误
+            if (metaKey) {
+                queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
+                queueMap.errorQueue = [metaKey, ...queueMap.errorQueue];
+
+                Object.assign(keymap, {
+                    error: queueMap.errorQueue.length,
+                    waiting: queueMap.waitingQueue.length
+                });
+            }
+
+            // 保存配置
+            localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+
             // 通知任务有错误发生了
-            this.dispatch({uuid, type: UploadNotify.Error, error: err.message});
+            this.dispatch({uuid, keymap, error: err.message, type: UploadNotify.Error});
         } else {
             info(
                 'Finish Region = %s, Bucket = %s, Prefix = %s, Name = %s',
                 region, bucket, prefix, prefix, name
             );
-            // 完成任务
-            this.dispatch({uuid, metaKey, type: UploadNotify.Finish});
+
+            // 子任务完成
+            if (metaKey) {
+                queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
+                queueMap.completeQueue = [metaKey, ...queueMap.completeQueue];
+
+                Object.assign(keymap, {
+                    waiting: queueMap.waitingQueue.length,
+                    complete: queueMap.completeQueue.length
+                });
+            }
+
+            // 保存配置
+            localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+
+            // 全部任务完成
+            if (queueMap.waitingQueue.length === 0 && queueMap.errorQueue.length === 0) {
+                this.dispatch({uuid, keymap, type: UploadNotify.Finish});
+            } else {
+                // 同步下状态
+                this.dispatch({
+                    [UploadCommandType]: {uuid, keymap, command: UploadNotify.Progress}
+                });
+            }
         }
 
-        if (this._queue.paused) {
-            this.emit('paused');
-        }
+        this._checkPaused();
     }
 
     // 最多分片1000片，除了最后一片其他片大小相等且大于等于UploadConfig.PartSize
@@ -140,13 +178,13 @@ export default class UploadQueue extends EventEmitter {
         const client = getRegionClient(region);
 
         // 如果任务暂停了，就暂停上传分片
-        if (this._queue.paused) {
+        if (this._suspend) {
             info(
                 'Suspend uuid = %s, PartNumber = %s, Part = %s',
                 uuid, partNumber, JSON.stringify(part)
             );
 
-            return callback(new Error('Suspend'));
+            return callback(new Error('Upload Task Suspend!'));
         }
 
         info(
@@ -170,7 +208,9 @@ export default class UploadQueue extends EventEmitter {
                 callback(null, {eTag, partNumber, partSize});
 
                 // 通知分片进度
-                this.dispatch({uuid, type: UploadNotify.Progress, increaseSize: partSize});
+                this.dispatch({
+                    [UploadCommandType]: {uuid, increaseSize: partSize, command: UploadNotify.Progress}
+                });
             },
             callback
         );
@@ -204,7 +244,9 @@ export default class UploadQueue extends EventEmitter {
             return client.putObjectFromFile(bucket, object, path).then(
                 () => {
                     // 通知进度
-                    this.dispatch({uuid, type: UploadNotify.Progress, increaseSize: totalSize});
+                    this.dispatch({
+                        [UploadCommandType]: {uuid, increaseSize: totalSize, command: UploadNotify.Progress}
+                    });
                     // 保存结果
                     localStorage.setItem(metaKey, JSON.stringify(
                         Object.assign(metaFile, {finish: true})
@@ -284,32 +326,24 @@ export default class UploadQueue extends EventEmitter {
         );
     }
 
-    _error() {
-        if (this._queue.paused) {
-            this.emit('paused');
-        } else {
-            this.emit('error');
+    _error(err) {
+        error('UploadTask Error = %s', err.message);
+    }
+
+    _checkPaused() {
+        const {uuid} = this._task;
+
+        if (this._suspend && this._queue.idle()) {
+            this.emit('suspend');
+            // 任务已暂停
+            this.dispatch({taskId: uuid, type: UploadNotify.Suspended});
         }
     }
 
     // 挂起任务
     suspend() {
-        const {uuid} = this._task;
+        this._suspend = true;
         // 暂停队列，不在提交新任务
-        this._queue.pause();
-        // 未完成任务数量
-        let leftWorkerCount = this._queue.running();
-
-        this.on('paused', () => {
-            leftWorkerCount -= 1;
-            if (leftWorkerCount <= 0) {
-                this.emit('suspend');
-                // 任务已暂停
-                this.dispatch({taskId: uuid, type: UploadNotify.Suspended});
-                // 释放资源
-                this._queue.kill();
-                delete this._queue;
-            }
-        });
+        this._queue.kill();
     }
 }

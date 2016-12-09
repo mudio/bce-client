@@ -138,64 +138,25 @@ export default function uploads(state = [], action) {
     case UploadNotify.Finish:
         return state.map(item => {
             if (item.uuid === action.uuid) {
-                const {keymap} = item;
-                // 读取配置
-                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
-                // 子任务完成
-                if (action.metaKey) {
-                    queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== action.metaKey);
-                    queueMap.completeQueue = [action.metaKey, ...queueMap.completeQueue];
-                }
-                // 全部任务完成
-                if (queueMap.waitingQueue.length === 0 && queueMap.errorQueue.length === 0) {
-                    Object.assign(item, {status: UploadStatus.Finish, offsetSize: item.totalSize});
-                }
-                // 保存配置
-                localStorage.setItem(keymap.key, JSON.stringify(queueMap));
                 // 同步启动状态
                 return Object.assign(item, {
-                    keymap: {
-                        key: keymap.key,
-                        error: queueMap.errorQueue.length,
-                        waiting: queueMap.waitingQueue.length,
-                        complete: queueMap.completeQueue.length
-                    }
+                    keymap: action.keymap,
+                    status: UploadStatus.Finish
                 });
             }
 
             return item;
         });
-    case UploadNotify.Error: {
+    case UploadNotify.Error:
         return state.map(item => {
-            const {uuid, metaKey, error} = action;
+            const {uuid, error, keymap} = action;
 
             if (item.uuid === uuid) {
-                const {keymap} = item;
-                // 读取配置
-                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
-                // 子任务错误
-                if (metaKey) {
-                    queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
-                    queueMap.errorQueue = [metaKey, ...queueMap.errorQueue];
-                }
-                // 保存配置
-                localStorage.setItem(keymap.key, JSON.stringify(queueMap));
-                // 同步启动状态
-                return Object.assign(item, {
-                    error,
-                    status: UploadStatus.Error,
-                    keymap: {
-                        key: keymap.key,
-                        error: queueMap.errorQueue.length,
-                        waiting: queueMap.waitingQueue.length,
-                        complete: queueMap.completeQueue.length
-                    }
-                });
+                return Object.assign(item, {error, keymap, status: UploadStatus.Error});
             }
 
             return item;
         });
-    }
     case UploadNotify.Remove: {
         return state.filter(item => {
             if (action.taskIds.indexOf(item.uuid) > -1) {
