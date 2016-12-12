@@ -68,8 +68,7 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                     localStorage.setItem(key, JSON.stringify({
                         path: file.path,
                         relative: file.name,
-                        totalSize: file.size,
-                        finish: false
+                        totalSize: file.size
                     }));
 
                     // 建立keymap
@@ -112,8 +111,7 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                     localStorage.setItem(key, JSON.stringify({
                         relative: relativePath,
                         path: absolutePath,
-                        totalSize: stat.size,
-                        finish: false
+                        totalSize: stat.size
                     }));
 
                     keys.push(key);

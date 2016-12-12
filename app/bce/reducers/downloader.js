@@ -9,16 +9,18 @@ import {error as errLogger} from '../utils/Logger';
 import {DownloadStatus} from '../utils/TransferStatus';
 import {DownloadNotify} from '../utils/TransferNotify';
 
+const defaultProperty = {
+    totalSize: 0,
+    offsetSize: 0,
+    keymap: {waiting: 0, error: 0, complete: 0}
+};
+
 export default function downloads(state = [], action) {
     switch (action.type) {
     case DownloadNotify.Init: {
-        const task = Object.assign({
-            offsetSize: 0,
-            errorQueue: [],
-            waitingQueue: [],
-            completeQueue: [],
+        const task = Object.assign({}, defaultProperty, action, {
             status: DownloadStatus.Init
-        }, action);
+        });
 
         delete task.type;
 
@@ -30,7 +32,7 @@ export default function downloads(state = [], action) {
                 return Object.assign(item, {
                     totalSize: action.totalSize,
                     status: DownloadStatus.Unstarted,
-                    waitingQueue: action.keys
+                    keymap: action.keymap
                 });
             }
 
@@ -48,14 +50,40 @@ export default function downloads(state = [], action) {
     case DownloadNotify.Launch:
         return state.map(item => {
             if (action.uuid === item.uuid) {
-                const errorQueue = [];
-                const waitingQueue = [...item.waitingQueue, ...item.errorQueue];
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
                 // Launch会把未完成、错误的重跑
+                queueMap.waitingQueue = [...queueMap.waitingQueue, ...queueMap.errorQueue];
+                queueMap.errorQueue = [];
+                // 保存配置
+                localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+                // 同步启动状态
                 return Object.assign(item, {
-                    errorQueue,
-                    waitingQueue,
-                    status: DownloadStatus.Running
+                    status: DownloadStatus.Running,
+                    keymap: {
+                        key: keymap.key,
+                        error: queueMap.errorQueue.length,
+                        waiting: queueMap.waitingQueue.length,
+                        complete: queueMap.completeQueue.length
+                    }
                 });
+            }
+
+            return item;
+        });
+    case DownloadNotify.Suspending:
+        return state.map(item => {
+            if (action.taskIds.indexOf(item.uuid) > -1) {
+                return Object.assign(item, {status: DownloadStatus.Suspending});
+            }
+
+            return item;
+        });
+    case DownloadNotify.Suspended:
+        return state.map(item => {
+            if (action.taskId === item.uuid) {
+                return Object.assign(item, {status: DownloadStatus.Suspended});
             }
 
             return item;
@@ -73,34 +101,14 @@ export default function downloads(state = [], action) {
             return item;
         });
     }
-    case DownloadNotify.Suspending:
-        return state.map(item => {
-            if (action.taskIds.indexOf(item.uuid) > -1) {
-                return Object.assign(item, {status: DownloadStatus.Suspending});
-            }
-
-            return item;
-        });
-    case DownloadNotify.Suspended:
-        return state.map(item => {
-            if (action.taskId === item.uuid) {
-                return Object.assign(item, {status: DownloadStatus.Suspended});
-            }
-
-            return item;
-        });
     case DownloadNotify.Finish: {
         return state.map(item => {
             if (item.uuid === action.uuid) {
-                if (action.metaKey) {
-                    const waitingQueue = item.waitingQueue.filter(key => key !== action.metaKey);
-                    const completeQueue = [action.metaKey, ...item.completeQueue];
-                    Object.assign(item, {waitingQueue, completeQueue});
-                }
-
-                if (item.waitingQueue.length === 0 && item.errorQueue.length === 0) {
-                    Object.assign(item, {status: DownloadStatus.Finish, offsetSize: item.totalSize});
-                }
+                // 同步启动状态
+                return Object.assign(item, {
+                    keymap: action.keymap,
+                    status: DownloadStatus.Finish
+                });
             }
 
             return item;
@@ -108,16 +116,10 @@ export default function downloads(state = [], action) {
     }
     case DownloadNotify.Error: {
         return state.map(item => {
-            const {uuid, metaKey, error} = action;
+            const {uuid, error, keymap} = action;
 
             if (item.uuid === uuid) {
-                if (metaKey) {
-                    const waitingQueue = item.waitingQueue.filter(key => key !== metaKey);
-                    const errorQueue = [metaKey, ...item.errorQueue];
-                    Object.assign(item, {waitingQueue, errorQueue});
-                }
-
-                Object.assign(item, {status: DownloadStatus.Error, error});
+                return Object.assign(item, {error, keymap, status: DownloadStatus.Error});
             }
 
             return item;
@@ -126,10 +128,16 @@ export default function downloads(state = [], action) {
     case DownloadNotify.Remove: {
         return state.filter(item => {
             if (action.taskIds.indexOf(item.uuid) > -1) {
-                const {waitingQueue, completeQueue, errorQueue} = item;
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
+                const {waitingQueue, completeQueue, errorQueue} = queueMap;
+                // 删除子任务
                 errorQueue.forEach(key => localStorage.removeItem(key));
                 completeQueue.forEach(key => localStorage.removeItem(key));
                 waitingQueue.forEach(key => localStorage.removeItem(key));
+                // 删除keymap
+                localStorage.removeItem(keymap.key);
             }
 
             return action.taskIds.indexOf(item.uuid) === -1;
@@ -138,15 +146,19 @@ export default function downloads(state = [], action) {
     case DownloadNotify.ClearFinish: {
         return state.filter(item => {
             if (item.status === DownloadStatus.Finish) {
-                const {waitingQueue, completeQueue, errorQueue} = item;
-
+                const {keymap} = item;
+                // 读取配置
+                const queueMap = JSON.parse(localStorage.getItem(keymap.key));
+                const {waitingQueue, completeQueue, errorQueue} = queueMap;
+                // 删除子任务
                 if (waitingQueue.length > 0 || errorQueue.length > 0) {
                     errLogger('Invoke CleanrFinish error, WaitingQueue or ErrorQueue not empty');
                 }
-
                 errorQueue.forEach(key => localStorage.removeItem(key));
                 completeQueue.forEach(key => localStorage.removeItem(key));
                 waitingQueue.forEach(key => localStorage.removeItem(key));
+                // 删除keymap
+                localStorage.removeItem(keymap.key);
             }
 
             return item.status !== DownloadStatus.Finish;

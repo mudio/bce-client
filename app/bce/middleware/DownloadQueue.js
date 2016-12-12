@@ -15,16 +15,16 @@ import {DownloadConfig} from '../config';
 import {error, info} from '../utils/Logger';
 import {getRegionClient} from '../api/client';
 import {DownloadStatus} from '../utils/TransferStatus';
-import {DownloadNotify} from '../utils/TransferNotify';
+import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
 
 export default class DownloadQueue extends EventEmitter {
     static TaskProperties = [
-        'uuid', 'name', 'basedir', 'region', 'bucket', 'prefix', 'status', 'totalSize',
-        'waitingQueue', 'errorQueue', 'completeQueue'
+        'uuid', 'name', 'basedir', 'region', 'bucket', 'prefix',
+        'status', 'totalSize', 'keymap'
     ];
 
     static MetaProperties = [
-        'relative', 'offsetSize', 'totalSize', 'finish'
+        'relative', 'offsetSize', 'totalSize'
     ];
 
     constructor(task) {
@@ -32,7 +32,7 @@ export default class DownloadQueue extends EventEmitter {
 
         // 检查任务
         if (!this._checkProperties(task, DownloadQueue.TaskProperties)) {
-            throw new TypeError(`Task ${task.uuid} must has properties: ${DownloadQueue.TaskProperty.join('、')}`);
+            throw new TypeError(`Task ${task.uuid} must has properties: ${DownloadQueue.TaskProperties.join('、')}`);
         }
         // 设置挂起状态
         this._suspend = false;
@@ -57,15 +57,18 @@ export default class DownloadQueue extends EventEmitter {
         this._queue.error = err => this._error(err);
         this._queue.saturated = () => this.emit('saturated');
         this._queue.unsaturated = () => this.emit('unsaturated');
+        // 获取keymap
+        const {keymap} = task;
+        const {waitingQueue, errorQueue} = JSON.parse(localStorage.getItem(keymap.key));
         // 等待任务放入队列中
-        task.waitingQueue.forEach(
+        waitingQueue.forEach(
             metaKey => this._queue.push(
                 {metaKey, ...task},
                 err => this._finally(err, metaKey, task)
             )
         );
         // 错误任务放入队列中
-        task.errorQueue.forEach(
+        errorQueue.forEach(
             metaKey => this._queue.push(
                 {metaKey, ...task},
                 err => this._finally(err, metaKey, task)
@@ -85,22 +88,60 @@ export default class DownloadQueue extends EventEmitter {
 
     // 通知任务状态变化
     _finally(err, metaKey, item) {
-        const {uuid, region, bucket, prefix, name} = item;
+        const {uuid, region, bucket, prefix, name, keymap} = item;
+        const queueMap = JSON.parse(localStorage.getItem(keymap.key));
 
         if (err) {
             error(
                 'Download failed Uuid = %s, Name = %s, Region = %s, Bucket = %s, Prefix = %s, Error = %s',
                 uuid, name, region, bucket, prefix, err.message
             );
+
+            // 子任务错误
+            if (metaKey) {
+                queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
+                queueMap.errorQueue = [metaKey, ...queueMap.errorQueue];
+
+                Object.assign(keymap, {
+                    error: queueMap.errorQueue.length,
+                    waiting: queueMap.waitingQueue.length
+                });
+            }
+
+            // 保存配置
+            localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+
             // 通知任务有错误发生了
-            this.dispatch({uuid, metaKey, type: DownloadNotify.Error, error: err.message});
+            this.dispatch({uuid, keymap, type: DownloadNotify.Error, error: err.message});
         } else {
             info(
                 'Download finish Uuid = %s, Name = %s, Region = %s, Bucket = %s, Prefix = %s',
                 uuid, name, region, bucket, prefix
             );
-            // 完成任务
-            this.dispatch({uuid, metaKey, type: DownloadNotify.Finish});
+
+             // 子任务完成
+            if (metaKey) {
+                queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
+                queueMap.completeQueue = [metaKey, ...queueMap.completeQueue];
+
+                Object.assign(keymap, {
+                    waiting: queueMap.waitingQueue.length,
+                    complete: queueMap.completeQueue.length
+                });
+            }
+
+            // 保存配置
+            localStorage.setItem(keymap.key, JSON.stringify(queueMap));
+
+            // 全部任务完成
+            if (queueMap.waitingQueue.length === 0 && queueMap.errorQueue.length === 0) {
+                this.dispatch({uuid, keymap, type: DownloadNotify.Finish});
+            } else {
+                // 同步下状态
+                this.dispatch({
+                    [DownloadCommandType]: {uuid, keymap, command: DownloadNotify.Progress}
+                });
+            }
         }
 
         this._checkPaused();
@@ -157,7 +198,11 @@ export default class DownloadQueue extends EventEmitter {
                                 // 显示调试信息
                                 info('Task uuid = %s range = %s bufferSize = %s', uuid, range, res.body.length);
                                 // 通知进度
-                                this.dispatch({uuid, increaseSize: res.body.length, type: DownloadNotify.Progress});
+                                this.dispatch({
+                                    [DownloadCommandType]: {
+                                        uuid, increaseSize: res.body.length, command: DownloadNotify.Progress
+                                    }
+                                });
                                 // 完成map
                                 if (this._suspend) {
                                     callback(new Error('Download Task Suspend!'));

@@ -9,7 +9,7 @@ export const _uploadType = 'UploadCommand';
 export const UploadCommandType = Symbol.for(_uploadType);
 
 export const _downloadType = 'DownloadCommand';
-export const DownloadType = Symbol.for(_downloadType);
+export const DownloadCommandType = Symbol.for(_downloadType);
 
 export const UploadNotify = {
     New: 'upload_notify_new',

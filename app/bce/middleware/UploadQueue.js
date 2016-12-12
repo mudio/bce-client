@@ -22,7 +22,7 @@ export default class UploadQueue extends EventEmitter {
     ];
 
     static MetaProperties = [
-        'path', 'relative', 'totalSize', 'finish'
+        'path', 'relative', 'totalSize'
     ];
 
     constructor(task) {
@@ -247,10 +247,6 @@ export default class UploadQueue extends EventEmitter {
                     this.dispatch({
                         [UploadCommandType]: {uuid, increaseSize: totalSize, command: UploadNotify.Progress}
                     });
-                    // 保存结果
-                    localStorage.setItem(metaKey, JSON.stringify(
-                        Object.assign(metaFile, {finish: true})
-                    ));
                     // 完成
                     done();
                 },

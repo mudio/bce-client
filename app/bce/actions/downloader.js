@@ -5,13 +5,15 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint object-property-newline: 0 */
+
 import getUuid from '../utils/Uuid';
 import {getRegionClient} from '../api/client';
-import {DownloadNotify, DownloadType} from '../utils/TransferNotify';
+import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
 
 export function downloadStart(taskIds = []) {
     return {
-        [DownloadType]: {
+        [DownloadCommandType]: {
             command: DownloadNotify.Start,      // 开始任务
             taskIds                             // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
@@ -20,7 +22,7 @@ export function downloadStart(taskIds = []) {
 
 export function downloadRemove(taskIds = []) {
     return {
-        [DownloadType]: {
+        [DownloadCommandType]: {
             command: DownloadNotify.Remove,    // 删除任务
             taskIds                            // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
@@ -29,7 +31,7 @@ export function downloadRemove(taskIds = []) {
 
 export function downloadSuspend(taskIds = []) {
     return {
-        [DownloadType]: {
+        [DownloadCommandType]: {
             command: DownloadNotify.Suspending,    // 删除任务
             taskIds                            // 如果为空，顺序开始等待任务， 不为空，开始指定任务
         }
@@ -56,7 +58,6 @@ export function createDownloadTask(region, bucket, prefix, keys, basedir) {
                         const metaKey = getUuid();
                         const metaFile = {
                             offsetSize: 0,
-                            finish: false,
                             eTag: item.eTag,
                             totalSize: item.size,
                             relative: item.key.replace(prefix, ''),
@@ -68,8 +69,18 @@ export function createDownloadTask(region, bucket, prefix, keys, basedir) {
 
                         return metaKey;
                     });
+                    // 建立keymap
+                    const keymapId = getUuid();
+                    localStorage.setItem(keymapId, JSON.stringify({
+                        errorQueue: [],
+                        completeQueue: [],
+                        waitingQueue: metaKeys
+                    }));
                     // 建立新任务
-                    dispatch({type: DownloadNotify.New, uuid, keys: metaKeys, totalSize});
+                    dispatch({
+                        type: DownloadNotify.New, uuid, totalSize,
+                        keymap: {key: keymapId, waiting: keys.length, error: 0, complete: 0}
+                    });
                     // 立即开始这个任务
                     dispatch(downloadStart([uuid]));
                 },
