@@ -1,7 +1,7 @@
 {
   "name": "bce-bos-client",
   "productName": "BOS",
-  "version": "0.1.8-beta",
+  "version": "0.2.0-beta",
   "description": "百度云-对象存储BOS-客户端",
   "main": "main.js",
   "scripts": {
