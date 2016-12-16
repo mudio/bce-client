@@ -54,7 +54,7 @@ export default class UploadQueue extends EventEmitter {
         this._queue.drain = () => this.emit('drain');
         this._queue.error = () => this._error();
         this._queue.saturated = () => this.emit('saturated');
-        this._queue.unsaturated = this.emit('unsaturated');
+        this._queue.unsaturated = () => this.emit('unsaturated');
         // 获取keymap
         const {keymap} = task;
         const {waitingQueue, errorQueue} = JSON.parse(localStorage.getItem(keymap.key));

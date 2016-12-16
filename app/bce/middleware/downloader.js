@@ -31,17 +31,19 @@ function startTask(store, taskIds = []) {
                 _workflow.push(item);
             }
         });
-
-        return dispatch({type: DownloadNotify.Start, taskIds});
-    }
+    } else {
     // 没有指定taskids
-    return downloads.forEach(item => {
-        if (item.status === DownloadStatus.Waiting
-            || item.status === DownloadStatus.Error
-            || item.status === DownloadStatus.Suspended) {
-            _workflow.push(item);
-        }
-    });
+        downloads.forEach(item => {
+            if (item.status === DownloadStatus.Waiting
+                || item.status === DownloadStatus.Error
+                || item.status === DownloadStatus.Suspended) {
+                taskIds.push(item.uuid);
+                _workflow.push(item);
+            }
+        });
+    }
+
+    return dispatch({type: DownloadNotify.Start, taskIds});
 }
 
 function suspendTask(store, taskIds = []) {

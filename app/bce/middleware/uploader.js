@@ -32,17 +32,19 @@ function startTask(store, taskIds = []) {
                 _workflow.push(item);
             }
         });
-
-        return dispatch({type: UploadNotify.Start, taskIds});
-    }
+    } else {
     // 没有指定taskids
-    return uploads.forEach(item => {
-        if (item.status === UploadStatus.Waiting
-            || item.status === UploadStatus.Error
-            || item.status === UploadStatus.Suspended) {
-            _workflow.push(item);
-        }
-    });
+        uploads.forEach(item => {
+            if (item.status === UploadStatus.Waiting
+                || item.status === UploadStatus.Error
+                || item.status === UploadStatus.Suspended) {
+                taskIds.push(item.uuid);
+                _workflow.push(item);
+            }
+        });
+    }
+
+    return dispatch({type: UploadNotify.Start, taskIds});
 }
 
 function suspendTask(store, taskIds = []) {

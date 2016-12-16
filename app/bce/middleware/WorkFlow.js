@@ -63,6 +63,8 @@ export default class WorkFlow extends EventEmitter {
                 }
             });
         } else {
+            this._queue.kill();
+
             _.forEach(this._handle, queue => queue.suspend());
 
             this._handle = {};
