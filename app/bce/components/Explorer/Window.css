@@ -45,6 +45,7 @@
     color: #ccc;
     width: 200px;
     height: 120px;
+    font-size: 14px;
     top: calc(50% - 100px);
     left: calc(50% - 100px);
     display: flex;

@@ -121,13 +121,13 @@ class Window extends Component {
     }
 
     renderError() {
-        const {isFetching, hasError} = this.props;
+        const {isFetching, hasError, error} = this.props;
 
         if (!isFetching && hasError) {
             return (
                 <span className={styles.error}>
-                    <i className="fa fa-mixcloud" />
-                    出错啦~(&gt;_&lt;)!!!
+                    <i className="fa fa-mixcloud fa-lg" />
+                    错误:{error}!
                 </span>
             );
         }
