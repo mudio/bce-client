@@ -11,16 +11,21 @@
 }
 
 .text {
-    display: inline-flex;
     flex: auto;
-    width: 90%;
+    width: 95%;
     font-size: 12px;
-    overflow: hidden;
-    line-height: 15px;
-    text-align: center;
+    display: inline-flex;
     align-items: center;
-    word-break: break-all;
     justify-content: center;
+}
+
+.text:before {
+    display: inline;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    content: attr(data-tip);
 }
 
 .foldericon {

@@ -32,7 +32,7 @@ export default class File extends Component {
         return (
             <div className={styles.container}>
                 <i className={`${styles.fileicon} asset-normal asset-${ext}`} />
-                <span className={styles.text} title={fileName}>{fileName}</span>
+                <span className={styles.text} data-tip={fileName} data-tip-align="bottom" />
             </div>
         );
     }

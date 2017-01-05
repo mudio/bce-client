@@ -32,9 +32,7 @@ export default class Folder extends Component {
         return (
             <div className={styles.container} onDoubleClick={() => onDoubleClick(folder.key)}>
                 <i className={`${styles.foldericon} asset-folder`} />
-                <span className={styles.text} title={normalize(folder.key)}>
-                    {normalize(folder.key)}
-                </span>
+                <span className={styles.text} data-tip={normalize(folder.key)} data-tip-align="bottom" />
             </div>
         );
     }

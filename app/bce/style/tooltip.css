@@ -5,69 +5,77 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-[tip] {
+[data-tip] {
   position: relative;
 }
-[tip]:after {
-  width: auto;
+
+[data-tip]:after {
+  top: 50%;
+  left: 100%;
+  width: 100%;
   opacity: 0;
   z-index: 1;
   display: block;
   padding: 0 4px;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  white-space: initial;
+  word-break: break-all;
   line-height: 18px;
   position: absolute;
   visibility: hidden;
-  color: #fff;
-  font-size: 12px;
-  content: attr(tip);
-  background-color: rgba(18, 26, 44, 0.8);
-  top: 50%;
-  left: 100%;
-  white-space: pre;
-  -webkit-transition: all .3s;
+  content: attr(data-tip);
   transition: all .3s;
-  -webkit-transform: translate(-5px, -50%);
   transform: translate(-5px, -50%);
+  background-color: rgba(18, 26, 44, 0.8);
   box-shadow: 0 0 14px rgba(0, 0, 0, 0.1);
 }
-[tip]:hover {
+
+[data-tip]:hover {
   overflow: visible;
 }
-[tip]:hover:after {
+
+[data-tip]:hover:after {
   opacity: 0.8;
   display: block;
   visibility: visible;
   -webkit-transform: translate(5px, -50%);
   transform: translate(5px, -50%);
 }
-[tip].tip-top:after,
-[tip][tip-align="top"]:after {
+
+[data-tip].tip-top:after,
+[data-tip][data-tip-align="top"]:after {
   top: auto;
   left: 50%;
   bottom: 100%;
   -webkit-transform: translate(-50%, 5px);
   transform: translate(-50%, 5px);
 }
-[tip].tip-top:hover:after,
-[tip][tip-align="top"]:hover:after {
+
+[data-tip].tip-top:hover:after,
+[data-tip][data-tip-align="top"]:hover:after {
   -webkit-transform: translate(-50%, -5px);
   transform: translate(-50%, -5px);
 }
-[tip].tip-bottom:after,
-[tip][tip-align="bottom"]:after {
+
+[data-tip].tip-bottom:after,
+[data-tip][data-tip-align="bottom"]:after {
   top: 100%;
   left: 50%;
   bottom: auto;
   -webkit-transform: translate(-50%, -5px);
   transform: translate(-50%, -5px);
 }
-[tip].tip-bottom:hover:after,
-[tip][tip-align="bottom"]:hover:after {
+
+[data-tip].tip-bottom:hover:after,
+[data-tip][data-tip-align="bottom"]:hover:after {
   -webkit-transform: translate(-50%, 5px);
   transform: translate(-50%, 5px);
 }
-[tip].tip-left:after,
-[tip][tip-align="left"]:after {
+
+[data-tip].tip-left:after,
+[data-tip][data-tip-align="left"]:after {
   top: 50%;
   right: 100%;
   left: auto;
@@ -75,14 +83,17 @@
   -webkit-transform: translate(5px, -50%);
   transform: translate(5px, -50%);
 }
-[tip].tip-left:hover:after,
-[tip][tip-align="left"]:hover:after {
+
+[data-tip].tip-left:hover:after,
+[data-tip][data-tip-align="left"]:hover:after {
   -webkit-transform: translate(-5px, -50%);
   transform: translate(-5px, -50%);
 }
-[tip].tip-disable:after {
+
+[data-tip].tip-disable:after {
   visibility: hidden !important;
 }
+
 [tip=""]:after {
   visibility: hidden !important;
 }
