@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint-disable no-console */
+
 import {app} from 'electron';
 import {spawn} from 'child_process';
 import path from 'path';
@@ -12,7 +14,7 @@ import path from 'path';
 export default class WIN32Updater {
     run(args, done) {
         const updateExe = path.resolve(path.dirname(process.execPath), '..', 'Update.exe');
-        console.log('Spawning `%s` with args `%s`', updateExe, args); // eslint-disable-line no-console
+        console.log('Spawning `%s` with args `%s`', updateExe, args);
 
         spawn(updateExe, args, {detached: true}).on('close', done);
     }
@@ -25,7 +27,7 @@ export default class WIN32Updater {
         const cmd = process.argv[1];
         const target = path.basename(process.execPath);
 
-        console.log('Processing squirrel command `%s`', cmd); // eslint-disable-line no-console
+        console.log('Processing squirrel command `%s`', cmd);
 
         if (cmd === '--squirrel-install' || cmd === '--squirrel-updated') {
             this.run([`--createShortcut=${target}`], app.quit);

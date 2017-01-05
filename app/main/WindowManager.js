@@ -32,10 +32,6 @@ export default class WindowManager {
             this._window.focus();
         });
 
-        this._window.webContents.once('did-frame-finish-load', () => {
-            this._updater.checkForUpdates();
-        });
-
         this._window.on('closed', () => {
             this._window = null;
         });
