@@ -127,7 +127,7 @@
     "classnames": "^2.2.5",
     "configstore": "^2.1.0",
     "css-modules-require-hook": "^4.0.5",
-    "debug": "^2.4.5",
+    "debug": "^2.6.0",
     "electron-debug": "^1.1.0",
     "font-awesome": "^4.7.0",
     "fs-walk": "0.0.1",
@@ -142,7 +142,6 @@
     "react-router-redux": "^4.0.7",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0",
-    "source-map-support": "^0.4.6",
     "uuid": "^3.0.1"
   },
   "devEngines": {
