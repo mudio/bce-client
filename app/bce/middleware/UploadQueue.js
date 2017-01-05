@@ -236,7 +236,9 @@ export default class UploadQueue extends EventEmitter {
         }
 
         const {path, relative, totalSize} = metaFile;
-        const object = prefix ? `/${prefix}${relative}` : relative;
+        // 处理下window分隔符问题
+        const suffix = relative.replace(/\\/g, '/');
+        const object = prefix ? `/${prefix}${suffix}` : suffix;
 
         // 1. 判断上传大小，如果小于PartLimit *  PartSize 就别分片了
         if (totalSize <= UploadConfig.PartLimit * UploadConfig.PartSize) {
