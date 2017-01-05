@@ -4,6 +4,7 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
+import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
@@ -19,12 +20,7 @@ export default merge(baseConfig, {
     },
 
     plugins: [
-        // Minify the output
-        new webpack.optimize.UglifyJsPlugin({
-            compressor: {
-                warnings: false
-            }
-        }),
+        new BabiliPlugin(),
 
         // NODE_ENV should be production so that modules do not perform certain development checks
         new webpack.DefinePlugin({

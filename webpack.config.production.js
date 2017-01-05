@@ -4,6 +4,7 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
+import BabiliPlugin from 'babili-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
@@ -62,12 +63,7 @@ export default merge(baseConfig, {
             'process.env.NODE_ENV': JSON.stringify('production')
         }),
 
-        // Minify without warning messages
-        new webpack.optimize.UglifyJsPlugin({
-            compressor: {
-                warnings: false
-            }
-        }),
+        new BabiliPlugin(),
 
         // Set the ExtractTextPlugin output filename
         new ExtractTextPlugin('style.css', {allChunks: true}),
