@@ -11,7 +11,7 @@ import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
 
-    devtool: 'inline-source-map',
+    devtool: 'cheap-module-source-map',
 
     entry: ['babel-polyfill', './app/bce/index'],
 

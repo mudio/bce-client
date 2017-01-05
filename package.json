@@ -89,7 +89,7 @@
     "del": "^2.2.2",
     "devtron": "^1.4.0",
     "electron": "^1.4.12",
-    "electron-builder": "^10.8.1",
+    "electron-builder": "^10.7.0",
     "electron-devtools-installer": "^2.0.1",
     "eslint": "^3.10.2",
     "eslint-config-airbnb": "^13.0.0",
