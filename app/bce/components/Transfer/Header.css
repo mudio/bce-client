@@ -26,6 +26,7 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #f3f5f9;
+    -webkit-app-region: no-drag;
 }
 
 .btn:hover {
