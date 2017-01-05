@@ -12,8 +12,7 @@ import {Provider} from 'react-redux';
 import {Router, hashHistory} from 'react-router';
 import {syncHistoryWithStore} from 'react-router-redux';
 
-import './app.global.css';
-import './mime.global.css';
+import './style/mixin.global.css';
 import routes from './routes';
 import {renderLogger} from './utils/Logger';
 import configureStore from './store/configureStore';
