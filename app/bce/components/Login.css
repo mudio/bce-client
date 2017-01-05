@@ -23,9 +23,10 @@
     flex: auto;
     padding: 0 10px;
     font-size: 14px;
+    height: 30px;
     line-height: 30px;
     border-radius: 5px;
-    background: rgba(43, 46, 48, .5);
+    background: rgba(153, 153, 153, .5);
 }
 
 .login h1 {
@@ -49,21 +50,31 @@
     margin-top: 10px;
 }
 
+.pin:after {
+    width: 100%;
+    white-space: initial;
+    word-break: break-all;
+}
+
 .loginBtn {
     display: flex;
+    border: none;
     cursor: pointer;
+    font-size: 26px;
+    color: rgba(153, 153, 153, .5);
+    background: none;
     align-items: center;
     justify-content: center;
 }
 
 .loginBtn:hover, .loginBtn:focus {
-    background-color: rgba(34, 141, 255, 0.8);
+    color: rgba(34, 141, 255, 0.8);
 }
 
 .error {
     font-size: 12px;
     line-height: 24px;
-    color: #fff;
+    color: #f64545;
     width: 300px;
 }
 
@@ -74,57 +85,25 @@
     justify-content: center;
 }
 
-.pinInValid:hover {
-    cursor: pointer;
-    text-shadow: 0 0 2px #fff,
-        0 0 5px #fff,
-        0 0 7px #fff,
-        0 0 10px #228DFF,
-        0 0 13px #228DFF,
-        0 0 20px #228DFF,
-        0 0 25px #228DFF,
-        0 0 38px #228DFF;
-}
-
-.pinTipWrap {
-    left: -25px;
-    color: #999;
-    display: flex;
-    cursor: pointer;
-    position: relative;
-    align-items: center;
-    justify-content: center;
-}
-
-.pinTipWrap .pinTip {
-    top: 33px;
-    padding: 5px;
-    display: none;
+.forgot {
+    width: 300px;
     color: #fff;
-    font-size: 12px;
-    min-width: 200px;
-    line-height: 20px;
-    border-radius: 3px;
-    position: absolute;
-    background-color: rgba(34, 141, 255, 0.8);
-    box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.3);
-    font-family: Arial, Helvetica, Helvetica Neue;
+    font-size: 14px;
+    display: flex;
 }
 
-.pinTipWrap .pinTip:before {
-    top: -10px;
-    left: 94px;
-    content: '';
-    position: absolute;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid rgba(34, 141, 255, 0.8);
-}
-
-.pinTipWrap:hover {
+.forgot button {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 16px;
+    margin-right: 6px;
     color: #108cee;
+    cursor: pointer;
+    background: none;
 }
 
-.pinTipWrap:hover .pinTip {
+.forgot span {
     display: inline-flex;
+    flex: auto;
 }

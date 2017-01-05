@@ -48,9 +48,9 @@ export default class Login extends Component {
     getLoginRender() {
         const {isLoading = false} = this.props.auth;
         if (isLoading) {
-            return <i className={`${styles.loading} fa fa-spinner fa-pulse fa-fw`} />;
+            return <i className={`${styles.loading} fa fa-spin`} />;
         }
-        return <input type="submit" className={styles.loginBtn} value="登录" />;
+        return <button type="submit" className={`${styles.loginBtn} fa fa-arrow-circle-right`} />;
     }
 
     getLoginError() {
@@ -71,20 +71,20 @@ export default class Login extends Component {
             );
         } else if (innerErrorType === INVALID_PIN) {
             return (
-                <span className={`${styles.error} ${styles.pinInValid}`} onClick={() => this.forgotPin()} >
-                    PIN码验证失败! 使用AK/SK验证?
+                <span className={styles.error} >
+                    PIN码验证失败!
                 </span>
             );
         }
     }
 
     getAkSkFields() {
-        const {pin, isAuth} = this.props.auth;
+        const {pin, isAuth, ak} = this.props.auth;
 
         if (!pin || !isAuth) {
             return (
                 <div>
-                    <div className={styles.ak}>
+                    <div className={styles.ak} data-tip="请输入AK">
                         <input
                             ref="ak"
                             type="text"
@@ -92,7 +92,7 @@ export default class Login extends Component {
                             defaultValue={credentials.ak}
                         />
                     </div>
-                    <div className={styles.sk}>
+                    <div className={styles.sk} data-tip="请输入SK">
                         <input
                             ref="sk"
                             type="text"
@@ -103,6 +103,17 @@ export default class Login extends Component {
                 </div>
             );
         }
+
+        return (
+            <div className={styles.forgot}>
+                <i className={'fa fa-user-secret fa-fw'} />
+                <span>{ak.replace(/^([\w]{8})[\w]+([\w]{8}$)/g, '$1****************$2')}</span>
+                <button className={'fa fa-user-times fa-fw'}
+                    onClick={() => this.forgotPin()}
+                    data-tip="注销登录，使用AK/SK登录！"
+                />
+            </div>
+        );
     }
 
     handleSubmit(evt) {
@@ -140,13 +151,11 @@ export default class Login extends Component {
                 <form className={styles.login} onSubmit={evt => this.handleSubmit(evt)}>
                     <h1>百度云</h1>
                     {this.getAkSkFields()}
-                    <div className={styles.pin}>
+                    <div className={styles.pin}
+                        data-tip="输入PIN码后，系统将记住你的AK、SK，下次登录只需要输入PIN码即可。"
+                        data-tip-align="bottom"
+                    >
                         <input type="text" placeholder="输入PIN码" ref="pin" />
-                        <span className={`${styles.pinTipWrap} fa fa-question-circle-o`}>
-                            <span className={styles.pinTip}>
-                                输入PIN码后，系统将记住你的AK、SK,下次登录只需要输入PIN码即可。
-                            </span>
-                        </span>
                         {this.getLoginRender()}
                     </div>
                     {this.getLoginError()}

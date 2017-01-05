@@ -28,6 +28,12 @@
     content: attr(data-tip);
 }
 
+.text:after {
+    width: 100%;
+    white-space: initial;
+    word-break: break-all;
+}
+
 .foldericon {
     display: flex;
     width: 48px;

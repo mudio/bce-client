@@ -25,6 +25,10 @@ a {
     text-decoration: none;
 }
 
+input, button {
+    outline: none;
+}
+
 #main {
     width: 100vw;
     display: flex;
