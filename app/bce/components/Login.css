@@ -92,15 +92,14 @@
     display: flex;
 }
 
-.forgot button {
+.forgot .forgotBtn {
     margin: 0;
     padding: 0;
-    border: none;
     font-size: 16px;
-    margin-right: 6px;
+    padding-right: 6px;
     color: #108cee;
     cursor: pointer;
-    background: none;
+    justify-content: flex-end;
 }
 
 .forgot span {

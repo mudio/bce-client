@@ -50,7 +50,7 @@ export default class Login extends Component {
         if (isLoading) {
             return <i className={`${styles.loading} fa fa-spin`} />;
         }
-        return <button type="submit" className={`${styles.loginBtn} fa fa-arrow-circle-right`} />;
+        return <button className={`${styles.loginBtn} fa fa-arrow-circle-right`} />;
     }
 
     getLoginError() {
@@ -108,9 +108,10 @@ export default class Login extends Component {
             <div className={styles.forgot}>
                 <i className={'fa fa-user-secret fa-fw'} />
                 <span>{ak.replace(/^([\w]{8})[\w]+([\w]{8}$)/g, '$1****************$2')}</span>
-                <button className={'fa fa-user-times fa-fw'}
+                <span className={`${styles.forgotBtn} fa fa-user-times fa-fw`}
                     onClick={() => this.forgotPin()}
                     data-tip="注销登录，使用AK/SK登录！"
+                    tabIndex="-1"
                 />
             </div>
         );
