@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible Node.js debug attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "调试",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "program": "${workspaceRoot}/app/main.js",
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "DEBUG": "bce-client:*,bce-sdk:*",
+                "HOT": "1",
+                "NODE_ENV": "development"
+            },
+            "runtimeArgs": [
+                "-r",
+                "babel-register",
+                "-r",
+                "babel-polyfill"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "预览",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "program": "${workspaceRoot}/static/main.js",
+            "cwd": "${workspaceRoot}",
+            "sourceMaps": true,
+            "preLaunchTask": "compile"
+        }
+    ]
+}
