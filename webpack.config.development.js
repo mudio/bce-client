@@ -7,9 +7,10 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
+import validate from 'webpack-validator';
 import baseConfig from './webpack.config.base';
 
-export default merge(baseConfig, {
+export default validate(merge(baseConfig, {
 
     debug: true,
 
@@ -41,11 +42,11 @@ export default merge(baseConfig, {
                     'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
                 ]
             },
-            // image
-            {test: /\.png$/, loaders: ['url-loader']},
-            // worker
-            {test: /\.worker\.js$/, loaders: ['worker-loader', 'babel-loader']},
 
+            // Images
+            {test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/, loader: 'url-loader'},
+
+            // Fonts
             {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
             {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
             {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
@@ -58,11 +59,22 @@ export default merge(baseConfig, {
         // https://webpack.github.io/docs/hot-module-replacement-with-webpack.html
         new webpack.HotModuleReplacementPlugin(),
 
-        // “If you are using the CLI, the webpack process will not exit with an error code by enabling this plugin.”
-        // https://github.com/webpack/docs/wiki/list-of-plugins#noerrorsplugin
+        /**
+         * If you are using the CLI, the webpack process will not exit with an error
+         * code by enabling this plugin.
+         * https://github.com/webpack/docs/wiki/list-of-plugins#noerrorsplugin
+         */
         new webpack.NoErrorsPlugin(),
 
-        // NODE_ENV should be production so that modules do not perform certain development checks
+        /**
+         * Create global constants which can be configured at compile time.
+         *
+         * Useful for allowing different behaviour between development builds and
+         * release builds
+         *
+         * NODE_ENV should be production so that modules do not perform certain
+         * development checks
+         */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development')
         })
@@ -70,4 +82,4 @@ export default merge(baseConfig, {
 
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
     target: 'electron-renderer'
-});
+}));

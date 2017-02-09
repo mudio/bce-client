@@ -3,9 +3,10 @@
 */
 
 import path from 'path';
+import validate from 'webpack-validator';
 import {dependencies as externals} from './static/package.json';
 
-export default {
+export default validate({
     module: {
         loaders: [
             {
@@ -35,4 +36,4 @@ export default {
     plugins: [],
 
     externals: Object.keys(externals || {})
-};
+});

@@ -4,12 +4,13 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
+import validate from 'webpack-validator';
 import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
-export default merge(baseConfig, {
+export default validate(merge(baseConfig, {
 
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
 
     entry: ['babel-polyfill', './app/main'],
 
@@ -20,9 +21,23 @@ export default merge(baseConfig, {
     },
 
     plugins: [
-        new BabiliPlugin(),
+        /**
+         * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
+         */
+        new BabiliPlugin({
+        // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
+            deadcode: false,
+        }),
 
-        // NODE_ENV should be production so that modules do not perform certain development checks
+        /**
+         * Create global constants which can be configured at compile time.
+         *
+         * Useful for allowing different behaviour between development builds and
+         * release builds
+         *
+         * NODE_ENV should be production so that modules do not perform certain
+         * development checks
+         */
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('production')
@@ -45,4 +60,4 @@ export default merge(baseConfig, {
         __dirname: false,
         __filename: false
     }
-});
+}));

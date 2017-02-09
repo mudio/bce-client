@@ -10,12 +10,12 @@
     "indent": [2, 4],
     "comma-dangle": 0,
     "max-len": [2, 120],
-    "consistent-return": 0,
+    "consistent-return": "off",
     "generator-star-spacing": "off",
     "class-methods-use-this": 0,
     "arrow-parens": ["off"],
     "object-curly-spacing": [2, "never"],
-    "import/no-extraneous-dependencies": 0,
+    "import/no-extraneous-dependencies": "off",
     "no-use-before-define": "off",
     "no-underscore-dangle": 0,
     "react/jsx-no-bind": 0,
@@ -26,12 +26,12 @@
     "react/forbid-prop-types": 0,
     "react/no-unused-prop-types": 0,
     "react/prefer-stateless-function": 0,
-    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }],
-    "jsx-a11y/no-static-element-interactions": 0
+    "react/jsx-filename-extension": [2, { "extensions": [".js", ".jsx"] }]
   },
   "plugins": [
     "import",
-    "react"
+    "react",
+    "promise"
   ],
   "settings": {
     "import/resolver": {

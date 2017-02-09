@@ -4,13 +4,14 @@
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
+import validate from 'webpack-validator';
 import BabiliPlugin from 'babili-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 import baseConfig from './webpack.config.base';
 
-export default merge(baseConfig, {
+export default validate(merge(baseConfig, {
 
     devtool: 'cheap-module-source-map',
 
@@ -40,11 +41,10 @@ export default merge(baseConfig, {
                 )
             },
 
-            // image
-            {test: /\.png$/, loaders: ['url-loader']},
-            // worker
-            {test: /\.worker\.js$/, loaders: ['worker-loader', 'babel-loader']},
+            // Images
+            {test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/, loader: 'url-loader'},
 
+            // Fonts
             {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
             {test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
             {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
@@ -54,20 +54,38 @@ export default merge(baseConfig, {
     },
 
     plugins: [
-        // https://webpack.github.io/docs/list-of-plugins.html#occurrenceorderplugin
-        // https://github.com/webpack/webpack/issues/864
+        /**
+         * Assign the module and chunk ids by occurrence count
+         * Reduces total file size and is recommended
+         */
         new webpack.optimize.OccurrenceOrderPlugin(),
 
-        // NODE_ENV should be production so that modules do not perform certain development checks
+        /**
+         * Create global constants which can be configured at compile time.
+         *
+         * Useful for allowing different behaviour between development builds and
+         * release builds
+         *
+         * NODE_ENV should be production so that modules do not perform certain
+         * development checks
+         */
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production')
         }),
 
-        new BabiliPlugin(),
+        /**
+         * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
+         */
+        new BabiliPlugin({
+        // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
+            deadcode: false,
+        }),
 
-        // Set the ExtractTextPlugin output filename
         new ExtractTextPlugin('style.css', {allChunks: true}),
 
+        /**
+         * Dynamically generate index.html page
+         */
         new HtmlWebpackPlugin({
             filename: 'app.html',
             template: 'app/app.html',
@@ -77,4 +95,4 @@ export default merge(baseConfig, {
 
     // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
     target: 'electron-renderer'
-});
+}));
