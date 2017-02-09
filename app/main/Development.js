@@ -16,11 +16,12 @@ export default class Development {
                     'REDUX_DEVTOOLS'
                 ];
                 const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-                for (const name of extensions) { // eslint-disable-line no-restricted-syntax
-                    try {
-                        await installer.default(installer[name], forceDownload);
-                    } catch (e) { } // eslint-disable-line
-                }
+                // TODO: Use async interation statement.
+                //       Waiting on https://github.com/tc39/proposal-async-iteration
+                //       Promises will fail silently, which isn't what we want in development
+                return Promise
+                    .all(extensions.map(name => installer.default(installer[name], forceDownload)))
+                    .catch(console.log);    // eslint-disable-line
             }
         };
     }
