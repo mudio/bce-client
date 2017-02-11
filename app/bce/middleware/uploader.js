@@ -7,7 +7,7 @@
 
 import _ from 'lodash';
 import WorkFlow from './WorkFlow';
-import {warn} from '../utils/Logger';
+import {warn} from '../utils/logger';
 import UploadQueue from './UploadQueue';
 import {UploadStatus} from '../utils/TransferStatus';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';

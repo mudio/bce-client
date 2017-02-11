@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {error as errLogger} from '../utils/Logger';
+import {error as errLogger} from '../utils/logger';
 import {DownloadStatus} from '../utils/TransferStatus';
 import {DownloadNotify} from '../utils/TransferNotify';
 

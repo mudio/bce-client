@@ -10,8 +10,8 @@
 import path from 'path';
 import walk from 'fs-walk';
 
-import getUuid from '../utils/Uuid';
-import {error} from '../utils/Logger';
+import {getUuid} from '../utils/utils';
+import {error} from '../utils/logger';
 import {TransType} from '../utils/BosType';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 

@@ -5,12 +5,12 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import _ from 'lodash';
 import EventEmitter from 'events';
 
-import _ from 'lodash';
-import getUuid from '../utils/Uuid';
+import {getUuid} from '../utils/utils';
 import IdbEntry from './worker/index.worker';
-import {workerLogger} from '../utils/Logger';
+import {workerLogger} from '../utils/logger';
 
 const _eventPool = {};
 const _worker = new IdbEntry();

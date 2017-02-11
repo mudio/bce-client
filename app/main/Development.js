@@ -5,13 +5,17 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint-disable global-require */
+
+import {error} from '../bce/utils/logger';
+
 export default class Development {
     constructor() {
-        require('electron-debug')({showDevTools: true}); // eslint-disable-line global-require
+        require('electron-debug')({showDevTools: true});
     }
 
     installExtensions() {
-        const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+        const installer = require('electron-devtools-installer');
 
         const extensions = [
             'REACT_DEVELOPER_TOOLS',
@@ -23,6 +27,6 @@ export default class Development {
         //       Promises will fail silently, which isn't what we want in development
         return Promise
             .all(extensions.map(name => installer.default(installer[name], forceDownload)))
-            .catch(console.log);    // eslint-disable-line
+            .catch(error);
     }
 }

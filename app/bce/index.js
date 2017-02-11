@@ -14,14 +14,11 @@ import {syncHistoryWithStore} from 'react-router-redux';
 
 import './style/mixin.global.css';
 import routes from './routes';
-import {renderLogger} from './utils/Logger';
 import configureStore from './store/configureStore';
 
 const cache = JSON.parse(localStorage.getItem('cache')) || {};
 window.globalStore = configureStore(cache);
 const history = syncHistoryWithStore(hashHistory, window.globalStore);
-
-renderLogger('startup');
 
 window.globalStore.subscribe(() => {
     const {navigator, auth, uploads, downloads} = window.globalStore.getState();

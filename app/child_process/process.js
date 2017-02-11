@@ -7,8 +7,8 @@
 
 import childProcess from 'child_process';
 
-import Uuid from '../bce/utils/Uuid';
-import {error, warn, info} from '../bce/utils/Logger';
+import {getUuid} from '../bce/utils/utils';
+import {error, warn, info} from '../bce/utils/logger';
 
 const _eventPool = {};
 
@@ -49,7 +49,7 @@ class Process {
 
     sendMessage(message) {
         return new Promise((resolve, reject) => {
-            const uuid = Uuid.getUuid();
+            const uuid = getUuid();
 
             _eventPool[uuid] = {resolve, reject};
 

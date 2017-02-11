@@ -10,7 +10,7 @@ import async from 'async';
 import {EventEmitter} from 'events';
 
 import {UploadConfig} from '../config';
-import {error, info} from '../utils/Logger';
+import {error, info} from '../utils/logger';
 import {getRegionClient} from '../api/client';
 import {UploadStatus} from '../utils/TransferStatus';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';

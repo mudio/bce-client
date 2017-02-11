@@ -9,7 +9,7 @@ import _ from 'lodash';
 import async from 'async';
 import {EventEmitter} from 'events';
 
-import {error} from '../utils/Logger';
+import {error} from '../utils/logger';
 
 export default class WorkFlow extends EventEmitter {
     constructor(QueueClassType, workflowLimit = 5) {

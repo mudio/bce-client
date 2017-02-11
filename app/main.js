@@ -7,7 +7,6 @@
 
 import {app} from 'electron';
 
-import {mainLogger} from './bce/utils/Logger';
 import MenuManager from './main/MenuManager';
 import Development from './main/Development';
 import WindowManager from './main/WindowManager';
@@ -25,8 +24,6 @@ if (shouldQuit) {
 }
 
 app.on('ready', () => {
-    mainLogger('main ready');
-
     if (process.env.NODE_ENV === 'development') {
         const developer = new Development();
         developer.installExtensions();

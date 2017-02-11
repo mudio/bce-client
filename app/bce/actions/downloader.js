@@ -7,7 +7,7 @@
 
 /* eslint object-property-newline: 0 */
 
-import getUuid from '../utils/Uuid';
+import {getUuid} from '../utils/utils';
 import {getRegionClient} from '../api/client';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
 
