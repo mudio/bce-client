@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {app, BrowserWindow} from 'electron';
+import {BrowserWindow} from 'electron';
 
 import AutoUpdater from './AutoUpdater';
 
@@ -26,18 +26,13 @@ export default class WindowManager {
     }
 
     registerWebContentEvent() {
-        this._window.webContents.on('did-finish-load', () => {
+        this._window.once('ready-to-show', () => {
             this._window.show();
-            this._window.focus();
         });
 
         this._window.on('closed', () => {
             this._window = null;
         });
-    }
-
-    registerAppEvent() {
-        app.on('window-all-closed', () => app.quit());
     }
 
     getWindow() {

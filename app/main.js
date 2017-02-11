@@ -11,36 +11,34 @@ import {mainLogger} from './bce/utils/Logger';
 import MenuManager from './main/MenuManager';
 import Development from './main/Development';
 import WindowManager from './main/WindowManager';
-import Win32Installer from './main/Win32SquirrelEventsHandle';
 
-const developer = new Development();
-const win32Installer = new Win32Installer();
 let windowManager = null;
 
-if (!win32Installer.handleStartupEvent()) {
-    const shouldQuit = app.makeSingleInstance(() => {
-        if (windowManager) {
-            windowManager.focusWindow();
-        }
-    });
+const shouldQuit = app.makeSingleInstance(() => {
+    if (windowManager) {
+        windowManager.focusWindow();
+    }
+});
 
-    if (shouldQuit) {
-        app.quit();
+if (shouldQuit) {
+    app.quit();
+}
+
+app.on('ready', () => {
+    mainLogger('main ready');
+
+    if (process.env.NODE_ENV === 'development') {
+        const developer = new Development();
+        developer.installExtensions();
     }
 
-    developer.showDevTools();
+    windowManager = new WindowManager();
+    windowManager.registerWebContentEvent();
+    windowManager.loadURL(`file://${__dirname}/app.html`);
 
-    app.on('ready', async () => { // eslint-disable-line arrow-parens
-        mainLogger('main ready');
-        await developer.installExtensions();
+    const currentWindow = windowManager.getWindow();
+    const menuManager = new MenuManager(currentWindow);
+    menuManager.initMenu();
+});
 
-        windowManager = new WindowManager();
-        windowManager.registerAppEvent();
-        windowManager.registerWebContentEvent();
-        windowManager.loadURL(`file://${__dirname}/app.html`);
-
-        const currentWindow = windowManager.getWindow();
-        const menuManager = new MenuManager(currentWindow);
-        menuManager.initMenu();
-    });
-}
+app.on('window-all-closed', () => app.quit());
