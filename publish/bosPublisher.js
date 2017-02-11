@@ -16,8 +16,7 @@ import buildPackage from '../package.json';
 import appPackage from '../static/package.json';
 
 const {BOS_AK, BOS_SK, BOS_ENDPOINT} = process.env;
-const {version, name} = appPackage;
-const outDir = buildPackage.directories.output;
+const outDir = buildPackage.build.directories.output;
 const distDir = path.join(__dirname, '..', outDir);
 
 const bucket = 'bce-bos-client';
@@ -51,48 +50,32 @@ function upload(dir, filename, object) {
 
 function publish() {
     if (os.platform() === 'darwin') {
-        // osx 平台发布dmg、zip包用于程序发布及更新
+        // osx 平台发布dmg程序安装包
         walk.files(
             path.join(distDir, 'mac'), // mac 由electron-builder生成，版本更新需要手动修改
             (basedir, filename) => {
                 const ext = path.extname(filename);
 
                 if (ext === '.dmg') {
-                    const target = `${prefix}/v${version}/${name}-${version}.dmg`;
-                    upload(basedir, filename, target);
-                } else if (ext === '.zip') {
-                    const target = `${prefix}/v${version}/${name}-${version}-mac.zip`;
-                    upload(basedir, filename, target);
+                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${filename}`);
                 }
             },
             err => console.log(err)
+        );
+        // latest-mac.json
+        upload(
+            path.join(distDir, 'github'), 'latest-mac.json', `${prefix}/latest-mac.json`
         );
     }
 
     if (os.platform() === 'win32') {
-        // win32 平台发布nsis installer、squirrel installer、squirrel nupkg包用于程序发布及更新
-        // squirrel
+        // nsis latest.yml
         walk.files(
-            path.join(distDir, 'win'), // win 由electron-builder生成，版本更新需要手动修改
+            distDir,
             (basedir, filename) => {
-                if (filename === 'RELEASES' || path.extname(filename) === '.nupkg') {
-                    const target = `${prefix}/v${version}/${filename}`;
-                    upload(basedir, filename, target);
-                } else if (path.extname(filename) === '.exe') {
-                    const target = `${prefix}/v${version}/${name}-${version}-setup.exe`;
-                    upload(basedir, filename, target);
-                }
-            },
-            err => console.log(err)
-        );
-
-        // nsis
-        walk.files(
-            distDir, // nsis 安装包在根目录下
-            (basedir, filename) => {
-                if (path.extname(filename) === '.exe') {
-                    const target = `${prefix}/v${version}/${name}-${version}-nsis.exe`;
-                    upload(basedir, filename, target);
+                const ext = path.extname(filename);
+                if (ext === '.exe' || ext === '.yml') {
+                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${filename}`);
                 }
             },
             err => console.log(err)

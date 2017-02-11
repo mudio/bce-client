@@ -20,7 +20,7 @@ import appPackage from '../static/package.json';
 
 const {GH_TOKEN} = process.env;
 const {version, name} = appPackage;
-const outDir = buildPackage.directories.output;
+const outDir = buildPackage.build.directories.output;
 const distDir = path.join(__dirname, '..', outDir);
 
 const client = request.defaults({
@@ -80,7 +80,7 @@ function prepareUpload(basedir, filename, uploadUrl, assetName, draft) {
 }
 
 function publish() {
-    client.get('https://api.github.com/repos/mudio/bos/releases', (error, response, body) => {
+    client.get('https://api.github.com/repos/mudio/bce-client/releases', (error, response, body) => {
         if (error) {
             console.error(error.message);
             return;
@@ -112,9 +112,6 @@ function publish() {
                         if (ext === '.dmg') {
                             const assetName = `${name}-${version}.dmg`;
                             prepareUpload(basedir, filename, uploadUrl, assetName, draft);
-                        } else if (ext === '.zip') {
-                            const assetName = `${name}-${version}-mac.zip`;
-                            prepareUpload(basedir, filename, uploadUrl, assetName, draft);
                         }
                     },
                     err => console.log(err)
@@ -122,25 +119,12 @@ function publish() {
             }
 
             if (os.platform() === 'win32') {
-                // win32 平台发布nsis installer、squirrel installer、squirrel nupkg包用于程序发布及更新
-                // squirrel
-                walk.files(
-                    path.join(distDir, 'win'), // win 由electron-builder生成，版本更新需要手动修改
-                    (basedir, filename) => {
-                        if (filename === 'RELEASES' || path.extname(filename) === '.nupkg') {
-                            prepareUpload(basedir, filename, uploadUrl, filename, draft);
-                        } else if (path.extname(filename) === '.exe') {
-                            const assetName = `${name}-${version}-setup.exe`;
-                            prepareUpload(basedir, filename, uploadUrl, assetName, draft);
-                        }
-                    },
-                    err => console.log(err)
-                );
                 // nsis
                 walk.files(
                     distDir, // nsis 安装包在根目录下
                     (basedir, filename) => {
-                        if (path.extname(filename) === '.exe') {
+                        const ext = path.extname(filename);
+                        if (ext === '.exe') {
                             const assetName = `${name}-${version}-nsis.exe`;
                             prepareUpload(basedir, filename, uploadUrl, assetName, draft);
                         }
