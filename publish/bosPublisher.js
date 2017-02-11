@@ -15,6 +15,7 @@ import {BosClient} from 'bce-sdk-js';
 import buildPackage from '../package.json';
 import appPackage from '../static/package.json';
 
+const {version, name} = appPackage;
 const {BOS_AK, BOS_SK, BOS_ENDPOINT} = process.env;
 const outDir = buildPackage.build.directories.output;
 const distDir = path.join(__dirname, '..', outDir);
@@ -57,14 +58,10 @@ function publish() {
                 const ext = path.extname(filename);
 
                 if (ext === '.dmg') {
-                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${filename}`);
+                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}.dmg`);
                 }
             },
             err => console.log(err)
-        );
-        // latest-mac.json
-        upload(
-            path.join(distDir, 'github'), 'latest-mac.json', `${prefix}/latest-mac.json`
         );
     }
 
@@ -73,9 +70,8 @@ function publish() {
         walk.files(
             distDir,
             (basedir, filename) => {
-                const ext = path.extname(filename);
-                if (ext === '.exe' || ext === '.yml') {
-                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${filename}`);
+                if (path.extname(filename) === '.exe') {
+                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}-nsis.exe`);
                 }
             },
             err => console.log(err)
