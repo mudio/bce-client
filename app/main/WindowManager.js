@@ -5,9 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
-
 import {app, BrowserWindow} from 'electron';
+
 import AutoUpdater from './AutoUpdater';
 
 export default class WindowManager {
