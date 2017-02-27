@@ -15,7 +15,7 @@ export default validate(merge(baseConfig, {
 
     devtool: 'cheap-module-source-map',
 
-    entry: ['babel-polyfill', './app/bce/index'],
+    entry: './app/bce/index',
 
     output: {
         publicPath: './'

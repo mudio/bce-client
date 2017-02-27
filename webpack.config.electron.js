@@ -12,7 +12,7 @@ export default validate(merge(baseConfig, {
 
     devtool: 'source-map',
 
-    entry: ['babel-polyfill', './app/main'],
+    entry: './app/main',
 
     // 'main.js' in root
     output: {

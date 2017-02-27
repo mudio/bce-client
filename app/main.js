@@ -36,6 +36,8 @@ app.on('ready', () => {
     const currentWindow = windowManager.getWindow();
     const menuManager = new MenuManager(currentWindow);
     menuManager.initMenu();
+
+    currentWindow.openDevTools();
 });
 
 app.on('window-all-closed', () => app.quit());

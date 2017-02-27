@@ -17,10 +17,10 @@
 .body {
     flex: auto;
     color: #fff;
+    flex-direction: column;
 }
 
 .item {
-    flex: auto;
     display: flex;
     font-size: 14px;
     color: #8692b2;

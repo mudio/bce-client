@@ -16,7 +16,7 @@ export default class WindowManager {
             width,
             height,
             frame: false,
-            titleBarStyle: 'hidden-inset'
+            titleBarStyle: 'hidden'
         });
         this._updater = new AutoUpdater(this._window);
     }

@@ -7,36 +7,29 @@
 
 import React from 'react';
 import {render} from 'react-dom';
-import {ipcRenderer} from 'electron';
-import {Provider} from 'react-redux';
-import {Router, hashHistory} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
 
 import './style/mixin.global.css';
-import routes from './routes';
-import configureStore from './store/configureStore';
+import bosBootstrap from '../bos/index';
+import Extensions from './components/Extensions';
 
-const cache = JSON.parse(localStorage.getItem('cache')) || {};
-window.globalStore = configureStore(cache);
-const history = syncHistoryWithStore(hashHistory, window.globalStore);
+const extensions = document.getElementById('extensions');
+const main = document.getElementById('main');
 
-window.globalStore.subscribe(() => {
-    const {navigator, auth, uploads, downloads} = window.globalStore.getState();
-    localStorage.setItem('cache', JSON.stringify({auth, uploads, downloads, navigator}));
-});
+bosBootstrap(main);
+render(<Extensions />, extensions);
 
-ipcRenderer.on('notify', (event, type, message) => {
-    if (type) {
-        window.globalStore.dispatch({type, message});
+document.body.onkeypress = ({code, target}) => {
+    if (target.tagName === 'INPUT') {
+        return;
     }
-});
 
-render(
-    <Provider store={window.globalStore}>
-        <Router history={history} routes={routes} />
-    </Provider>,
-    document.getElementById('main')
-);
+    if (code === 'Backquote' && extensions.className.indexOf('fadeIn') === -1) {
+        extensions.className = 'fadeIn';
+    } else {
+        extensions.className = 'fadeOut';
+    }
+};
 
 document.body.ondrop = evt => evt.preventDefault();
 document.body.ondragover = evt => evt.preventDefault();
+

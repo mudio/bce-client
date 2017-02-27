@@ -13,12 +13,12 @@
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
     "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "preview": "cross-env NODE_ENV=production electron ./static/",
-    "start": "cross-env HOT=1 NODE_ENV=development electron -r babel-register -r babel-polyfill ./app/main",
+    "start": "cross-env HOT=1 NODE_ENV=development electron -r babel-register ./app/main",
     "server": "cross-env NODE_ENV=development node -r babel-register server.js",
     "dev": "concurrently --kill-others \"npm run server\" \"npm run start\"",
     "compile": "npm run build-main && npm run build-renderer",
     "build": "npm run compile && build",
-    "build:win": "build --win --publish never",
+    "build:win": "build --win --ia32 --publish never",
     "build:osx": "build --mac --publish never",
     "publish:bos": "node -r babel-register ./publish/bosPublisher.js",
     "publish:github": "node -r babel-register ./publish/githubPublisher.js"
@@ -80,7 +80,6 @@
     "babel-plugin-transform-class-properties": "^6.22.0",
     "babel-plugin-transform-es2015-classes": "^6.22.0",
     "babel-plugin-webpack-loaders": "^0.8.0",
-    "babel-polyfill": "^6.22.0",
     "babel-preset-env": "^1.1.8",
     "babel-preset-react": "^6.22.0",
     "babel-preset-react-hmre": "^1.1.1",
@@ -132,6 +131,7 @@
     "worker-loader": "^0.7.1"
   },
   "dependencies": {
+    "animate.css": "^3.5.2",
     "async": "^2.1.4",
     "bce-sdk-js": "^0.2.3",
     "classnames": "^2.2.5",
