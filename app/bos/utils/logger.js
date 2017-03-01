@@ -14,3 +14,5 @@ logger.transports.console.level = 'info';
 
 logger.transports.file = !isDev();
 logger.transports.console = isDev();
+
+export default logger;

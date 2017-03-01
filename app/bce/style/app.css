@@ -46,7 +46,6 @@ input, button {
     z-index: 0;
     width: 100vw;
     display: flex;
-    background: #fff;
     transition: filter .3s;
 }
 
@@ -54,6 +53,7 @@ input, button {
     flex: auto;
     width: 100vw;
     display: flex;
+    background: #fff;
     position: relative;
 }
 
