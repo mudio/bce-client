@@ -84,11 +84,20 @@ export default validate(merge(baseConfig, {
         new ExtractTextPlugin('style.css', {allChunks: true}),
 
         /**
-         * Dynamically generate index.html page
+         * Dynamically generate app.html page
          */
         new HtmlWebpackPlugin({
             filename: 'app.html',
             template: 'app/app.html',
+            inject: false
+        }),
+
+        /**
+         * Dynamically generate login.html page
+         */
+        new HtmlWebpackPlugin({
+            filename: 'login.html',
+            template: 'app/login.html',
             inject: false
         })
     ],
