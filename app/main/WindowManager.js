@@ -7,18 +7,33 @@
 
 import {BrowserWindow} from 'electron';
 
-import AutoUpdater from './AutoUpdater';
-
 export default class WindowManager {
-    constructor(show = false, width = 960, height = 680) {
-        this._window = new BrowserWindow({
-            show,
-            width,
-            height,
-            frame: false,
-            titleBarStyle: 'hidden'
+    constructor(width = 960, height = 680, option = {}) {
+        this._window = new BrowserWindow(
+            Object.assign(
+                {show: false, frame: false, titleBarStyle: 'hidden'},
+                option,
+                {width, height}
+            )
+        );
+    }
+
+    static fromLogin(url) {
+        const currentWindow = new WindowManager(280, 340, {
+            resizable: false, maximizable: false, minimizable: false
         });
-        this._updater = new AutoUpdater(this._window);
+        currentWindow.registerWebContentEvent();
+        currentWindow.loadURL(url);
+
+        return currentWindow.getWindow();
+    }
+
+    static fromApp(url) {
+        const currentWindow = new WindowManager();
+        currentWindow.registerWebContentEvent();
+        currentWindow.loadURL(url);
+
+        return currentWindow.getWindow();
     }
 
     loadURL(url = '') {
@@ -39,11 +54,7 @@ export default class WindowManager {
         return this._window;
     }
 
-    focusWindow() {
-        if (this._window.isMinimized()) {
-            this._window.restore();
-        }
-
-        this._window.focus();
+    close() {
+        this._window.close();
     }
 }

@@ -1,0 +1,98 @@
+
+.container {
+    flex: auto;
+    display: flex;
+    overflow: hidden;
+    background: #444c63;
+    flex-flow: column nowrap;
+    -webkit-app-region: drag;
+}
+
+.container svg {
+    width: 100px;
+    margin: 30px auto;
+}
+
+.login {
+    flex: auto;
+    display: flex;
+    margin: 0 27px;
+    flex-direction: column;
+}
+
+.login input {
+    font-size: 12px;
+    width: 100%;
+    line-height: 40px;
+    padding: 0;
+    color: #fff;
+    background: transparent;
+    border: none;
+    border-bottom: #8692b2 1px solid;
+}
+
+.login input::-webkit-input-placeholder {
+    color: #8692b2;
+}
+
+.fields {
+    flex-direction: column;
+}
+
+.loginBtn {
+    display: flex;
+    border: none;
+    cursor: pointer;
+    font-size: 26px;
+    color: #8692b2;
+    background: none;
+    right: 5px;
+    padding: 0;
+    margin: 0;
+    line-height: 40px;
+    position: absolute;
+}
+
+.loginBtn:hover {
+    color: #2eacfc;
+}
+
+.pin {
+    position: relative;
+}
+
+.forgot {
+    color: #fff;
+    font-size: 12px;
+    line-height: 40px;
+    position: relative;
+    border-bottom: #8692b2 1px solid;
+}
+
+.forgotBtn {
+    right: 5px;
+    color: #8692b2;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 40px;
+    position: absolute;
+}
+
+.forgotBtn:hover {
+    color: #2eacfc;
+}
+
+.error {
+    flex: auto;
+    font-size: 12px;
+    color: #ec6c37;
+    align-items: center;
+}
+
+.loading {
+    position: absolute;
+    right: 5px;
+    line-height: 40px;
+    color: #fff;
+    font-size: 20px;
+}

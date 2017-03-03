@@ -1,7 +1,7 @@
 /**
  * Main Process - 自动更新
  *
- * @file OSXUpdater.js
+ * @file AutoUpdater.js
  * @author mudio(job.mudio@gmail.com)
  */
 
@@ -17,7 +17,7 @@ import {
 
 const feedURL = 'http://bce-bos-client.bj.bcebos.com/releases/';
 
-export default class OSXUpdater {
+export default class AutoUpdater {
     constructor(window) {
         this._window = window;
 
@@ -26,6 +26,10 @@ export default class OSXUpdater {
         this._window.webContents.once('did-frame-finish-load', () => {
             autoUpdater.checkForUpdates();
         });
+    }
+
+    static from(window) {
+        return new AutoUpdater(window);
     }
 
     notify(title, message) {

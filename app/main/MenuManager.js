@@ -5,32 +5,11 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
-
-import {app, Menu, shell, getCurrentWindow} from 'electron';
+import {app, Menu, shell} from 'electron';
 
 export default class MenuManager {
-    constructor(window) {
-        this._window = window || getCurrentWindow();
-    }
-
-    initMenu() {
+    static initMenu() {
         const name = app.getName();
-
-        if (process.env.NODE_ENV === 'development') {
-            this._window.webContents.on('context-menu', (e, props) => {
-                const {x, y} = props;
-
-                Menu.buildFromTemplate([
-                    {
-                        label: '查看元素',
-                        click: () => {
-                            this._window.inspectElement(x, y);
-                        }
-                    }
-                ]).popup(this._window);
-            });
-        }
 
         if (process.platform === 'darwin') {
             const template = [

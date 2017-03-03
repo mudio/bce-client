@@ -7,11 +7,30 @@
 
 /* eslint-disable global-require */
 
+import {BrowserWindow, Menu} from 'electron';
+
 import {error} from '../bce/utils/logger';
 
 export default class Development {
     constructor() {
         require('electron-debug')({showDevTools: true});
+    }
+
+    supportInspect() {
+        BrowserWindow.getAllWindows().forEach(_window => {
+            _window.webContents.on('context-menu', (e, props) => {
+                const {x, y} = props;
+
+                Menu.buildFromTemplate([
+                    {
+                        label: '查看元素',
+                        click: () => {
+                            _window.inspectElement(x, y);
+                        }
+                    }
+                ]).popup(_window);
+            });
+        });
     }
 
     installExtensions() {

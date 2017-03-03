@@ -7,6 +7,8 @@
 
 import Q from 'q';
 import {BosClient} from 'bce-sdk-js';
+
+import {REGION_BJ} from '../utils/Region';
 import GlobalConfig from '../../main/ConfigManager';
 
 const endpoint = GlobalConfig.get('endpoint');
@@ -93,7 +95,7 @@ export class Client extends BosClient {
     }
 }
 
-export function getRegionClient(region) {
+export function getRegionClient(region = REGION_BJ) {
     const {auth} = window.globalStore.getState();
     const {ak, sk} = auth;
 
