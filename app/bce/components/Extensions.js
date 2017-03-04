@@ -9,6 +9,7 @@ import React, {Component} from 'react';
 
 import styles from './Extensions.css';
 import {REGION_BJ} from '../utils/region';
+import SystemBar from './common/SystemBar';
 import {getRegionClient} from '../api/client';
 
 export default class Extensions extends Component {
@@ -63,6 +64,7 @@ export default class Extensions extends Component {
     render() {
         return (
             <div className={styles.container}>
+                <SystemBar />
                 <div className={styles.search}>
                     <input placeholder="🔍 请输入关键字搜索" />
                 </div>

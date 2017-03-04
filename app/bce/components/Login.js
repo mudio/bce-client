@@ -121,7 +121,7 @@ export default class Login extends Component {
     render() {
         return (
             <div className={styles.container}>
-                <SystemBar darwinHidden />
+                <SystemBar />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150">
                     <g fill="#2eacfc">
                         <path d="M50.597,59.606V42.301c0-3.35-1.814-6.448-4.76-8.121l-12.029-6.842v41.819c0,1.048,0.568,2.017,1.489,2.539
