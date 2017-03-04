@@ -86,7 +86,12 @@
     flex: auto;
     font-size: 12px;
     color: #ec6c37;
-    align-items: center;
+    margin-top: 10px;
+}
+
+.error :global(.fa) {
+    line-height: 18px;
+    margin-right: 5px;
 }
 
 .loading {

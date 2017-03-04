@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import ErrorCode from './ErrorCode';
+import errorMap from './error';
 import {getRegionClient} from '../api/client';
 
 export const API_TYPE = Symbol('Call API');
@@ -41,7 +41,7 @@ export default () => next => action => {
         })),
         error => next(actionWith({
             type: failureType,
-            error: ErrorCode[error.code] || error.message
+            error: errorMap[error.code] || error.message
         }))
     );
 };

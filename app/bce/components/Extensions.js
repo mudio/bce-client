@@ -8,7 +8,7 @@
 import React, {Component} from 'react';
 
 import styles from './Extensions.css';
-import {REGION_BJ} from '../utils/Region';
+import {REGION_BJ} from '../utils/region';
 import {getRegionClient} from '../api/client';
 
 export default class Extensions extends Component {
