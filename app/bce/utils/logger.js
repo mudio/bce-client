@@ -7,7 +7,4 @@
 
 import logger from 'electron-log';
 
-// Log level
-logger.transports.console.level = 'info';
-
 export default logger;

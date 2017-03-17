@@ -16,11 +16,7 @@ class Version extends Component {
     static propTypes = {
         type: PropTypes.string.isRequired,
         version: PropTypes.string.isRequired,
-        lastest: PropTypes.shape({
-            url: PropTypes.string,
-            error: PropTypes.string,
-            releaseName: PropTypes.string
-        })
+        lastest: PropTypes.string
     }
 
     getVersionDom() {
@@ -57,32 +53,22 @@ class Version extends Component {
                     <i className="fa fa-exclamation-triangle" />
                     {version}
                     <span className={styles.tip}>
-                        新版本 {lastest.releaseName} 已经下载，重启客户端将自动安装更新
+                        新版本 {lastest} 已经下载，重启客户端将自动安装更新
                     </span>
                 </span>
             );
         case UpdaterActions.UPDATE_ERROR: {
-            if (lastest.url) {
-                return (
-                    <span className={styles.btn}>
-                        <i className="fa fa-exclamation-triangle" />
-                        {version}
-                        <span className={styles.tip}>
-                            发现新版本
-                            <BrowserLink linkTo={lastest.url}>
-                                {lastest.releaseName}
-                            </BrowserLink>
-                            ，由于更新服务异常，请手动更新。
-                        </span>
-                    </span>
-                );
-            }
-
             return (
                 <span className={styles.btn}>
                     <i className="fa fa-exclamation-triangle" />
                     {version}
-                    <span className={styles.tip}>{lastest.error}</span>
+                    <span className={styles.tip}>
+                        发现新版本
+                        <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/BOSCLI.html#BOS.E6.A1.8C.E9.9D.A2">
+                            {lastest}
+                        </BrowserLink>
+                        ，由于更新服务异常，请手动更新。
+                    </span>
                 </span>
             );
         }

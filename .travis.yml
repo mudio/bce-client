@@ -21,8 +21,6 @@ before_script:
 - npm run pretest
 
 script:
-- npm run pretest
 - npm run lint
-- npm run compile
 - npm run build:osx
 

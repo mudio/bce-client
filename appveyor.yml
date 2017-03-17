@@ -36,7 +36,6 @@ test_script:
   - npm --version
   - npm run pretest
   - npm run lint
-  - npm run compile
   - npm run build:win
   - npm run publish:bos
   - npm run publish:github
