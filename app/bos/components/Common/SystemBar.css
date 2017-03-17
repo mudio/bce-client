@@ -1,48 +1,32 @@
 
-.darwinBar {
-    width: 40px;
-    display: flex;
-    cursor: pointer;
-    color: #8692b2;
-    align-items: center;
-    justify-content: center;
-}
-
-.darwinBar:hover {
-    color: #d44950;
-}
-
-.windowBar {
-    display: flex;
-    height: 24px;
+.container {
     justify-content: flex-end;
     -webkit-app-region: drag;
 }
 
-.windowBar div {
+.container div {
     color: #ccc;
     width: 35px;
     display: flex;
     cursor: pointer;
     line-height: 24px;
     justify-content: center;
-    transition: background 0.3s ease-in,color 0.3s ease-in;
+    transition: 0.3s ease-in,color 0.3s ease-in;
 }
 
-.windowBar .exit,
-.windowBar .min,
-.windowBar .max {
+.container .exit,
+.container .min,
+.container .max {
     z-index: 999;
 }
 
-.windowBar .lock:hover,
-.windowBar .exit:hover {
+.container .exit:hover {
     color: #fff;
     background-color: #f06a6a;
 }
 
-.windowBar .min:hover,
-.windowBar .max:hover {
+.container .min:hover,
+.container .max:hover {
     color: #fff;
-    background-color: #ccc;
+    background-color: #333b51;
 }

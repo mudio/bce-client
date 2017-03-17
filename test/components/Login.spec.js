@@ -8,7 +8,7 @@ import {
     findRenderedDOMComponentWithClass,
     Simulate
 } from 'react-addons-test-utils';
-import Login from '../../app/bos/components/Login';
+import Login from '../../app/bce/components/Login';
 
 
 function setup() {

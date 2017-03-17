@@ -35,7 +35,7 @@ app.on('ready', () => {
     // 监听通知
     ipcMain.on('notify', (evt, msg) => {
         if (msg.type === 'login_success') {
-            const win = WindowManager.fromApp(`file://${__dirname}/app.html`);
+            const win = WindowManager.fromApp(`file://${__dirname}/app.html#/region`);
             _window.close();
             _window = win;
             // 初始化菜单

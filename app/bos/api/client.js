@@ -94,8 +94,7 @@ export class Client extends BosClient {
 }
 
 export function getRegionClient(region) {
-    const {auth} = window.globalStore.getState();
-    const {ak, sk} = auth;
+    const {ak, sk} = JSON.parse(localStorage.getItem('framework')).auth;
 
     if (region) {
         return new Client(region, {ak, sk});

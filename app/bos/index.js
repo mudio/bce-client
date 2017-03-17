@@ -16,13 +16,13 @@ import './style/mixin.global.css';
 import routes from './routes';
 import configureStore from './store/configureStore';
 
-const cache = JSON.parse(localStorage.getItem('cache')) || {};
+const cache = JSON.parse(localStorage.getItem('bos')) || {};
 window.globalStore = configureStore(cache);
 const history = syncHistoryWithStore(hashHistory, window.globalStore);
 
 window.globalStore.subscribe(() => {
     const {navigator, auth, uploads, downloads} = window.globalStore.getState();
-    localStorage.setItem('cache', JSON.stringify({auth, uploads, downloads, navigator}));
+    localStorage.setItem('bos', JSON.stringify({auth, uploads, downloads, navigator}));
 });
 
 ipcRenderer.on('notify', (event, type, message) => {
