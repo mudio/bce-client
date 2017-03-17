@@ -5,11 +5,12 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint-disable no-console */
+/* eslint-disable max-len, no-console */
 
-import os from 'os';
+import fs from 'fs';
 import path from 'path';
 import walk from 'fs-walk';
+import yaml from 'js-yaml';
 import {BosClient} from 'bce-sdk-js';
 
 import buildPackage from '../package.json';
@@ -17,8 +18,6 @@ import appPackage from '../static/package.json';
 
 const {version, name} = appPackage;
 const {BOS_AK, BOS_SK, BOS_ENDPOINT} = process.env;
-const outDir = buildPackage.build.directories.output;
-const distDir = path.join(__dirname, '..', outDir);
 
 const bucket = 'bce-bos-client';
 const prefix = 'releases';
@@ -37,11 +36,17 @@ function upload(dir, filename, object) {
             () => console.log(`取消，已经存在 => ${object}`),
             err => {
                 if (err.status_code === 404) {
-                    client.putObjectFromFile(bucket, object, path.join(dir, filename))
-                        .then(
+                    if (/\.(dmg|zip|exe)$/.test(filename)) {
+                        client.putObjectFromFile(bucket, object, path.join(dir, filename)).then(
                             () => console.log(`上传完毕 => ${object}`),
                             res => console.log(res)
                         );
+                    } else if (/\.(yml|json)$/.test(filename)) {
+                        client.putObjectFromString(bucket, `${prefix}/${filename}`, object).then(
+                            () => console.log(`上传完毕 ==> ${prefix}/${filename}`),
+                            ex => console.error(ex)
+                        );
+                    }
                 } else {
                     console.error(err.message);
                 }
@@ -49,38 +54,55 @@ function upload(dir, filename, object) {
         );
 }
 
-function publish() {
-    if (os.platform() === 'darwin') {
-        // osx 平台发布dmg程序安装包
-        walk.files(
-            path.join(distDir, 'mac'), // mac 由electron-builder生成，版本更新需要手动修改
-            (basedir, filename) => {
-                const ext = path.extname(filename);
+function publish(distDir) {
+    walk.files(distDir, (basedir, filename) => {
+        const ext = path.extname(filename);
+        // osx dmg
+        if (ext === '.dmg') {
+            upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}.dmg`);
+        }
+        // osx zip
+        if (ext === '.zip') {
+            upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}.zip`);
+        }
+        // osx update conf
+        if (filename === 'latest-mac.json') {
+            try {
+                const config = JSON.parse(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
+                config.url = `http://bce-bos-client.cdn.bcebos.com/${prefix}/v${appPackage.version}/${name}-${version}.zip`;
 
-                if (ext === '.dmg') {
-                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}.dmg`);
-                }
-            },
-            err => console.log(err)
-        );
-    }
+                upload(basedir, filename, JSON.stringify(config));
+            } catch (ex) {
+                console.error(ex.message);
+            }
+        }
 
-    if (os.platform() === 'win32') {
-        // nsis latest.yml
-        walk.files(
-            distDir,
-            (basedir, filename) => {
-                if (path.extname(filename) === '.exe') {
-                    upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}-nsis.exe`);
-                }
-            },
-            err => console.log(err)
-        );
-    }
+        // nsis exe
+        if (ext === '.exe') {
+            upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}-nsis.exe`);
+        }
+        // nsis update yaml
+        if (ext === '.yml') {
+            try {
+                const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
+                config.path = `http://bce-bos-client.cdn.bcebos.com/${prefix}/v${appPackage.version}/${name}-${version}-nsis.exe`;
+
+                upload(basedir, filename, JSON.stringify(config));
+            } catch (ex) {
+                console.error(ex.message);
+            }
+        }
+    },
+    err => console.log(err));
 }
 
 if (BOS_AK && BOS_SK && BOS_ENDPOINT) {
-    publish();
+    const outDir = buildPackage.build.directories.output;
+    const distDir = path.join(__dirname, '..', outDir);
+
+    publish(distDir);
+    publish(`${distDir}/mac`);
+    publish(`${distDir}/mac/github`);
 } else {
     console.log('终止发布操作，请配置环境变量BOS_AK、BOS_SK、BOS_ENDPOINT。');
 }

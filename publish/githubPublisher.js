@@ -102,36 +102,22 @@ function publish() {
 
             const uploadUrl = draft.upload_url.substring(0, draft.upload_url.indexOf('{'));
 
-            if (os.platform() === 'darwin') {
-                // osx 平台发布dmg、zip包用于程序发布及更新
-                walk.files(
-                    path.join(distDir, 'mac'), // mac 由electron-builder生成，版本更新需要手动修改
-                    (basedir, filename) => {
-                        const ext = path.extname(filename);
+            walk.files(
+                distDir, // nsis 安装包在根目录下
+                (basedir, filename) => {
+                    const ext = path.extname(filename);
+                    if (ext === '.exe') {
+                        const assetName = `${name}-${version}-nsis.exe`;
+                        prepareUpload(basedir, filename, uploadUrl, assetName, draft);
+                    }
 
-                        if (ext === '.dmg') {
-                            const assetName = `${name}-${version}.dmg`;
-                            prepareUpload(basedir, filename, uploadUrl, assetName, draft);
-                        }
-                    },
-                    err => console.log(err)
-                );
-            }
-
-            if (os.platform() === 'win32') {
-                // nsis
-                walk.files(
-                    distDir, // nsis 安装包在根目录下
-                    (basedir, filename) => {
-                        const ext = path.extname(filename);
-                        if (ext === '.exe') {
-                            const assetName = `${name}-${version}-nsis.exe`;
-                            prepareUpload(basedir, filename, uploadUrl, assetName, draft);
-                        }
-                    },
-                    err => console.log(err)
-                );
-            }
+                    if (ext === '.dmg') {
+                        const assetName = `${name}-${version}.dmg`;
+                        prepareUpload(basedir, filename, uploadUrl, assetName, draft);
+                    }
+                },
+                err => console.log(err)
+            );
         } catch (ex) {
             console.error(ex.message);
         }
