@@ -6,16 +6,10 @@
  */
 
 import Q from 'q';
-import {BosClient, HttpClient} from 'bce-sdk-js';
+import {BosClient} from 'bce-sdk-js';
 import GlobalConfig from '../../main/ConfigManager';
 
 const endpoint = GlobalConfig.get('endpoint');
-
-const method = HttpClient.prototype.buildQueryString;
-
-// fix baidubce/bce-sdk-js#28
-HttpClient.prototype.buildQueryString =
-    params => method(params).replace(/[()'!~.*\-_]/g, char => `%${char.charCodeAt().toString(16)}`);
 
 export class Client extends BosClient {
     constructor(region, auth) {
