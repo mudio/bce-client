@@ -7,7 +7,7 @@
 
 import path from 'path';
 import ConfigStore from 'configstore';
-import {REGION_BJ, REGION_GZ} from '../bce/utils/Region';
+import {REGION_BJ, REGION_GZ} from '../bce/utils/region';
 
 const bcedir = path.join('..', '.bce');
 const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});

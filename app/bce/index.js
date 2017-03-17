@@ -5,41 +5,64 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import electron from 'electron';
 import React from 'react';
 import {render} from 'react-dom';
-import {ipcRenderer} from 'electron';
 import {Provider} from 'react-redux';
-import {Router, hashHistory} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
 
 import './style/mixin.global.css';
-import routes from './routes';
-import {renderLogger} from './utils/Logger';
+import Extensions from './components/Extensions';
+import LoginPage from './containers/LoginPage';
 import configureStore from './store/configureStore';
 
+const extensions = document.getElementById('extensions');
 const cache = JSON.parse(localStorage.getItem('cache')) || {};
+
 window.globalStore = configureStore(cache);
-const history = syncHistoryWithStore(hashHistory, window.globalStore);
-
-renderLogger('startup');
-
 window.globalStore.subscribe(() => {
-    const {navigator, auth, uploads, downloads} = window.globalStore.getState();
-    localStorage.setItem('cache', JSON.stringify({auth, uploads, downloads, navigator}));
+    const {auth} = window.globalStore.getState();
+    const config = JSON.stringify({auth});
+    localStorage.setItem('cache', config);
 });
 
-ipcRenderer.on('notify', (event, type, message) => {
+electron.ipcRenderer.on('notify', (event, type, message) => {
     if (type) {
         window.globalStore.dispatch({type, message});
     }
 });
 
-render(
-    <Provider store={window.globalStore}>
-        <Router history={history} routes={routes} />
-    </Provider>,
-    document.getElementById('main')
-);
+function renderLoginPage() {
+    render(
+        <Provider store={window.globalStore}>
+            <LoginPage />
+        </Provider>
+        , document.getElementById('main')
+    );
+}
+
+function renderHomePage() {
+    render(<Extensions />, extensions);
+
+    document.body.onkeypress = ({code, target}) => {
+        if (target.tagName === 'INPUT') {
+            return;
+        }
+
+        if (code === 'Backquote' && extensions.className.indexOf('fadeIn') === -1) {
+            extensions.className = 'fadeIn';
+        } else {
+            extensions.className = 'fadeOut';
+        }
+    };
+}
+
+if (/login.html$/.test(location.pathname)) {
+    // 登陆
+    renderLoginPage();
+} else if (/app.html$/.test(location.pathname)) {
+    // 首页
+    renderHomePage();
+}
 
 document.body.ondrop = evt => evt.preventDefault();
 document.body.ondragover = evt => evt.preventDefault();

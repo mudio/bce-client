@@ -5,12 +5,12 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import ErrorCode from '../utils/ErrorCode';
+import errorMap from './error';
 import {getRegionClient} from '../api/client';
 
 export const API_TYPE = Symbol('Call API');
 
-export default store => next => action => {
+export default () => next => action => {
     const callAPI = action[API_TYPE];
     if (typeof callAPI === 'undefined') {
         return next(action);
@@ -25,8 +25,7 @@ export default store => next => action => {
     }
 
     const [requestType, successType, failureType] = types;
-    const {navigator, auth} = store.getState();
-    const client = getRegionClient(navigator.region, auth);
+    const client = getRegionClient();
 
     function actionWith(data) {
         const finalAction = Object.assign({}, action, data);
@@ -42,7 +41,7 @@ export default store => next => action => {
         })),
         error => next(actionWith({
             type: failureType,
-            error: ErrorCode[error.code] || error.message
+            error: errorMap[error.code] || error.message
         }))
     );
 };

@@ -10,10 +10,8 @@ import {connect} from 'react-redux';
 import Login from '../components/Login';
 import * as LoginActions from '../actions/login';
 
-function mapStateToProps(state) {
-    return {
-        auth: state.auth
-    };
+function mapStateToProps({auth, login}) {
+    return {...auth, ...login};
 }
 
 function mapDispatchToProps(dispatch) {

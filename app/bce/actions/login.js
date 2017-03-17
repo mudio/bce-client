@@ -15,10 +15,7 @@ export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 // 没办法，没有更好办法验证ak、sk
 export function login(ak, sk, pin) {
     return dispath => {
-        dispath({
-            type: UPDATE_AUTH,
-            auth: {ak, sk, pin}
-        });
+        dispath({type: UPDATE_AUTH, ak, sk, pin});
         dispath({
             [API_TYPE]: {
                 types: [LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE],
@@ -29,10 +26,8 @@ export function login(ak, sk, pin) {
     };
 }
 
-export function logout() {
-    return (dispath, getState) => {
-        const {auth} = getState();
-
-        dispath({type: UPDATE_AUTH, ak: auth.ak, sk: auth.sk, pin: ''});
+export function logout(ak = '', sk = '', pin = '') {
+    return dispath => {
+        dispath({type: UPDATE_AUTH, ak, sk, pin});
     };
 }

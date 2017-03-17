@@ -6,7 +6,7 @@
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mudio/bos"
+    "url": "git+https://github.com/mudio/bce-client"
   },
   "author": {
     "name": "木休大人",
@@ -15,13 +15,13 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mudio/bos/issues"
+    "url": "https://github.com/mudio/bce-client/issues"
   },
   "keywords": [
     "bce",
     "bos"
   ],
-  "homepage": "https://github.com/mudio/bos#readme",
+  "homepage": "https://github.com/mudio/bce-client#readme",
   "dependencies": {
   },
   "devEngines": {

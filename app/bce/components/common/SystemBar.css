@@ -1,0 +1,32 @@
+
+.container {
+    justify-content: flex-end;
+    -webkit-app-region: drag;
+}
+
+.container div {
+    color: #ccc;
+    width: 35px;
+    display: flex;
+    cursor: pointer;
+    line-height: 24px;
+    justify-content: center;
+    transition: 0.3s ease-in,color 0.3s ease-in;
+}
+
+.container .exit,
+.container .min,
+.container .max {
+    z-index: 999;
+}
+
+.container .exit:hover {
+    color: #fff;
+    background-color: #f06a6a;
+}
+
+.container .min:hover,
+.container .max:hover {
+    color: #fff;
+    background-color: #333b51;
+}

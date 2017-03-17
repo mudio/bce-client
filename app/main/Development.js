@@ -5,29 +5,47 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-export default class Development {
-    get installExtensions() {
-        return async () => {
-            if (process.env.NODE_ENV === 'development') {
-                const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
+/* eslint-disable global-require */
 
-                const extensions = [
-                    'REACT_DEVELOPER_TOOLS',
-                    'REDUX_DEVTOOLS'
-                ];
-                const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-                for (const name of extensions) { // eslint-disable-line no-restricted-syntax
-                    try {
-                        await installer.default(installer[name], forceDownload);
-                    } catch (e) { } // eslint-disable-line
-                }
-            }
-        };
+import {BrowserWindow, Menu} from 'electron';
+
+import {error} from '../bce/utils/logger';
+
+export default class Development {
+    constructor() {
+        require('electron-debug')({showDevTools: true});
     }
 
-    showDevTools() {
-        if (process.env.NODE_ENV === 'development') {
-            require('electron-debug')({showDevTools: true}); // eslint-disable-line global-require
-        }
+    supportInspect() {
+        BrowserWindow.getAllWindows().forEach(_window => {
+            _window.webContents.on('context-menu', (e, props) => {
+                const {x, y} = props;
+
+                Menu.buildFromTemplate([
+                    {
+                        label: '查看元素',
+                        click: () => {
+                            _window.inspectElement(x, y);
+                        }
+                    }
+                ]).popup(_window);
+            });
+        });
+    }
+
+    installExtensions() {
+        const installer = require('electron-devtools-installer');
+
+        const extensions = [
+            'REACT_DEVELOPER_TOOLS',
+            'REDUX_DEVTOOLS'
+        ];
+        const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+        // TODO: Use async interation statement.
+        //       Waiting on https://github.com/tc39/proposal-async-iteration
+        //       Promises will fail silently, which isn't what we want in development
+        return Promise
+            .all(extensions.map(name => installer.default(installer[name], forceDownload)))
+            .catch(error);
     }
 }
