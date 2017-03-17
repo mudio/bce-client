@@ -1,39 +1,41 @@
 /**
-* Base webpack config used across other specific configs
-*/
+ * Base webpack config used across other specific configs
+ */
 
 import path from 'path';
-import validate from 'webpack-validator';
+import webpack from 'webpack';
 import {dependencies as externals} from './static/package.json';
 
-export default validate({
+export default {
     module: {
-        loaders: [
-            {
-                test: /\.jsx?$/,
-                loaders: ['babel-loader'],
-                exclude: /node_modules/
-            }, {
-                test: /\.json$/,
-                loader: 'json-loader'
-            }]
+        rules: [{
+            test: /\.jsx?$/,
+            use: 'babel-loader',
+            exclude: /node_modules/
+        }]
     },
 
     output: {
         path: path.join(__dirname, 'static'),
         filename: 'bundle.js',
-
-        // https://github.com/webpack/webpack/issues/1114
+    // https://github.com/webpack/webpack/issues/1114
         libraryTarget: 'commonjs2'
     },
 
-    // https://webpack.github.io/docs/configuration.html#resolve
+    /**
+     * Determine the array of extensions that should be used to resolve modules.
+     */
     resolve: {
-        extensions: ['', '.js', '.jsx', '.json'],
-        packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
+        extensions: ['.js', '.jsx', '.json'],
+        modules: [
+            path.join(__dirname, 'static'),
+            'node_modules',
+        ],
     },
 
-    plugins: [],
+    plugins: [
+        new webpack.NamedModulesPlugin(),
+    ],
 
     externals: Object.keys(externals || {})
-});
+};

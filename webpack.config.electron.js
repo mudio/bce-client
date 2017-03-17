@@ -1,14 +1,14 @@
 /**
-* Build config for electron 'Main Process' filae
-*/
+ * Build config for electron 'Main Process' file
+ */
 
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-import validate from 'webpack-validator';
 import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
-export default validate(merge(baseConfig, {
+export default merge(baseConfig, {
+    devtool: 'source-map',
 
     entry: './app/main',
 
@@ -22,10 +22,7 @@ export default validate(merge(baseConfig, {
         /**
          * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
          */
-        new BabiliPlugin({
-        // Disable deadcode until https://github.com/babel/babili/issues/385 fixed
-            deadcode: false,
-        }),
+        new BabiliPlugin(),
 
         /**
          * Create global constants which can be configured at compile time.
@@ -44,7 +41,7 @@ export default validate(merge(baseConfig, {
     ],
 
     /**
-     * Set targed to Electron speciffic node.js env.
+     * Set target to Electron specific node.js env.
      * https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
      */
     target: 'electron-main',
@@ -57,5 +54,6 @@ export default validate(merge(baseConfig, {
     node: {
         __dirname: false,
         __filename: false
-    }
-}));
+    },
+});
+
