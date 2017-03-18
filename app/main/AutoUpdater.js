@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import http from 'http';
 import {dialog} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
@@ -18,7 +19,8 @@ import {
     UPDATE_NOT_AVAILABLE
 } from '../bce/actions/updater';
 
-const feedURL = 'http://bce-bos-client.bj.bcebos.com/releases/';
+// const feedURL = 'http://bce-bos-client.bos.qasandbox.bcetest.baidu.com/releases';
+const feedURL = 'http://bce-bos-client.bj.bcebos.com/releases';
 
 export default class AutoUpdater {
     constructor(window) {
@@ -26,13 +28,35 @@ export default class AutoUpdater {
 
         this.prepare();
 
-        this._window.webContents.once('did-frame-finish-load', () => {
-            autoUpdater.checkForUpdates();
-        });
+        this._window.webContents.once('did-frame-finish-load', this.checkForUpdates);
     }
 
     static from(window) {
         return new AutoUpdater(window);
+    }
+
+    checkForUpdates() {
+        http.get(`${feedURL}/lastest.json`, res => {
+            const statusCode = res.statusCode;
+            let rawData = '';
+
+            if (statusCode === 200) {
+                res.on('data', chunk => { rawData += chunk; });
+                res.on('end', () => {
+                    try {
+                        const {version} = JSON.parse(rawData);
+                        autoUpdater.setFeedURL(`${feedURL}/v${version}`);
+                        autoUpdater.checkForUpdates();
+                    } catch (err) {
+                        log.error(err.message);
+                    }
+                });
+                return;
+            }
+
+            res.resume();
+        })
+        .on('error', err => log.error(err.message));
     }
 
     notify(title, message = '') {
@@ -53,7 +77,7 @@ export default class AutoUpdater {
             this.notify(UPDATE_DOWNLOADED, info.version);
 
             dialog.showMessageBox({
-                type: '提示',
+                type: 'question',
                 title: '更新提示',
                 message: `客户端已经自动更新至${info.version}，重新启动后生效！`,
                 buttons: ['重启', '取消']
@@ -63,7 +87,5 @@ export default class AutoUpdater {
                 }
             });
         });
-
-        autoUpdater.setFeedURL(feedURL);
     }
 }

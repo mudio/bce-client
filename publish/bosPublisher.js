@@ -20,7 +20,7 @@ const {version, name} = appPackage;
 const {BOS_AK, BOS_SK, BOS_ENDPOINT} = process.env;
 
 const bucket = 'bce-bos-client';
-const prefix = 'releases';
+const prefix = `releases/v${appPackage.version}`;
 
 const client = new BosClient({
     credentials: {
@@ -30,7 +30,7 @@ const client = new BosClient({
     endpoint: BOS_ENDPOINT
 });
 
-function upload(dir, filename, object) {
+function upload(dir, filename, object, buffer) {
     client.getObjectMetadata(bucket, object)
         .then(
             () => console.log(`取消，已经存在 => ${object}`),
@@ -39,13 +39,14 @@ function upload(dir, filename, object) {
                     if (/\.(dmg|zip|exe)$/.test(filename)) {
                         client.putObjectFromFile(bucket, object, path.join(dir, filename)).then(
                             () => console.log(`上传完毕 => ${object}`),
-                            res => console.log(res)
+                            res => console.error(res)
                         );
                     } else if (/\.(yml|json)$/.test(filename)) {
-                        client.putObjectFromString(bucket, `${prefix}/${filename}`, object).then(
-                            () => console.log(`上传完毕 ==> ${prefix}/${filename}`),
-                            ex => console.error(ex)
-                        );
+                        client.putObjectFromString(bucket, object, buffer)
+                            .then(
+                                () => console.log(`上传完毕 => ${object}`),
+                                ex => console.error(ex)
+                            );
                     }
                 } else {
                     console.error(err.message);
@@ -59,19 +60,19 @@ function publish(distDir) {
         const ext = path.extname(filename);
         // osx dmg
         if (ext === '.dmg') {
-            upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}.dmg`);
+            upload(basedir, filename, `${prefix}/${name}-${version}.dmg`);
         }
         // osx zip
         if (ext === '.zip') {
-            upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}.zip`);
+            upload(basedir, filename, `${prefix}/${name}-${version}.zip`);
         }
         // osx update conf
         if (filename === 'latest-mac.json') {
             try {
                 const config = JSON.parse(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
-                config.url = `http://bce-bos-client.cdn.bcebos.com/${prefix}/v${appPackage.version}/${name}-${version}.zip`;
+                config.url = `${prefix}/${name}-${version}.zip`;
 
-                upload(basedir, filename, JSON.stringify(config));
+                upload(basedir, filename, `${prefix}/${filename}`, JSON.stringify(config));
             } catch (ex) {
                 console.error(ex.message);
             }
@@ -79,15 +80,15 @@ function publish(distDir) {
 
         // nsis exe
         if (ext === '.exe') {
-            upload(basedir, filename, `${prefix}/v${appPackage.version}/${name}-${version}-nsis.exe`);
+            upload(basedir, filename, `${prefix}/${name}-${version}-nsis.exe`);
         }
         // nsis update yaml
         if (ext === '.yml') {
             try {
                 const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
-                config.path = `http://bce-bos-client.cdn.bcebos.com/${prefix}/v${appPackage.version}/${name}-${version}-nsis.exe`;
+                config.path = `${name}-${version}-nsis.exe`;
 
-                upload(basedir, filename, JSON.stringify(config));
+                upload(basedir, filename, `${prefix}/${filename}`, yaml.dump(config));
             } catch (ex) {
                 console.error(ex.message);
             }

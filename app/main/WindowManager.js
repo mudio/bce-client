@@ -7,7 +7,7 @@
 
 import {BrowserWindow} from 'electron';
 
-import {name, version} from '../../package.json';
+import {name, version} from '../../static/package.json';
 
 export default class WindowManager {
     constructor(width = 960, height = 680, option = {}) {
