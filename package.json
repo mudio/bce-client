@@ -1,8 +1,8 @@
 {
-  "name": "bce-bos-client",
-  "productName": "BOS",
-  "version": "0.2.4-beta",
-  "description": "百度云-对象存储BOS-客户端",
+  "name": "bce-client",
+  "productName": "百度云",
+  "version": "0.3.0-beta",
+  "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
     "postinstall": "install-app-deps",
@@ -19,7 +19,7 @@
     "server": "cross-env NODE_ENV=development node -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
     "dev": "cross-env START_HOT=1 npm run server",
     "build": "npm run compile && build --publish never",
-    "build:win": "npm run compile && build --win --x64",
+    "build:win": "npm run compile && build --win --ia32",
     "build:osx": "npm run compile && build --mac --publish never",
     "publish:bos": "node -r babel-register ./publish/bosPublisher.js",
     "publish:github": "node -r babel-register ./publish/githubPublisher.js"
@@ -44,7 +44,7 @@
       ]
     },
     "files": [
-      "!*.{map,eot,ttf,woff2}"
+      "!*.{eot,ttf}"
     ],
     "directories": {
       "buildResources": "build",

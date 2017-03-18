@@ -1,8 +1,8 @@
 {
-  "name": "bce-bos-client",
-  "productName": "BOS",
-  "version": "0.2.4-beta",
-  "description": "百度云-对象存储BOS-客户端",
+  "name": "bce-client",
+  "productName": "百度云",
+  "version": "0.3.0-beta",
+  "description": "百度云-客户端",
   "main": "main.js",
   "repository": {
     "type": "git",
