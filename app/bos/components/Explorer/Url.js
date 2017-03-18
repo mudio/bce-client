@@ -13,7 +13,7 @@ import React, {Component, PropTypes} from 'react';
 import styles from './Url.css';
 import SystemBar from '../Common/SystemBar';
 import {getRegionClient} from '../../api/client';
-import {getLocalText} from '../../utils/Region';
+import {getLocalText} from '../../../utils/region';
 import GlobalConfig from '../../../main/ConfigManager';
 
 const endpoint = GlobalConfig.get('endpoint');

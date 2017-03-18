@@ -28,21 +28,7 @@
 			"plugins": [
 				"transform-class-properties",
 				"transform-es2015-classes",
-				"tcomb"
-			],
-			"presets": [
-				"react-hmre"
-			]
-		},
-		"test": {
-			"plugins": [
-				[
-					"webpack-loaders",
-					{
-						"config": "webpack.config.test.js",
-						"verbose": false
-					}
-				]
+				"react-hot-loader/babel"
 			]
 		}
 	}

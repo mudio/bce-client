@@ -7,7 +7,7 @@
 
 import Q from 'q';
 
-import {info} from '../utils/logger';
+import {info} from '../../utils/logger';
 import {API_TYPE} from '../middleware/api';
 import {getRegionClient} from '../api/client';
 import {createUploadTask} from './uploader';

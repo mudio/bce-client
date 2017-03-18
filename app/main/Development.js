@@ -9,7 +9,7 @@
 
 import {BrowserWindow, Menu} from 'electron';
 
-import {error} from '../bce/utils/logger';
+import {error} from '../utils/logger';
 
 export default class Development {
     constructor() {

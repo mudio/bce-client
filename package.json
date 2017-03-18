@@ -6,10 +6,8 @@
   "main": "main.js",
   "scripts": {
     "postinstall": "install-app-deps",
-    "test": "cross-env NODE_ENV=test mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
     "pretest": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
-    "test-e2e": "cross-env NODE_ENV=test mocha --compilers js:babel-register --require ./test/setup.js ./test/e2e.js",
-    "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty app test",
+    "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty app",
     "lint-fix": "npm run lint -- --fix",
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
     "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
@@ -118,20 +116,16 @@
     "jsdom": "^9.10.0",
     "json-loader": "^0.5.4",
     "mime": "^1.3.4",
-    "minimist": "^1.2.0",
-    "react-addons-test-utils": "^15.4.2",
     "react-hot-loader": "3.0.0-beta.6",
     "redux-logger": "^2.8.1",
-    "sinon": "^2.0.0",
-    "spectron": "^3.6.0",
     "style-loader": "^0.14.1",
     "url-loader": "^0.5.7",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "source-map-support": "^0.4.13"
   },
   "dependencies": {
-    "animate.css": "^3.5.2",
     "async": "^2.1.5",
     "bce-sdk-js": "^0.2.5",
     "classnames": "^2.2.5",
@@ -151,7 +145,6 @@
     "react-router-redux": "^4.0.8",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
-    "source-map-support": "^0.4.13",
     "uuid": "^3.0.1"
   },
   "devEngines": {

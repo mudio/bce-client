@@ -12,7 +12,7 @@ import mkdirp from 'mkdirp';
 import {EventEmitter} from 'events';
 
 import {DownloadConfig} from '../config';
-import {error, info} from '../utils/logger';
+import {error, info} from '../../utils/logger';
 import {getRegionClient} from '../api/client';
 import {DownloadStatus} from '../utils/TransferStatus';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';

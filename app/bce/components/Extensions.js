@@ -8,7 +8,7 @@
 import React, {Component} from 'react';
 
 import styles from './Extensions.css';
-import {REGION_BJ} from '../utils/region';
+import {REGION_BJ} from '../../utils/region';
 import SystemBar from './common/SystemBar';
 import {getRegionClient} from '../api/client';
 

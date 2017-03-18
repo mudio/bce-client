@@ -1,7 +1,7 @@
 /**
- * Uitls - utils
+ * utils - helper
  *
- * @file utils.js
+ * @file helper.js
  * @author mudio(job.mudio@gmail.com)
  */
 
@@ -9,6 +9,4 @@ import uuid from 'uuid';
 
 export const isDev = process.env.NODE_ENV === 'development';
 
-export function getUuid() {
-    return uuid.v1();
-}
+export const getUuid = () => uuid.v1();

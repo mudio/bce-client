@@ -7,7 +7,7 @@
 
 import {app, ipcMain} from 'electron';
 
-import {isDev} from './bce/utils/utils';
+import {isDev} from './utils/helper';
 import AutoUpdater from './main/AutoUpdater';
 import MenuManager from './main/MenuManager';
 import Development from './main/Development';

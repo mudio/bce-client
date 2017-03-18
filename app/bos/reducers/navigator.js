@@ -6,7 +6,7 @@
  */
 
 import {UPDATE_NAV} from '../actions/explorer';
-import {REGION_BJ} from '../utils/Region';
+import {REGION_BJ} from '../../utils/region';
 
 const defalutState = {region: REGION_BJ, bucket: '', prefix: ''};
 

@@ -8,7 +8,7 @@
 import Q from 'q';
 import {BosClient} from 'bce-sdk-js';
 
-import {REGION_BJ} from '../utils/region';
+import {REGION_BJ} from '../../utils/region';
 import GlobalConfig from '../../main/ConfigManager';
 
 const endpoint = GlobalConfig.get('endpoint');

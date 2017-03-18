@@ -9,7 +9,7 @@ import http from 'http';
 import {dialog} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
-import log from '../bce/utils/logger';
+import log from '../utils/logger';
 
 import {
     UPDATE_ERROR,
@@ -60,7 +60,7 @@ export default class AutoUpdater {
     }
 
     notify(title, message = '') {
-        log.info(title, message);
+        log.debug(title, message);
         this._window.webContents.send('notify', title, message);
     }
 

@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {isDev} from '../utils/utils';
+import {isDev} from '../../utils/helper';
 
 if (isDev) {
     module.exports = require('./configureStore.development'); // eslint-disable-line global-require
