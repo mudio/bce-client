@@ -10,6 +10,10 @@
 }
 
 .progress {
+    flex-flow: column nowrap;
+}
+
+.loader {
     display: flex;
     width: 150px;
     height: 8px;
@@ -18,7 +22,7 @@
     background: #f3f5f9;
 }
 
-.loader {
+.step {
     position: absolute;
     height: inherit;
     border-radius: 4px;
@@ -26,7 +30,7 @@
     transition: width .5s;
 }
 
-.loader.error {
+.step.error {
     background-color: rgba(255, 49, 34, 0.5);
 }
 
@@ -59,8 +63,8 @@
 
 .status {
     color: #8692b2;
-    padding-top: 5px;
-    text-align: right;
+    padding-top: 3px;
+    justify-content: flex-end;
 }
 
 .status i {

@@ -268,7 +268,7 @@ class Url extends Component {
                     />
                     {this._renderMatchRecords()}
                 </div>
-                <SystemBar />
+                <SystemBar resize />
             </div>
         );
     }

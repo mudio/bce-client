@@ -116,7 +116,7 @@ function publish() {
                         prepareUpload(basedir, filename, uploadUrl, assetName, draft);
                     }
                 },
-                err => console.log(err)
+                err => console.log(err.message)
             );
         } catch (ex) {
             console.error(ex.message);

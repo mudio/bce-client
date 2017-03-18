@@ -7,15 +7,19 @@
 
 import {BrowserWindow} from 'electron';
 
+import {name, version} from '../../package.json';
+
 export default class WindowManager {
     constructor(width = 960, height = 680, option = {}) {
         this._window = new BrowserWindow(
             Object.assign(
-                {show: false, frame: false, titleBarStyle: 'hidden'},
+                {show: false, frame: false, titleBarStyle: 'hidden', backgroundColor: '#444c63'},
                 option,
                 {width, height}
             )
         );
+
+        this.overrideUserAgent();
     }
 
     static fromLogin(url) {
@@ -48,6 +52,10 @@ export default class WindowManager {
         this._window.on('closed', () => {
             this._window = null;
         });
+    }
+
+    overrideUserAgent() {
+        this._window.webContents.setUserAgent(`${name}/${version}`);
     }
 
     getWindow() {

@@ -1,7 +1,7 @@
 
 .container {
-    justify-content: flex-end;
-    -webkit-app-region: drag;
+    right: 0;
+    position: absolute;
 }
 
 .container div {

@@ -1,5 +1,6 @@
 
 .container {
+    height: 25px;
     justify-content: flex-end;
     -webkit-app-region: drag;
 }

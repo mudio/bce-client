@@ -47,10 +47,10 @@ export default class DownloadItem extends Component {
         const width = 100 * offsetSize / totalSize; // eslint-disable-line no-mixed-operators
 
         return (
-            <div>
-                <span className={styles.progress}>
-                    <span className={classnames(styles.loader, klass)} style={{width: `${width}%`}} />
-                </span>
+            <div className={styles.progress}>
+                <div className={styles.loader}>
+                    <div className={classnames(styles.step, klass)} style={{width: `${width}%`}} />
+                </div>
                 {this.getStatus()}
             </div>
         );

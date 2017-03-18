@@ -93,7 +93,7 @@ function publish(distDir) {
             }
         }
     },
-    err => console.log(err));
+    err => console.log(err.message));
 }
 
 if (BOS_AK && BOS_SK && BOS_ENDPOINT) {

@@ -14,7 +14,7 @@ import styles from './Login.css';
 import SystemBar from './common/SystemBar';
 import GlobalConfig from '../../main/ConfigManager';
 
-const credentials = GlobalConfig.get('credentials');
+const credentials = GlobalConfig.get('credentials') || {};
 
 export default class Login extends Component {
     static propTypes = {

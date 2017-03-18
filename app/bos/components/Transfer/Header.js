@@ -88,7 +88,7 @@ export default class Header extends Component {
         return (
             <div className={styles.container}>
                 {this.renderCategory()}
-                <SystemBar />
+                <SystemBar resize />
             </div>
         );
     }
