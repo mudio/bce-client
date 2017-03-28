@@ -5,8 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint react/no-string-refs: 0, no-underscore-dangle: 0 */
-
 import u from 'lodash';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -19,6 +17,13 @@ import styles from './Window.css';
 import Selection from '../Common/Selection';
 import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';
+
+import {
+    MENU_TRASH_COMMAND,
+    MENU_RENAME_COMMAND,
+    MENU_DOWNLOAD_COMMAND
+} from '../../actions/context';
+
 
 class Window extends Component {
     static propTypes = {
@@ -47,8 +52,6 @@ class Window extends Component {
         folders: PropTypes.array.isRequired,
         // 文件集合，这里存放多次请求的response
         objects: PropTypes.array.isRequired,
-        // 上下文支持命令
-        commands: PropTypes.array.isRequired,
         // func
         redirect: PropTypes.func.isRequired,
         uploadFile: PropTypes.func.isRequired,
@@ -61,6 +64,10 @@ class Window extends Component {
             folders: PropTypes.array.isRequired
         })
     };
+
+    state = {
+        commands: []
+    }
 
     componentWillReceiveProps(nextProps) {
         const {refresh, uploadTask, nav} = this.props;
@@ -79,10 +86,12 @@ class Window extends Component {
         const {nav, uploadFile} = this.props;
         const {region, bucket, prefix} = nav;
 
-        const prefixes = prefix.split('/');
-        prefixes.splice(-1, 1, '');
+        if (bucket) {
+            const prefixes = prefix.split('/');
+            prefixes.splice(-1, 1, '');
 
-        uploadFile(evt.dataTransfer.items, region, bucket, prefixes.join('/'));
+            uploadFile(evt.dataTransfer.items, region, bucket, prefixes.join('/'));
+        }
 
         return false;
     }
@@ -102,6 +111,16 @@ class Window extends Component {
         const region = nav.region;
 
         return this.props.onCommand(cmd, Object.assign({region, bucketName, prefix}, config));
+    }
+
+    _onSelectionChange(keys = []) {
+        this.setState({
+            commands: [
+                {type: MENU_RENAME_COMMAND, disable: keys.length !== 1},
+                {type: MENU_DOWNLOAD_COMMAND},
+                {type: MENU_TRASH_COMMAND}
+            ]
+        });
     }
 
     redirect(bucket = '', folder = '') {
@@ -162,7 +181,8 @@ class Window extends Component {
         }
 
         return (
-            <Selection commands={this.props.commands}
+            <Selection commands={this.state.commands}
+                onSelectionChange={(...args) => this._onSelectionChange(...args)}
                 onCommand={(...args) => this._onCommand(...args)}
             >
                 {this.renderFolders()}
