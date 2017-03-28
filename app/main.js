@@ -38,8 +38,6 @@ app.on('ready', () => {
             const win = WindowManager.fromApp(`file://${__dirname}/app.html#/region`);
             _window.close();
             _window = win;
-            // 初始化菜单
-            MenuManager.initMenu();
             // 初始化自动更新
             AutoUpdater.from(win);
         } else if (msg.type === 'logout') {
@@ -57,6 +55,9 @@ app.on('ready', () => {
 
         _window.openDevTools();
     }
+
+    // 初始化菜单
+    MenuManager.initMenu();
 });
 
 app.on('window-all-closed', () => app.quit());
