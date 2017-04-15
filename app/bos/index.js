@@ -21,8 +21,8 @@ window.globalStore = configureStore(cache);
 const history = syncHistoryWithStore(hashHistory, window.globalStore);
 
 window.globalStore.subscribe(() => {
-    const {navigator, auth, uploads, downloads} = window.globalStore.getState();
-    localStorage.setItem('bos', JSON.stringify({auth, uploads, downloads, navigator}));
+    const {navigator, uploads, downloads} = window.globalStore.getState();
+    localStorage.setItem('bos', JSON.stringify({uploads, downloads, navigator}));
 });
 
 ipcRenderer.on('notify', (event, type, message) => {

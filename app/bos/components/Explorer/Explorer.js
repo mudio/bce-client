@@ -5,18 +5,19 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
-
 import {remote} from 'electron';
 import React, {Component, PropTypes} from 'react';
 
 import Url from './Url';
+import Move from './Move';
 import Window from './Window';
 import styles from './Explorer.css';
 import SideBar from '../App/SideBar';
+import Modal from '../Common/Modal';
 
 import {
     MENU_TRASH_COMMAND,
+    MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND
 } from '../../actions/context';
 
@@ -48,6 +49,8 @@ export default class Explorer extends Component {
         const {region, bucketName, prefix, keys} = config;
 
         switch (cmd) {
+        case MENU_RENAME_COMMAND:
+            return this.refs._rename.show({region, bucket: bucketName, prefix, keys});
         case MENU_TRASH_COMMAND:
             return this._trash(region, bucketName, prefix, keys);
         case MENU_DOWNLOAD_COMMAND:
@@ -98,9 +101,11 @@ export default class Explorer extends Component {
                     <Window nav={nav}
                         onCommand={(...args) => this._onCommand(...args)}
                         redirect={(...args) => dispatch(redirect(...args))}
-                        commands={[MENU_DOWNLOAD_COMMAND, MENU_TRASH_COMMAND]}
                     />
                 </div>
+                <Modal ref="_rename" title="重命名" width="400">
+                    <Move />
+                </Modal>
             </div>
         );
     }

@@ -51,7 +51,10 @@ export default class ContextMenu extends Component {
 
     render() {
         const {offsetX, offsetY, pageX, pageY, commands, onCommand} = this.props;
-        const datasource = commands.map(key => ContextMenu.menuCommands[key]);
+        const datasource = commands.map(item => Object.assign(
+            {disable: !!item.disable},
+            ContextMenu.menuCommands[item.type])
+        );
 
         let left = offsetX;
         let top = offsetY;
@@ -66,14 +69,22 @@ export default class ContextMenu extends Component {
         return (
             <div className={styles.container} style={{left, top}}>
                 {
-                    datasource.map((item, index) => (
-                        <div key={index} onClick={() => onCommand(item.command)}
-                            className={classnames(styles.menuItem, {[styles.trash]: item.icon === 'trash'})}
-                        >
-                            <i className={`fa fa-${item.icon} fa-fw`} />
-                            {item.name}
-                        </div>
-                    ))
+                    datasource.map((item, index) => {
+                        const style = classnames(
+                            styles.menuItem,
+                            {[styles.disabled]: item.disable},
+                            {[styles.trash]: item.icon === 'trash'}
+                        );
+
+                        return (
+                            <div key={index} className={style}
+                                onClick={() => !item.disable && onCommand(item.command)}
+                            >
+                                <i className={`fa fa-${item.icon} fa-fw`} />
+                                {item.name}
+                            </div>
+                        );
+                    })
                 }
             </div>
         );

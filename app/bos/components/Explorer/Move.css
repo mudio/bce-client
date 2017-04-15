@@ -1,0 +1,10 @@
+/**
+ * Component - Move Style
+ *
+ * @file Move.css
+ * @author mudio(job.mudio@gmail.com)
+ */
+
+.container {
+    flex: auto;
+}
