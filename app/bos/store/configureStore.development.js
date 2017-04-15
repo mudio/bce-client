@@ -6,7 +6,7 @@
  */
 
 import thunk from 'redux-thunk';
-import createLogger from 'redux-logger';
+import logger from 'redux-logger';
 import {hashHistory} from 'react-router';
 import {routerMiddleware} from 'react-router-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
@@ -15,11 +15,6 @@ import api from '../middleware/api';
 import rootReducer from '../reducers';
 import upload from '../middleware/uploader';
 import download from '../middleware/downloader';
-
-const logger = createLogger({
-    level: 'info',
-    collapsed: true
-});
 
 const router = routerMiddleware(hashHistory);
 

@@ -6,7 +6,7 @@
  */
 
 import thunk from 'redux-thunk';
-import createLogger from 'redux-logger';
+import logger from 'redux-logger';
 import {hashHistory} from 'react-router';
 import {routerMiddleware, push} from 'react-router-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
@@ -19,11 +19,6 @@ const actionCreators = {
     ...counterActions,
     push,
 };
-
-const logger = createLogger({
-    level: 'info',
-    collapsed: true
-});
 
 const router = routerMiddleware(hashHistory);
 
