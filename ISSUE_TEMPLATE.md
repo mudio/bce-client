@@ -6,7 +6,7 @@
 - 紧急问题或者需求，通过如下方式联系我
 	- EMAIL: job.mudio#gmail.com
 	- QQ: 523317421
-	- 微信: Mudioloard
+	- 微信: Mudiolord
 -->
 
 * 客户端版本:
