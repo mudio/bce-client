@@ -70,7 +70,7 @@ function publish(distDir) {
         if (filename === 'latest-mac.json') {
             try {
                 const config = JSON.parse(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
-                config.url = `${prefix}/${name}-${version}.zip`;
+                config.url = `http://bce-bos-client.bj.bcebos.com/${prefix}/${name}-${version}.zip`;
 
                 upload(basedir, filename, `${prefix}/${filename}`, JSON.stringify(config));
             } catch (ex) {
@@ -103,7 +103,7 @@ if (BOS_AK && BOS_SK && BOS_ENDPOINT) {
 
     publish(distDir);
     publish(`${distDir}/mac`);
-    publish(`${distDir}/mac/github`);
+    publish(`${distDir}/github`);
 } else {
     console.log('终止发布操作，请配置环境变量BOS_AK、BOS_SK、BOS_ENDPOINT。');
 }
