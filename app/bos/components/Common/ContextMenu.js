@@ -77,7 +77,8 @@ export default class ContextMenu extends Component {
                         );
 
                         return (
-                            <div key={index} className={style}
+                            <div key={index}
+                                className={style}
                                 onClick={() => !item.disable && onCommand(item.command)}
                             >
                                 <i className={`fa fa-${item.icon} fa-fw`} />

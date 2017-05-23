@@ -281,7 +281,8 @@ export default class Selection extends Component {
 
     render() {
         return (
-            <div ref="selection" tabIndex="0"
+            <div ref="selection"
+                tabIndex="0"        // eslint-disable-line
                 className={styles.selection}
                 onClick={evt => this._onSelectItem(evt)}
                 onKeyDown={evt => this._onKeyDown(evt)}

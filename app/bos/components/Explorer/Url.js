@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+
 import _ from 'lodash';
 import {connect} from 'react-redux';
 import classnames from 'classnames';

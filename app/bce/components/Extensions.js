@@ -39,7 +39,7 @@ export default class Extensions extends Component {
     renderExtensions() {
         const extensions = this.state.extensions;
 
-        return extensions.map(ext =>
+        return extensions.map(ext => (
             <div key={ext.name} className={styles.extItem}>
                 <div>
                     <img src={ext.icon} alt={ext.name} />
@@ -58,7 +58,7 @@ export default class Extensions extends Component {
                     </div>
                 </div>
             </div>
-        );
+        ));
     }
 
     render() {
