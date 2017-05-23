@@ -5,7 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 
 import Header from './Header';
 import styles from './Transfer.css';

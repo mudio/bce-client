@@ -8,8 +8,9 @@
 /* eslint-disable max-len */
 
 import {Link} from 'react-router';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import Version from './Version';
 import styles from './SideBar.css';

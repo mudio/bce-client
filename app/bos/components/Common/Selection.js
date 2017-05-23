@@ -9,8 +9,9 @@
 
 import _ from 'lodash';
 import ReactDom from 'react-dom';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import styles from './Selection.css';
 import ContextMenu from './ContextMenu';

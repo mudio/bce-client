@@ -6,7 +6,8 @@
  */
 
 import {remote} from 'electron';
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 
 import Url from './Url';
 import Move from './Move';

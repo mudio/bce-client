@@ -6,9 +6,11 @@
  */
 
 import u from 'lodash';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
-import React, {Component, PropTypes} from 'react';
+
 
 import File from './File';
 import Bucket from './Bucket';

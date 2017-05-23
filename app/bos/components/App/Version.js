@@ -5,8 +5,9 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import styles from './Version.css';
 import BrowserLink from '../Common/BrowserLink';

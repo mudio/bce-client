@@ -6,13 +6,14 @@
  */
 
 import electron from 'electron';
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 
 const {shell} = electron;
 
 export default class BrowserLink extends Component {
     static propTypes = {
-        className: PropTypes.string,
+        className: String,
         children: PropTypes.node.isRequired,
         linkTo: PropTypes.string.isRequired
     };

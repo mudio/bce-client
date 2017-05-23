@@ -7,8 +7,9 @@
 
 /* eslint react/no-string-refs: 0, max-len: 0 */
 
+import PropTypes from 'prop-types';
 import {ipcRenderer} from 'electron';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import styles from './Login.css';
 import SystemBar from './common/SystemBar';

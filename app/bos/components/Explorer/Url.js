@@ -8,9 +8,10 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classnames from 'classnames';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import styles from './Url.css';
 import SystemBar from '../Common/SystemBar';

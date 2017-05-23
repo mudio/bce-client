@@ -7,8 +7,9 @@
 
 import path from 'path';
 import electron from 'electron';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import styles from './DownloadItem.css';
 import {getText, DownloadStatus} from '../../utils/TransferStatus';

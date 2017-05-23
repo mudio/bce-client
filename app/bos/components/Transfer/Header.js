@@ -5,8 +5,9 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import styles from './Header.css';
 import SystemBar from '../Common/SystemBar';

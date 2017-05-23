@@ -5,7 +5,9 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import React, {Component, PropTypes} from 'react';
+import PropTypes from 'prop-types';
+import React, {Component} from 'react';
+
 import styles from './Bucket.css';
 
 export default class Bucket extends Component {
