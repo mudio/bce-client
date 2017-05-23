@@ -7,7 +7,7 @@
 
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
-import {hashHistory} from 'react-router';
+import {createHashHistory} from 'history';
 import {routerMiddleware} from 'react-router-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
 
@@ -16,14 +16,15 @@ import rootReducer from '../reducers';
 import upload from '../middleware/uploader';
 import download from '../middleware/downloader';
 
-const router = routerMiddleware(hashHistory);
+const history = createHashHistory();
+const router = routerMiddleware(history);
 
 const enhancer = compose(
     applyMiddleware(thunk, router, api, upload, download, logger),
     window.devToolsExtension ? window.devToolsExtension() : noop => noop
 );
 
-export default function configureStore(initialState) {
+function configureStore(initialState) {
     const store = createStore(rootReducer, initialState, enhancer);
 
     if (module.hot) {
@@ -34,3 +35,6 @@ export default function configureStore(initialState) {
 
     return store;
 }
+
+export default {history, configureStore};
+

@@ -9,16 +9,14 @@ import React from 'react';
 import {render} from 'react-dom';
 import {ipcRenderer} from 'electron';
 import {Provider} from 'react-redux';
-import {Router, hashHistory} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
+import {ConnectedRouter} from 'react-router-redux';
 
 import './style/mixin.global.css';
-import routes from './routes';
-import configureStore from './store/configureStore';
+import Routes from './routes';
+import {configureStore, history} from './store/configureStore';
 
 const cache = JSON.parse(localStorage.getItem('bos')) || {};
 window.globalStore = configureStore(cache);
-const history = syncHistoryWithStore(hashHistory, window.globalStore);
 
 window.globalStore.subscribe(() => {
     const {navigator, uploads, downloads} = window.globalStore.getState();
@@ -34,7 +32,9 @@ ipcRenderer.on('notify', (event, type, message) => {
 export default function startup(container) {
     render(
         <Provider store={window.globalStore}>
-            <Router history={history} routes={routes} />
+            <ConnectedRouter history={history}>
+                <Routes />
+            </ConnectedRouter>
         </Provider>,
         container
     );

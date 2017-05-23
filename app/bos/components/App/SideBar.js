@@ -7,9 +7,10 @@
 
 /* eslint-disable max-len */
 
-import {Link} from 'react-router';
+
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {NavLink} from 'react-router-dom';
 import React, {Component} from 'react';
 
 import Version from './Version';
@@ -39,13 +40,13 @@ class SideBar extends Component {
                     </svg>
                 </div>
                 <div className={styles.body}>
-                    <Link to={'/region'}
+                    <NavLink to={'/region'}
                         className={`${styles.item} ${styles.region}`}
                         activeClassName={styles.active}
                     >
                         全部文件
-                    </Link>
-                    <Link to={'/download'}
+                    </NavLink>
+                    <NavLink to={'/download'}
                         className={`${styles.item} ${styles.download}`}
                         activeClassName={styles.active}
                     >
@@ -53,8 +54,8 @@ class SideBar extends Component {
                         {
                             downloadCount > 0 ? <span className={styles.badge}>{downloadCount}</span> : ''
                         }
-                    </Link>
-                    <Link to={'/upload'}
+                    </NavLink>
+                    <NavLink to={'/upload'}
                         className={`${styles.item} ${styles.upload}`}
                         activeClassName={styles.active}
                     >
@@ -62,8 +63,8 @@ class SideBar extends Component {
                         {
                             uploadCount > 0 ? <span className={styles.badge}>{uploadCount}</span> : ''
                         }
-                    </Link>
-                    <Link to={'/complete'}
+                    </NavLink>
+                    <NavLink to={'/complete'}
                         className={`${styles.item} ${styles.complete}`}
                         activeClassName={styles.active}
                     >
@@ -71,7 +72,7 @@ class SideBar extends Component {
                         {
                             completeCount > 0 ? <span className={styles.badge}>{completeCount}</span> : ''
                         }
-                    </Link>
+                    </NavLink>
                 </div>
                 <div className={styles.tool}>
                     <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/API.html">
