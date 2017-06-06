@@ -22,10 +22,9 @@
     "bos"
   ],
   "homepage": "https://github.com/mudio/bce-client#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devEngines": {
-    "node": "5.x || 6.x",
-    "npm": "2.x || 3.x"
+    "node": ">=6.x",
+    "npm": ">=3.x"
   }
 }

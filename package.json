@@ -5,7 +5,7 @@
   "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
-    "postinstall": "install-app-deps",
+    "postinstall": "echo install-app-deps",
     "pretest": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
     "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty app",
     "lint-fix": "npm run lint -- --fix",
@@ -96,8 +96,8 @@
     "css-modules-require-hook": "^4.0.6",
     "del": "^2.2.2",
     "devtron": "^1.4.0",
-    "electron": "^1.6.8",
-    "electron-builder": "^17.8.0",
+    "electron": "^1.6.10",
+    "electron-builder": "^18.5.1",
     "electron-debug": "^1.1.0",
     "electron-devtools-installer": "^2.2.0",
     "eslint": "^3.19.0",
@@ -110,7 +110,7 @@
     "eslint-plugin-react": "^7.0.1",
     "express": "^4.15.3",
     "extract-text-webpack-plugin": "2.1.0",
-    "fbjs-scripts": "^0.7.1",
+    "fbjs-scripts": "^0.8.0",
     "file-loader": "^0.11.1",
     "html-webpack-plugin": "^2.28.0",
     "js-yaml": "^3.8.4",
@@ -129,6 +129,7 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "antd": "^2.10.4",
     "async": "^2.4.0",
     "bce-sdk-js": "^0.2.7",
     "classnames": "^2.2.5",
