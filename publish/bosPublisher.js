@@ -66,6 +66,11 @@ function publish(distDir) {
         if (ext === '.zip') {
             upload(basedir, filename, `${prefix}/${name}-${version}.zip`);
         }
+        // nsis exe
+        if (ext === '.exe') {
+            upload(basedir, filename, `${prefix}/${name}-${version}-nsis.exe`);
+        }
+
         // osx update conf
         if (filename === 'latest-mac.json') {
             try {
@@ -78,12 +83,8 @@ function publish(distDir) {
             }
         }
 
-        // nsis exe
-        if (ext === '.exe') {
-            upload(basedir, filename, `${prefix}/${name}-${version}-nsis.exe`);
-        }
         // nsis update yaml
-        if (ext === '.yml') {
+        if (filename === 'latest.yml') {
             try {
                 const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
                 config.path = `${name}-${version}-nsis.exe`;
@@ -102,7 +103,6 @@ if (BOS_AK && BOS_SK && BOS_ENDPOINT) {
     const distDir = path.join(__dirname, '..', outDir);
 
     publish(distDir);
-    publish(`${distDir}/mac`);
     publish(`${distDir}/github`);
 } else {
     console.log('终止发布操作，请配置环境变量BOS_AK、BOS_SK、BOS_ENDPOINT。');
