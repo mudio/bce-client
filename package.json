@@ -5,7 +5,7 @@
   "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
-    "postinstall": "echo install-app-deps",
+    "postinstall": "install-app-deps",
     "pretest": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
     "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty app",
     "lint-fix": "npm run lint -- --fix",
@@ -97,7 +97,7 @@
     "del": "^2.2.2",
     "devtron": "^1.4.0",
     "electron": "^1.6.10",
-    "electron-builder": "^18.5.1",
+    "electron-builder": "^18.6.2",
     "electron-debug": "^1.1.0",
     "electron-devtools-installer": "^2.2.0",
     "eslint": "^3.19.0",
