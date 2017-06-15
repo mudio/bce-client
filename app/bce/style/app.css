@@ -15,10 +15,6 @@ body {
     font-family: Helvetica, Arial, serif;
 }
 
-div {
-    display: flex;
-}
-
 button, input, textarea, a, p, i, span, h1, h2, h3, li,
 .fa {
     -webkit-app-region: no-drag;
