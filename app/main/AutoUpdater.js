@@ -6,7 +6,8 @@
  */
 
 import http from 'http';
-import {dialog} from 'electron';
+import semver from 'semver';
+import {app, dialog} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
 import log from '../utils/logger';
@@ -44,8 +45,10 @@ export default class AutoUpdater {
                 res.on('data', chunk => { rawData += chunk; });
                 res.on('end', () => {
                     try {
-                        const {version} = JSON.parse(rawData);
-                        autoUpdater.setFeedURL(`${feedURL}/v${version}`);
+                        const {strategies} = JSON.parse(rawData);
+                        const strategy = strategies.find(item => semver.satisfies(app.getVersion(), item.semver));
+
+                        autoUpdater.setFeedURL(`${feedURL}/v${strategy.lastest}`);
                         autoUpdater.checkForUpdates();
                     } catch (err) {
                         log.error(err.message);

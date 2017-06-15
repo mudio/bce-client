@@ -8,7 +8,7 @@
 import {combineReducers} from 'redux';
 import {routerReducer as routing} from 'react-router-redux';
 
-import update from './updater';
+import updater from './updater';
 import explorer from './explorer';
 import navigator from './navigator';
 import downloads from './downloader';
@@ -20,7 +20,7 @@ const rootReducer = combineReducers({
     explorer,
     navigator,
     downloads,
-    update
+    updater
 });
 
 export default rootReducer;

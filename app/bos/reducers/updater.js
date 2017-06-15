@@ -28,7 +28,10 @@ export default function updater(state = defaultState, action) {
     case UPDATE_AVAILABLE:
     case UPDATE_DOWNLOADED:
     case UPDATE_NOT_AVAILABLE:
-        return Object.assign({}, state, {lastest: action.version});
+        return Object.assign({}, state, {
+            type: action.type,
+            lastest: action.version
+        });
     default:
         return state;
     }

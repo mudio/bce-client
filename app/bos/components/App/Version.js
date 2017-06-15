@@ -93,7 +93,7 @@ class Version extends Component {
 }
 
 function mapStateToProps(state) {
-    return Object.assign({}, state.update);
+    return Object.assign({}, state.updater);
 }
 
 export default connect(mapStateToProps)(Version);
