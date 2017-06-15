@@ -7,21 +7,68 @@
 
 import Q from 'q';
 import {BosClient} from 'bce-sdk-js';
+
+import {REGION_BJ} from '../../utils/region';
 import GlobalConfig from '../../main/ConfigManager';
 
 const endpoint = GlobalConfig.get('endpoint');
 
 export class Client extends BosClient {
-    constructor(region, auth) {
-        super({credentials: auth, endpoint: endpoint[region]});
+    constructor(region, credentials) {
+        super({credentials, endpoint: endpoint[region]});
         this.region = region;
+        this.credentials = credentials;
     }
 
-    listBuckets() {
+    listBuckets(config = {}) {
+        const {forceUpdate, region} = config;
+
+        if (!forceUpdate) {
+            try {
+                const {buckets, owner} = JSON.parse(sessionStorage.getItem('buckets'));
+
+                if (region) {
+                    return Promise.resolve({
+                        owner,
+                        buckets: buckets.filter(item => item.location === region)
+                    });
+                }
+
+                return Promise.resolve({owner, buckets});
+            } catch (ex) {} // eslint-disable-line
+        }
+
         return super.listBuckets().then(res => {
-            // 按照地域过滤
-            const buckets = res.body.buckets.filter(item => item.location === this.region);
-            return Object.assign(res.body, {buckets});
+            const {buckets, owner} = res.body;
+
+            try {
+                sessionStorage.setItem('buckets', JSON.stringify(res.body));
+            } catch (ex) {} // eslint-disable-line
+
+            if (region) {
+                return {
+                    owner,
+                    bucket: buckets.filter(item => item.location === region)
+                };
+            }
+
+            return {owner, buckets};
+        });
+    }
+
+    static fromBucket(bucketName) {
+        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        const client = new Client(REGION_BJ, credentials);
+
+        return client.listBuckets().then(res => {
+            const bucket = res.buckets.find(item => item.name === bucketName);
+
+            if (bucket) {
+                return new Client(bucket.location, credentials);
+            }
+
+            // 默认返回北京
+            return client;
         });
     }
 
