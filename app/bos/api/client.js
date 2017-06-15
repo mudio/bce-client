@@ -48,7 +48,7 @@ export class Client extends BosClient {
             if (region) {
                 return {
                     owner,
-                    bucket: buckets.filter(item => item.location === region)
+                    buckets: buckets.filter(item => item.location === region)
                 };
             }
 

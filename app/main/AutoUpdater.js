@@ -7,7 +7,7 @@
 
 import http from 'http';
 import semver from 'semver';
-import {app, dialog} from 'electron';
+import {app} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
 import log from '../utils/logger';
@@ -17,8 +17,10 @@ import {
     UPDATE_CHECKING,
     UPDATE_AVAILABLE,
     UPDATE_DOWNLOADED,
-    UPDATE_NOT_AVAILABLE
-} from '../bce/actions/updater';
+    UPDATE_NOT_AVAILABLE,
+    UPDATE_COMMAND_CHECKING,
+    UPDATE_COMMAND_INSTALL
+} from '../bos/actions/updater';
 
 // const feedURL = 'http://bce-bos-client.bos.qasandbox.bcetest.baidu.com/releases';
 const feedURL = 'http://bce-bos-client.bj.bcebos.com/releases';
@@ -30,6 +32,13 @@ export default class AutoUpdater {
         this.prepare();
 
         this._window.webContents.once('did-frame-finish-load', this.checkForUpdates);
+        this._window.webContents.on('notify', (evt, type) => {
+            if (type === UPDATE_COMMAND_CHECKING) {
+                this.checkForUpdates();
+            } else if (type === UPDATE_COMMAND_INSTALL) {
+                autoUpdater.quitAndInstall();
+            }
+        });
     }
 
     static from(window) {
@@ -76,19 +85,6 @@ export default class AutoUpdater {
         autoUpdater.on('update-available', () => this.notify(UPDATE_AVAILABLE));
         autoUpdater.on('checking-for-update', () => this.notify(UPDATE_CHECKING));
         autoUpdater.on('update-not-available', () => this.notify(UPDATE_NOT_AVAILABLE));
-        autoUpdater.on('update-downloaded', info => {
-            this.notify(UPDATE_DOWNLOADED, info.version);
-
-            dialog.showMessageBox({
-                type: 'question',
-                title: '更新提示',
-                message: `客户端已经自动更新至${info.version}，重新启动后生效！`,
-                buttons: ['重启', '取消']
-            }, (bIndex) => {
-                if (bIndex === 0) {
-                    autoUpdater.quitAndInstall();
-                }
-            });
-        });
+        autoUpdater.on('update-downloaded', info => this.notify(UPDATE_DOWNLOADED, info.version));
     }
 }

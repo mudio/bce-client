@@ -7,7 +7,9 @@
 
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {ipcRenderer} from 'electron';
 import React, {Component} from 'react';
+import {Button, Icon, notification} from 'antd';
 
 import styles from './Version.css';
 import BrowserLink from '../Common/BrowserLink';
@@ -18,6 +20,27 @@ class Version extends Component {
         type: PropTypes.string.isRequired,
         version: PropTypes.string.isRequired,
         lastest: PropTypes.string
+    }
+
+    componentDidUpdate() {
+        const {type, lastest} = this.props;
+
+        if (type === UpdaterActions.UPDATE_DOWNLOADED) {
+            notification.open({
+                key: this.notifyKey,
+                btn: (
+                    <Button type="primary" size="small" onClick={this.installUpdate}>
+                        现在重启
+                    </Button>
+                ),
+                icon: (
+                    <Icon type="smile-circle" style={{color: '#108ee9'}} />
+                ),
+                duration: 0,
+                message: '发现新版本',
+                description: `新版本 ${lastest} 已经下载，重启客户端将自动安装更新`
+            });
+        }
     }
 
     getVersionDom() {
@@ -48,7 +71,7 @@ class Version extends Component {
                     <span className={styles.tip}>当前最新版本</span>
                 </span>
             );
-        case UpdaterActions.UPDATE_DOWNLOADED:
+        case UpdaterActions.UPDATE_DOWNLOADED: {
             return (
                 <span className={styles.btn}>
                     <i className="fa fa-exclamation-triangle" />
@@ -58,6 +81,7 @@ class Version extends Component {
                     </span>
                 </span>
             );
+        }
         case UpdaterActions.UPDATE_ERROR: {
             return (
                 <span className={styles.btn}>
@@ -83,6 +107,15 @@ class Version extends Component {
         }
     }
 
+    get notifyKey() {
+        return `update_notify_${Date.now}`;
+    }
+
+    installUpdate = () => {
+        ipcRenderer.send('notify', UpdaterActions.UPDATE_COMMAND_INSTALL);
+        notification.close(this.notifyKey);
+    }
+
     render() {
         return (
             <div className={styles.container}>
@@ -97,3 +130,5 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(Version);
+
+window.ipcRenderer = ipcRenderer;

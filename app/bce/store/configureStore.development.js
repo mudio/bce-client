@@ -13,12 +13,8 @@ import {createStore, applyMiddleware, compose} from 'redux';
 
 import api from '../middleware/api';
 import rootReducer from '../reducers';
-import * as counterActions from '../actions/updater';
 
-const actionCreators = {
-    ...counterActions,
-    push,
-};
+const actionCreators = {push};
 
 const router = routerMiddleware(hashHistory);
 
