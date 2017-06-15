@@ -179,8 +179,9 @@ export default class Selection extends Component {
         const rect = this.refs.selection.getBoundingClientRect();
         const left = Math.min(startPoint.x, endPoint.x) - rect.left;
         const top = Math.min(startPoint.y, endPoint.y) - rect.top;
-        const width = Math.abs(startPoint.x - endPoint.x);
-        const height = Math.abs(startPoint.y - endPoint.y);
+        // +1 保证`MouseUp`事件在`SelectionBox`上
+        const width = Math.abs(startPoint.x - endPoint.x) + 1;
+        const height = Math.abs(startPoint.y - endPoint.y) + 1;
 
         return {left, top, width, height};
     }

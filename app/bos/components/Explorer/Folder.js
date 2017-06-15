@@ -7,6 +7,7 @@
 
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
 
+import {Tooltip} from 'antd';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
@@ -29,11 +30,16 @@ export default class Folder extends Component {
 
     render() {
         const {folder, onDoubleClick} = this.props;
+        const folderName = normalize(folder.key);
 
         return (
             <div className={styles.container} onDoubleClick={() => onDoubleClick(folder.key)}>
                 <i className={`${styles.foldericon} asset-folder`} />
-                <span className={styles.text} data-tip={normalize(folder.key)} data-tip-align="bottom" />
+                <Tooltip placement="bottom" title={folderName}>
+                    <span className={styles.text}>
+                        {folderName}
+                    </span>
+                </Tooltip>
             </div>
         );
     }

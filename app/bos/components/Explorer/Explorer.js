@@ -8,21 +8,23 @@
 import {remote} from 'electron';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {Modal, notification} from 'antd';
 
 import Url from './Url';
-import Move from './Move';
 import Window from './Window';
+import Migration from './migration/migration';
 import styles from './Explorer.css';
 import SideBar from '../App/SideBar';
-import Modal from '../Common/Modal';
 
 import {
+    MENU_COPY_COMMAND,
+    MENU_MOVE_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND
 } from '../../actions/context';
 
-import {redirect, trash} from '../../actions/explorer';
+import {redirect, trash, migration} from '../../actions/explorer';
 import {createDownloadTask} from '../../actions/downloader';
 
 export default class Explorer extends Component {
@@ -34,6 +36,11 @@ export default class Explorer extends Component {
         }),
         dispatch: PropTypes.func.isRequired
     };
+
+    state = {
+        visible: false,
+        option: {}
+    }
 
     componentDidMount() {
         const {dispatch, nav} = this.props;
@@ -50,8 +57,14 @@ export default class Explorer extends Component {
         const {region, bucketName, prefix, keys} = config;
 
         switch (cmd) {
-        case MENU_RENAME_COMMAND:
-            return this.refs._rename.show({region, bucket: bucketName, prefix, keys});
+        case MENU_MOVE_COMMAND:
+        case MENU_COPY_COMMAND:
+        case MENU_RENAME_COMMAND: {
+            return this.setState({
+                visible: true,
+                option: {region, bucket: bucketName, object: keys[0], command: cmd}
+            });
+        }
         case MENU_TRASH_COMMAND:
             return this._trash(region, bucketName, prefix, keys);
         case MENU_DOWNLOAD_COMMAND:
@@ -74,25 +87,58 @@ export default class Explorer extends Component {
     }
 
     _trash(region, bucketName, prefix, keys) {
-        const comfirmTrash = !remote.dialog.showMessageBox(
-            remote.getCurrentWindow(),
-            {
-                message: `您确定删除${keys.length}个文件吗?`,
-                title: '删除提示',
-                buttons: ['删除', '取消'],
-                cancelId: 1
-            }
-        );
-
-        if (comfirmTrash) {
-            this.props.dispatch(
+        Modal.confirm({
+            title: '删除提示',
+            content: `您确定删除${keys.length}个文件吗?`,
+            onOk: () => this.props.dispatch(
                 trash(region, bucketName, prefix, keys)
-            );
+            ).then(
+                () => notification.success({message: '删除成功', description: `成功删除${keys.length}个文件`})
+            )
+        });
+    }
+
+    _onCancel = () => {
+        this.setState({visible: false});
+    }
+
+    _onMigration = (config = {}, removeSource = false) => {
+        const {
+            sourceBucket, sourceObject,
+            targetBucket, targetObject
+        } = config;
+
+        this.setState({visible: false});
+
+        if (sourceBucket !== targetBucket || sourceObject !== targetObject) {
+            this.props.dispatch(
+                migration(config, removeSource)
+            ).then(res => {
+                if (res.error) {
+                    notification.error(
+                        {message: '重命名失败', description: `${res.error} => ${sourceObject}`}
+                    );
+                } else {
+                    notification.success(
+                        {message: '重命名成功', description: `${sourceObject} => ${targetObject}`}
+                    );
+                }
+            });
         }
+    }
+
+    updateValue(evt) {
+        const target = evt.target.value;
+        const option = this.state.option;
+
+        option.target = target;
+
+        this.setState({option});
     }
 
     render() {
         const {nav, dispatch} = this.props;
+        const {visible, option} = this.state;
 
         return (
             <div className={styles.container}>
@@ -104,9 +150,11 @@ export default class Explorer extends Component {
                         redirect={(...args) => dispatch(redirect(...args))}
                     />
                 </div>
-                <Modal ref="_rename" title="重命名" width="400">
-                    <Move />
-                </Modal>
+                <Migration {...option}
+                    visible={visible}
+                    onMigration={this._onMigration}
+                    onCancel={this._onCancel}
+                />
             </div>
         );
     }

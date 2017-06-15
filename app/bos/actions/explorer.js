@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {deleteObject, listObjects, listBuckets} from './window';
+import {deleteObject, listObjects, listBuckets, copyObject, migrationObject} from './window';
 
 export const UPDATE_NAV = 'UPDATE_NAV';
 
@@ -21,24 +21,8 @@ export function redirect(region, bucket, prefix) {
     };
 }
 
-export function copy() {
-
-}
-
-export function move() {
-
-}
-
-export function view() {
-
-}
-
-export function share() {
-
-}
-
-export function rename() {
-
+export function migration(...args) {
+    return migrationObject(...args);
 }
 
 export function trash(...args) {

@@ -9,6 +9,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {Tooltip} from 'antd';
 
 import styles from './File.css';
 
@@ -33,7 +34,11 @@ export default class File extends Component {
         return (
             <div className={styles.container}>
                 <i className={`${styles.fileicon} asset-normal asset-${ext}`} />
-                <span className={styles.text} data-tip={fileName} data-tip-align="bottom" />
+                <Tooltip placement="bottom" title={fileName}>
+                    <span className={styles.text}>
+                        {fileName}
+                    </span>
+                </Tooltip>
             </div>
         );
     }

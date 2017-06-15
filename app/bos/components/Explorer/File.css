@@ -11,27 +11,16 @@
 }
 
 .text {
-    flex: auto;
     width: 95%;
     font-size: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.text:before {
-    display: inline;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    content: attr(data-tip);
-}
-
-.text:after {
-    width: 100%;
-    white-space: initial;
+    text-align: center;
+    overflow : hidden;
+    display: -webkit-box;
+    word-wrap: break-word;
     word-break: break-all;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
 }
 
 .fileicon {
