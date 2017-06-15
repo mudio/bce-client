@@ -7,6 +7,7 @@
 
 export const REGION_BJ = 'bj';
 export const REGION_GZ = 'gz';
+export const REGION_SU = 'su';
 export const REGION_HK = 'hk';
 
 export function getLocalText(region) {
