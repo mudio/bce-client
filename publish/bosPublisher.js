@@ -71,7 +71,19 @@ function publish(distDir) {
             upload(basedir, filename, `${prefix}/${name}-${version}-nsis.exe`);
         }
 
-        // osx update conf
+        // osx update json
+        if (filename === 'latest-mac.json') {
+            try {
+                const config = JSON.parse(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
+                config.url = `http://bce-bos-client.bj.bcebos.com/${prefix}/${name}-${version}-mac.zip`;
+
+                upload(basedir, filename, `${prefix}/${filename}`, JSON.stringify(config));
+            } catch (ex) {
+                console.error(ex.message);
+            }
+        }
+
+        // osx update yaml
         if (filename === 'latest-mac.yml') {
             try {
                 const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
@@ -103,6 +115,7 @@ if (BOS_AK && BOS_SK && BOS_ENDPOINT) {
     const distDir = path.join(__dirname, '..', outDir);
 
     publish(distDir);
+    publish(`${distDir}/github`);
 } else {
     console.log('终止发布操作，请配置环境变量BOS_AK、BOS_SK、BOS_ENDPOINT。');
 }
