@@ -13,7 +13,8 @@
 		"react"
 	],
 	"plugins": [
-		"add-module-exports"
+		"add-module-exports",
+		["import", {"libraryName": "antd", "style": "css"}]
 	],
 	"env": {
 		"production": {

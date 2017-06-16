@@ -29,6 +29,16 @@ export default merge(baseConfig, {
     module: {
         rules: [
             {
+                test: /antd[\w./]+css$/, // 处理antd样式
+                use: [
+                    {loader: 'style-loader'},
+                    {
+                        loader: 'css-loader',
+                        options: {sourceMap: true},
+                    }
+                ]
+            },
+            {
                 test: /\.global\.css$/,
                 use: [
                     {loader: 'style-loader'},
@@ -39,7 +49,7 @@ export default merge(baseConfig, {
                 ]
             },
             {
-                test: /^((?!\.global).)*\.css$/,
+                test: /^((?!\.global|antd).)*\.css$/, // 不要处理global/antd样式
                 use: [
                     {loader: 'style-loader'},
                     {

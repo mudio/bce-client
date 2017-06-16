@@ -23,6 +23,14 @@ export default merge(baseConfig, {
 
     module: {
         rules: [
+            // Extract all antd style to style.css as is
+            {
+                test: /antd[\w./]+css$/,
+                use: ExtractTextPlugin.extract({
+                    use: 'css-loader',
+                    fallback: 'style-loader',
+                })
+            },
             // Extract all .global.css to style.css as is
             {
                 test: /\.global\.css$/,
@@ -31,10 +39,9 @@ export default merge(baseConfig, {
                     fallback: 'style-loader',
                 })
             },
-
             // Pipe other styles through css modules and append to style.css
             {
-                test: /^((?!\.global).)*\.css$/,
+                test: /^((?!\.global|antd).)*\.css$/,
                 use: ExtractTextPlugin.extract({
                     use: {
                         loader: 'css-loader',
