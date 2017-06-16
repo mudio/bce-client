@@ -7,7 +7,7 @@
 
 import http from 'http';
 import semver from 'semver';
-import {app} from 'electron';
+import {app, ipcMain} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
 import log from '../utils/logger';
@@ -32,7 +32,8 @@ export default class AutoUpdater {
         this.prepare();
 
         this._window.webContents.once('did-frame-finish-load', this.checkForUpdates);
-        this._window.webContents.on('notify', (evt, type) => {
+
+        ipcMain.on('notify', (evt, type) => {
             if (type === UPDATE_COMMAND_CHECKING) {
                 this.checkForUpdates();
             } else if (type === UPDATE_COMMAND_INSTALL) {

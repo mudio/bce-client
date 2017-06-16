@@ -30,7 +30,7 @@ export default function updater(state = defaultState, action) {
     case UPDATE_NOT_AVAILABLE:
         return Object.assign({}, state, {
             type: action.type,
-            lastest: action.version
+            lastest: action.message
         });
     default:
         return state;

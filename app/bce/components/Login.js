@@ -112,7 +112,7 @@ export default class Login extends Component {
     }
 
     loginSuccess() {
-        ipcRenderer.send('notify', {type: 'login_success'});
+        ipcRenderer.send('notify', 'login_success');
     }
 
     forgotPin() {

@@ -33,14 +33,14 @@ app.on('ready', () => {
     // 开启登陆
     _window = WindowManager.fromLogin(`file://${__dirname}/login.html`);
     // 监听通知
-    ipcMain.on('notify', (evt, msg) => {
-        if (msg.type === 'login_success') {
+    ipcMain.on('notify', (evt, type) => {
+        if (type === 'login_success') {
             const win = WindowManager.fromApp(`file://${__dirname}/app.html#/region`);
             _window.close();
             _window = win;
             // 初始化自动更新
             AutoUpdater.from(win);
-        } else if (msg.type === 'logout') {
+        } else if (type === 'logout') {
             const win = WindowManager.fromLogin(`file://${__dirname}/login.html`);
             _window.close();
             _window = win;
