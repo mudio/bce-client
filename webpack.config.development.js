@@ -29,7 +29,7 @@ export default merge(baseConfig, {
     module: {
         rules: [
             {
-                test: /antd[\w./\\]+css$/, // 处理antd样式
+                test: /antd(.*)css$/, // 处理antd样式
                 use: [
                     {loader: 'style-loader'},
                     {
