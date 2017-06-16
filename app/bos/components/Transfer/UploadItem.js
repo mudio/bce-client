@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {Modal} from 'antd';
 import electron from 'electron';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
@@ -116,21 +117,13 @@ export default class UploadItem extends Component {
     _onTrash() {
         const {uuid, name, dispatch} = this.props;
 
-        const remote = electron.remote;
-
-        const comfirmTrash = !remote.dialog.showMessageBox(
-            remote.getCurrentWindow(),
-            {
-                message: `您确定删除 ${name} 吗?`,
-                title: '删除提示',
-                buttons: ['删除', '取消'],
-                cancelId: 1
+        Modal.confirm({
+            title: '删除提示',
+            content: `您确定删除 ${name} 吗?`,
+            onOk() {
+                dispatch(uploadRemove([uuid]));
             }
-        );
-
-        if (comfirmTrash) {
-            dispatch(uploadRemove([uuid]));
-        }
+        });
     }
 
     _onStart() {
