@@ -5,7 +5,8 @@
 os: unstable
 
 cache:
-  - node_modules
+  - node_modules -> package.json
+  - static/node_modules -> static/package.json
 
 environment:
   matrix:
