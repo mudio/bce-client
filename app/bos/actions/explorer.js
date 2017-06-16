@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {deleteObject, listObjects, listBuckets, copyObject, migrationObject} from './window';
+import {deleteObject, listObjects, listBuckets, migrationObject} from './window';
 
 export const UPDATE_NAV = 'UPDATE_NAV';
 
