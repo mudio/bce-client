@@ -25,7 +25,7 @@ export default merge(baseConfig, {
         rules: [
             // Extract all antd style to style.css as is
             {
-                test: /antd[\w./]+css$/,
+                test: /antd[\w./\\]+css$/,
                 use: ExtractTextPlugin.extract({
                     use: 'css-loader',
                     fallback: 'style-loader',
