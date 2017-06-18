@@ -116,11 +116,11 @@ export default class Explorer extends Component {
             ).then(res => {
                 if (res.error) {
                     notification.error(
-                        {message: '重命名失败', description: `${res.error} => ${sourceObject}`}
+                        {message: '操作失败', description: `${res.error} => ${sourceObject}`}
                     );
                 } else {
                     notification.success(
-                        {message: '重命名成功', description: `${sourceObject} => ${targetObject}`}
+                        {message: '操作成功', description: `${sourceObject} => ${targetObject}`}
                     );
                 }
             });

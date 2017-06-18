@@ -21,6 +21,7 @@ import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';
 
 import {
+    MENU_COPY_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND
@@ -118,6 +119,7 @@ class Window extends Component {
     _onSelectionChange(keys) {
         this.setState({
             commands: [
+                {type: MENU_COPY_COMMAND, disable: keys.length !== 1},
                 {type: MENU_RENAME_COMMAND, disable: keys.length !== 1},
                 {type: MENU_DOWNLOAD_COMMAND},
                 {type: MENU_TRASH_COMMAND}

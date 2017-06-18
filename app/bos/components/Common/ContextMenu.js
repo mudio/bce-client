@@ -41,7 +41,7 @@ export default class ContextMenu extends Component {
     };
 
     static menuCommands = {
-        [MENU_COPY_COMMAND]: {name: '复制', icon: 'copy', command: MENU_COPY_COMMAND},
+        [MENU_COPY_COMMAND]: {name: '复制到', icon: 'copy', command: MENU_COPY_COMMAND},
         [MENU_TRASH_COMMAND]: {name: '删除', icon: 'trash', command: MENU_TRASH_COMMAND},
         [MENU_SHARE_COMMAND]: {name: '分享', icon: 'chain', command: MENU_SHARE_COMMAND},
         [MENU_MOVE_COMMAND]: {name: '移动到', icon: 'arrows', command: MENU_MOVE_COMMAND},

@@ -8,8 +8,6 @@
 import React from 'react';
 import {Input, Modal, Icon, Form} from 'antd';
 
-import styles from './rename.css';
-
 const FormItem = Form.Item;
 
 export default Form.create({
@@ -32,7 +30,6 @@ export default Form.create({
             <Modal title="重命名"
                 width={400}
                 visible={visible}
-                className={styles.container}
                 onCancel={onCancel}
                 onOk={onCreate}
             >

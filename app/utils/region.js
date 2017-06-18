@@ -18,6 +18,8 @@ export function getLocalText(region) {
         return '广州';
     case REGION_HK:
         return '香港';
+    case REGION_SU:
+        return '苏州';
     default:
         return region;
     }
