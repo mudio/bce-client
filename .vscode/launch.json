@@ -33,6 +33,17 @@
             "cwd": "${workspaceRoot}",
             "sourceMaps": true,
             "preLaunchTask": "compile"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Github publisher",
+            "program": "${workspaceRoot}/publish/githubPublisher.js",
+            "cwd": "${workspaceRoot}",
+            "runtimeArgs": [
+                "-r",
+                "babel-register"
+            ]
         }
     ]
 }
