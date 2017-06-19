@@ -7,7 +7,6 @@
 
 /* eslint-disable no-console */
 
-import os from 'os';
 import fs from 'fs';
 import url from 'url';
 import path from 'path';
@@ -53,12 +52,16 @@ function upload(dir, fileName, uploadUrl) {
             if (response.statusCode === 201) {
                 const parseUrl = url.parse(uploadUrl);
                 console.log(`上传完毕 => ${parseUrl.query.slice(5)}`);
+                return;
             }
 
             if (response.statusCode === 422) {
                 const res = JSON.parse(body);
                 console.error(res.errors);
+                return;
             }
+
+            return console.warn(response.statusCode, body);
         }
     );
 }
