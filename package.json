@@ -1,7 +1,7 @@
 {
   "name": "bce-client",
   "productName": "百度云",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
@@ -98,7 +98,7 @@
     "del": "^3.0.0",
     "devtron": "^1.4.0",
     "electron": "^1.6.10",
-    "electron-builder": "^19.5.1",
+    "electron-builder": "^18.8.1",
     "electron-debug": "^1.1.0",
     "electron-devtools-installer": "^2.2.0",
     "eslint": "^3.19.0",
