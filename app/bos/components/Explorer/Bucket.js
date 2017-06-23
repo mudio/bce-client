@@ -20,13 +20,16 @@ export default class Bucket extends Component {
         })
     };
 
-    render() {
+    _triggerDoubleClick = () => {
         const {item, onDoubleClick} = this.props;
+        onDoubleClick(item.name);
+    }
+
+    render() {
+        const {item} = this.props;
 
         return (
-            <div className={styles.container}
-                onDoubleClick={() => onDoubleClick(item.name)}
-            >
+            <div className={styles.container} onDoubleClick={this._triggerDoubleClick}>
                 <i className={`${styles.bucketicon} asset-bucket`} />
                 <span className={styles.text} alt={item.creationDate}>{item.name}</span>
             </div>

@@ -114,7 +114,7 @@ export default class UploadItem extends Component {
         }
     }
 
-    _onTrash() {
+    _onTrash = () => {
         const {uuid, name, dispatch} = this.props;
 
         Modal.confirm({
@@ -126,7 +126,7 @@ export default class UploadItem extends Component {
         });
     }
 
-    _onStart() {
+    _onStart = () => {
         const {uuid, status, dispatch} = this.props;
 
         if (status === UploadStatus.Suspended
@@ -135,7 +135,7 @@ export default class UploadItem extends Component {
         }
     }
 
-    _onSuspend() {
+    _onSuspend = () => {
         const {uuid, status, dispatch} = this.props;
 
         if (status === UploadStatus.Running
@@ -144,8 +144,12 @@ export default class UploadItem extends Component {
         }
     }
 
+    _showItemInFolder = () => {
+        shell.showItemInFolder(this.props.basedir);
+    }
+
     renderOperation() {
-        const {basedir, status} = this.props;
+        const {status} = this.props;
 
         const start = () => {
             const className = classnames(
@@ -154,7 +158,7 @@ export default class UploadItem extends Component {
             );
 
             return (
-                <i className={className} title="开始任务" onClick={() => this._onStart()} />
+                <i className={className} title="开始任务" onClick={this._onStart} />
             );
         };
 
@@ -165,7 +169,7 @@ export default class UploadItem extends Component {
             );
 
             return (
-                <i className={className} title="暂停任务" onClick={() => this._onSuspend()} />
+                <i className={className} title="暂停任务" onClick={this._onSuspend} />
             );
         };
 
@@ -181,7 +185,7 @@ export default class UploadItem extends Component {
             );
 
             return (
-                <i className={className} title="删除任务" onClick={() => this._onTrash()} />
+                <i className={className} title="删除任务" onClick={this._onTrash} />
             );
         };
 
@@ -189,7 +193,7 @@ export default class UploadItem extends Component {
             <div className={styles.operation} >
                 {start()}
                 {pause()}
-                <i className="fa fa-folder-open" title="打开目录" onClick={() => shell.showItemInFolder(basedir)} />
+                <i className="fa fa-folder-open" title="打开目录" onClick={this._showItemInFolder} />
                 {trash()}
             </div>
         );

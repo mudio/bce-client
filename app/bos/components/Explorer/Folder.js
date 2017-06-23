@@ -28,12 +28,17 @@ export default class Folder extends Component {
         onDoubleClick: PropTypes.func.isRequired
     };
 
-    render() {
+    _triggerDoubleClick = () => {
         const {folder, onDoubleClick} = this.props;
+        onDoubleClick(folder.key);
+    }
+
+    render() {
+        const {folder} = this.props;
         const folderName = normalize(folder.key);
 
         return (
-            <div className={styles.container} onDoubleClick={() => onDoubleClick(folder.key)}>
+            <div className={styles.container} onDoubleClick={this._triggerDoubleClick}>
                 <i className={`${styles.foldericon} asset-folder`} />
                 <Tooltip placement="bottom" title={folderName}>
                     <span className={styles.text}>

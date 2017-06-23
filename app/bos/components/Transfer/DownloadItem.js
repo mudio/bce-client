@@ -113,7 +113,7 @@ export default class DownloadItem extends Component {
     }
 
 
-    _onTrash() {
+    _onTrash = () => {
         const {uuid, name, dispatch} = this.props;
 
         Modal.confirm({
@@ -125,7 +125,7 @@ export default class DownloadItem extends Component {
         });
     }
 
-    _onSuspend() {
+    _onSuspend = () => {
         const {uuid, status, dispatch} = this.props;
 
         if (status === DownloadStatus.Running
@@ -134,7 +134,7 @@ export default class DownloadItem extends Component {
         }
     }
 
-    _onStart() {
+    _onStart = () => {
         const {uuid, status, dispatch} = this.props;
 
         if (status === DownloadStatus.Suspended
@@ -143,9 +143,15 @@ export default class DownloadItem extends Component {
         }
     }
 
-    renderOperation() {
-        const {name, basedir, status} = this.props;
+    _showItemInFolder = () => {
+        const {name, basedir} = this.props;
         const localDir = path.join(basedir, name);
+
+        shell.showItemInFolder(localDir);
+    }
+
+    renderOperation() {
+        const {status} = this.props;
 
         const start = () => {
             const className = classnames(
@@ -154,7 +160,7 @@ export default class DownloadItem extends Component {
             );
 
             return (
-                <i className={className} title="开始任务" onClick={() => this._onStart()} />
+                <i className={className} title="开始任务" onClick={this._onStart} />
             );
         };
 
@@ -165,7 +171,7 @@ export default class DownloadItem extends Component {
             );
 
             return (
-                <i className={className} title="暂停任务" onClick={() => this._onSuspend()} />
+                <i className={className} title="暂停任务" onClick={this._onSuspend} />
             );
         };
 
@@ -181,7 +187,7 @@ export default class DownloadItem extends Component {
             );
 
             return (
-                <i className={className} title="删除任务" onClick={() => this._onTrash()} />
+                <i className={className} title="删除任务" onClick={this._onTrash} />
             );
         };
 
@@ -189,7 +195,7 @@ export default class DownloadItem extends Component {
             <div className={styles.operation} >
                 {start()}
                 {pause()}
-                <i className="fa fa-folder-open" title="打开目录" onClick={() => shell.showItemInFolder(localDir)} />
+                <i className="fa fa-folder-open" title="打开目录" onClick={this._showItemInFolder} />
                 {trash()}
             </div>
         );

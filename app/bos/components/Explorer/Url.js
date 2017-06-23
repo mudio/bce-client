@@ -148,7 +148,7 @@ class Url extends Component {
         }
     }
 
-    _onBlur() {
+    _onBlur = () => {
         const {bucket, prefix} = this.props;
         let value = '';
 
@@ -179,14 +179,14 @@ class Url extends Component {
         }
     }
 
-    forward() {
+    forward = () => {
         const {redirect} = this.props;
         const {region, bucket, prefix} = this.state.history.pop();
 
         redirect(region, bucket, prefix);
     }
 
-    backward() {
+    backward = () => {
         const {redirect, region} = this.props;
         const {value, history} = this.state;
         const {bucket, prefix = ''} = this._format(value);
@@ -245,8 +245,8 @@ class Url extends Component {
         return (
             <div className={styles.container}>
                 <div className={styles.nav}>
-                    <span className={leftClassName} onClick={() => this.backward()} />
-                    <span className={rightClassName} onClick={() => this.forward()} />
+                    <span className={leftClassName} onClick={this.backward} />
+                    <span className={rightClassName} onClick={this.forward} />
                 </div>
                 <div className={styles.url}>
                     <span className={styles.region}>
@@ -265,7 +265,7 @@ class Url extends Component {
                     </span>
                     <input className={styles.input}
                         value={value}
-                        onBlur={() => this._onBlur()}
+                        onBlur={this._onBlur}
                         onChange={evt => this._onChange(evt)}
                         onKeyDown={evt => this._onKeyDown(evt)}
                     />

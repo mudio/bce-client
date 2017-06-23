@@ -23,12 +23,12 @@ export default class Header extends Component {
         category: PropTypes.string.isRequired
     };
 
-    _onClearFinish() {
+    _onClearFinish = () => {
         const {dispatch} = this.props;
         dispatch(clearFinish());
     }
 
-    _onSuspned() {
+    _onSuspned = () => {
         const {dispatch, category} = this.props;
 
         if (category === TransCategory.Upload) {
@@ -38,7 +38,7 @@ export default class Header extends Component {
         }
     }
 
-    _onStart() {
+    _onStart = () => {
         const {dispatch, category} = this.props;
 
         if (category === TransCategory.Upload) {
@@ -56,15 +56,11 @@ export default class Header extends Component {
         case TransCategory.Download:
             return (
                 <div className={styles.body}>
-                    <div className={classnames(styles.btn, styles.start)}
-                        onClick={() => this._onStart()}
-                    >
+                    <div className={classnames(styles.btn, styles.start)} onClick={this._onStart}>
                         <i className="fa fa-play fa-fw" title="开始全部" />
                         开始全部
                     </div>
-                    <div className={classnames(styles.btn, styles.pause)}
-                        onClick={() => this._onSuspned()}
-                    >
+                    <div className={classnames(styles.btn, styles.pause)} onClick={this._onSuspned}>
                         <i className="fa fa-pause fa-fw" title="暂停全部" />
                         暂停全部
                     </div>
@@ -73,9 +69,7 @@ export default class Header extends Component {
         case TransCategory.Complete:
             return (
                 <div className={styles.body}>
-                    <div className={classnames(styles.btn, styles.clear)}
-                        onClick={() => this._onClearFinish()}
-                    >
+                    <div className={classnames(styles.btn, styles.clear)} onClick={this._onClearFinish}>
                         <i title="清除已完成" className="fa fa-trash fa-fw" />
                         清除已完成
                     </div>

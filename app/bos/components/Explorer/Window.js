@@ -127,6 +127,11 @@ class Window extends Component {
         });
     }
 
+    _listMore = () => {
+        const {bucketName, prefix, nextMarker, listMore} = this.props;
+        listMore(bucketName, prefix, nextMarker);
+    }
+
     redirect(bucket = '', folder = '') {
         const {nav, redirect} = this.props;
         redirect(nav.region, bucket, folder);
@@ -223,7 +228,7 @@ class Window extends Component {
     }
 
     renderMore() {
-        const {isFetching, isTruncated, bucketName, prefix, nextMarker, listMore} = this.props;
+        const {isFetching, isTruncated} = this.props;
 
         // 数据正在加载，并且没有加载完
         if (isFetching && isTruncated) {
@@ -239,7 +244,7 @@ class Window extends Component {
         if (!isFetching && isTruncated) {
             return (
                 <div className={styles.loadMore}>
-                    <button onClick={() => listMore(bucketName, prefix, nextMarker)}>加载更多&gt;&gt;</button>
+                    <button onClick={this._listMore} >加载更多&gt;&gt;</button>
                 </div>
             );
         }

@@ -79,7 +79,7 @@ export default class Login extends Component {
             <div className={styles.forgot}>
                 <span>{ak.replace(/^([\w]{8})[\w]+([\w]{8}$)/g, '$1****************$2')}</span>
                 <span className={`${styles.forgotBtn} fa fa-user-times`}
-                    onClick={() => this.forgotPin()}
+                    onClick={this.forgotPin}
                     data-tip="注销登录!"
                     data-tip-align="left"
                     tabIndex="-1"
@@ -115,7 +115,7 @@ export default class Login extends Component {
         ipcRenderer.send('notify', 'login_success');
     }
 
-    forgotPin() {
+    forgotPin = () => {
         this.props.logout();
     }
 

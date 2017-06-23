@@ -18,7 +18,7 @@ export default class BrowserLink extends Component {
         linkTo: PropTypes.string.isRequired
     };
 
-    openExternalLink() {
+    openExternalLink = () => {
         const {linkTo} = this.props;
         shell.openExternal(linkTo);
     }
@@ -27,7 +27,7 @@ export default class BrowserLink extends Component {
         const {className, children} = this.props;
 
         return (
-            <a className={className} onClick={() => this.openExternalLink()}>{children}</a>
+            <a className={className} onClick={this.openExternalLink}>{children}</a>
         );
     }
 }
