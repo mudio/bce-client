@@ -127,7 +127,7 @@ export default class Login extends Component {
                     data-tip-align="left"
                     tabIndex="-1"
                 />
-                <input type="text" placeholder="请输入安全码" ref="pin" />
+                <input type="password" placeholder="请输入安全码" ref="pin" />
                 <button data-tip="验证安全码"
                     data-tip-align="left"
                     onClick={this.validatePinCode}
@@ -147,8 +147,8 @@ export default class Login extends Component {
     renderSetPinFields() {
         return (
             <div className={styles.loginform}>
-                <input type="text" placeholder="请输入安全码" ref="pin" />
-                <input type="text" placeholder="请再次输入安全码" ref="pinconfirm" />
+                <input type="password" placeholder="请输入安全码" ref="pin" />
+                <input type="password" placeholder="请再次输入安全码" ref="pinconfirm" />
                 <button data-tip="设置安全码"
                     data-tip-align="left"
                     onClick={this.setPinCode}

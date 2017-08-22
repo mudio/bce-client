@@ -10,12 +10,11 @@ import {hashHistory} from 'react-router';
 import {routerMiddleware} from 'react-router-redux';
 import {createStore, applyMiddleware} from 'redux';
 
-import api from '../middleware/api';
 import rootReducer from '../reducers';
 
 const router = routerMiddleware(hashHistory);
 
-const enhancer = applyMiddleware(thunk, router, api);
+const enhancer = applyMiddleware(thunk, router);
 
 export default function configureStore(initialState) {
     return createStore(rootReducer, initialState, enhancer);

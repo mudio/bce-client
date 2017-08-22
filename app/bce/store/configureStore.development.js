@@ -11,7 +11,6 @@ import {hashHistory} from 'react-router';
 import {routerMiddleware, push} from 'react-router-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
 
-import api from '../middleware/api';
 import rootReducer from '../reducers';
 
 const actionCreators = {push};
@@ -28,7 +27,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
     compose;
 /* eslint-enable no-underscore-dangle */
 const enhancer = composeEnhancers(
-    applyMiddleware(thunk, router, api, logger)
+    applyMiddleware(thunk, router, logger)
 );
 
 export default function configureStore(initialState) {
