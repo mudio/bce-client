@@ -10,17 +10,18 @@
 
 .container svg {
     width: 100px;
-    margin: 30px auto;
+    margin: 40px auto;
 }
 
-.login {
+.loginform {
     flex: auto;
     display: flex;
-    margin: 0 27px;
+    margin: 0 20px;
+    position: relative;
     flex-direction: column;
 }
 
-.login input {
+.loginform input {
     font-size: 12px;
     width: 100%;
     line-height: 40px;
@@ -31,42 +32,24 @@
     border-bottom: #8692b2 1px solid;
 }
 
-.login input::-webkit-input-placeholder {
+.loginform input::-webkit-input-placeholder {
     color: #8692b2;
 }
 
-.fields {
-    flex-direction: column;
-}
-
 .loginBtn {
-    display: flex;
+    top: 40px;
+    right: 0px;
     border: none;
     cursor: pointer;
     font-size: 26px;
     color: #8692b2;
     background: none;
-    right: 5px;
-    padding: 0;
-    margin: 0;
     line-height: 40px;
     position: absolute;
 }
 
 .loginBtn:hover {
     color: #2eacfc;
-}
-
-.pin {
-    position: relative;
-}
-
-.forgot {
-    color: #fff;
-    font-size: 12px;
-    line-height: 40px;
-    position: relative;
-    border-bottom: #8692b2 1px solid;
 }
 
 .forgotBtn {
@@ -83,7 +66,6 @@
 }
 
 .error {
-    flex: auto;
     font-size: 12px;
     color: #ec6c37;
     margin-top: 10px;
@@ -94,10 +76,16 @@
     margin-right: 5px;
 }
 
+.ignorepincode {
+    cursor: pointer;
+    color: #108cee;
+}
+
 .loading {
-    position: absolute;
+    top: 40px;
     right: 5px;
-    line-height: 40px;
     color: #fff;
     font-size: 20px;
+    line-height: 40px;
+    position: absolute;
 }

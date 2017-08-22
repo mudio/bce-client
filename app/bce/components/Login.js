@@ -19,107 +19,189 @@ const credentials = GlobalConfig.get('credentials') || {};
 
 export default class Login extends Component {
     static propTypes = {
-        ak: PropTypes.string.isRequired,
-        sk: PropTypes.string.isRequired,
-        pin: PropTypes.string.isRequired,
-        isLoading: PropTypes.bool.isRequired,
-        isAuth: PropTypes.bool.isRequired,
-        error: PropTypes.string.isRequired,
+        pin: PropTypes.string,
+        loading: PropTypes.bool,
+        ak: PropTypes.string,
+        sk: PropTypes.string,
+        setPinCode: PropTypes.func.isRequired,
         login: PropTypes.func.isRequired,
         logout: PropTypes.func.isRequired
     };
 
     constructor(...args) {
         super(...args);
-        this.state = {errMsg: ''};
-    }
-
-    componentWillReceiveProps({isAuth}) {
-        // 验证成功，则登陆
-        if (isAuth) {
-            this.loginSuccess();
-        }
-    }
-
-    getLoginRender() {
-        const {isLoading} = this.props;
-        if (isLoading) {
-            return <i className={`${styles.loading} fa fa-spinner fa-spin`} />;
-        }
-
-        return <button className={`${styles.loginBtn} fa fa-arrow-circle-right`} data-tip="登录" data-tip-align="left" />;
+        this.state = {errMsg: '', hasLogin: false};
     }
 
     getLoginError() {
-        const msg = this.props.error || this.state.errMsg;
+        const msg = this.state.errMsg;
 
         if (msg) {
             return (
                 <div className={styles.error}>
                     <i className="fa fa-exclamation-triangle" />
-                    登录失败：{msg}
+                    {msg}
                 </div>
             );
         }
     }
 
-    getAkSkFields() {
-        const {pin, ak} = this.props;
+    setPinCode = () => {
+        const pincode = this.refs.pin.value.trim();
+        const confirmcode = this.refs.pinconfirm.value.trim();
 
-        if (!pin) {
-            return (
-                <div className={styles.fields}>
-                    <input ref="ak" type="text" placeholder="请输入AK" defaultValue={credentials.ak} />
-                    <input ref="sk" type="text" placeholder="请输入SK" defaultValue={credentials.sk} />
-                </div>
-            );
+        if (!pincode) {
+            this.setState({errMsg: '请输入安全码！'});
+            return;
         }
 
-        return (
-            <div className={styles.forgot}>
-                <span>{ak.replace(/^([\w]{8})[\w]+([\w]{8}$)/g, '$1****************$2')}</span>
-                <span className={`${styles.forgotBtn} fa fa-user-times`}
-                    onClick={this.forgotPin}
-                    data-tip="注销登录!"
-                    data-tip-align="left"
-                    tabIndex="-1"
-                />
-            </div>
-        );
+        if (pincode === confirmcode) {
+            this.props.setPinCode(pincode);
+            ipcRenderer.send('notify', 'login_success');
+        } else {
+            this.setState({errMsg: '安全码输入不一致！'});
+        }
     }
 
-    handleSubmit(evt) {
+    validateAkSK = evt => {
         evt.preventDefault();
 
-        const {login, pin} = this.props;
-
-        // 验证pin码
-        const _pin = this.refs.pin.value.trim();
-        if (pin) {
-            if (pin === _pin) {
-                return this.loginSuccess();
-            }
-            return this.setState({errMsg: 'PIN码错误'});
-        }
-        // 验证AK\SK
         const _ak = this.refs.ak.value.trim();
         const _sk = this.refs.sk.value.trim();
+
         if (_ak && _sk) {
-            return login(_ak, _sk, _pin);
+            this.setState({errMsg: ''});
+
+            return this.props.login(_ak, _sk).then(
+                () => this.setState({hasLogin: true}),
+                err => {
+                    if (err.code === 'SignatureDoesNotMatch') {
+                        this.setState({errMsg: 'AK/SK效验错误，请核实后重试！'});
+                    } else if (err.code === 'ETIMEDOUT') {
+                        this.setState({errMsg: '连接超时！'});
+                    } else {
+                        this.setState({errMsg: '网络错误！'});
+                    }
+                }
+            );
         }
 
-        this.setState({errMsg: 'AK/SK 验证失败'});
+        this.setState({errMsg: 'AK/SK 格式错误！'});
     }
 
-    loginSuccess() {
-        ipcRenderer.send('notify', 'login_success');
+    validatePinCode = () => {
+        const pincode = this.refs.pin.value.trim();
+
+        if (pincode === this.props.pin) {
+            ipcRenderer.send('notify', 'login_success');
+        } else {
+            this.setState({errMsg: '安全码错误！'});
+        }
     }
 
     forgotPin = () => {
         this.props.logout();
     }
 
+    skipPinCodeCheck = () => {
+        if (this.state.hasLogin) {
+            ipcRenderer.send('notify', 'login_success');
+        }
+    }
+
+    /**
+     * 设置验证安全码表单
+     *
+     * @returns
+     * @memberof Login
+     */
+    renderValidatePinFields() {
+        const accessKey = this.props.ak.replace(/^([\w]{8})[\w]+([\w]{8}$)/g, '$1****************$2');
+
+        return (
+            <div className={styles.loginform}>
+                <input type="text" defaultValue={accessKey} readOnly />
+                <span className={`${styles.forgotBtn} fa fa-user-times`}
+                    onClick={this.forgotPin}
+                    data-tip="切换登录AK/SK!"
+                    data-tip-align="left"
+                    tabIndex="-1"
+                />
+                <input type="text" placeholder="请输入安全码" ref="pin" />
+                <button data-tip="验证安全码"
+                    data-tip-align="left"
+                    onClick={this.validatePinCode}
+                    className={`${styles.loginBtn} fa fa-arrow-circle-right`}
+                />
+                {this.getLoginError()}
+            </div>
+        );
+    }
+
+    /**
+     * 绘制设置安全码表单
+     *
+     * @returns
+     * @memberof Login
+     */
+    renderSetPinFields() {
+        return (
+            <div className={styles.loginform}>
+                <input type="text" placeholder="请输入安全码" ref="pin" />
+                <input type="text" placeholder="请再次输入安全码" ref="pinconfirm" />
+                <button data-tip="设置安全码"
+                    data-tip-align="left"
+                    onClick={this.setPinCode}
+                    className={`${styles.loginBtn} fa fa-arrow-circle-right`}
+                />
+                <div className={styles.error}>
+                    <i className="fa fa-info-circle" />
+                        设置安全码可快速登录，
+                        <span className={styles.ignorepincode} onClick={this.skipPinCodeCheck}>
+                            跳过设置
+                        </span>
+                        安全码?
+                </div>
+                {this.getLoginError()}
+            </div>
+        );
+    }
+
+    /**
+     * 绘制AK\SK表单
+     *
+     * @returns
+     * @memberof Login
+     */
+    renderAkSkFields() {
+        const loading = this.props.loading;
+
+        return (
+            <form className={styles.loginform} onSubmit={this.validateAkSK}>
+                <input ref="ak" type="text" placeholder="Access Key ID" defaultValue={credentials.ak} />
+                <input ref="sk" type="text" placeholder="Secret Access Key" defaultValue={credentials.sk} />
+                {
+                    loading
+                        ? <i className={`${styles.loading} fa fa-spinner fa-spin`} />
+                        : <button className={`${styles.loginBtn} fa fa-arrow-circle-right`} data-tip="登录" data-tip-align="left" />
+                }
+                {this.getLoginError()}
+            </form>
+        );
+    }
+
+    /**
+     * 登陆分为几个状态：`验证AK/SK`、`设置安全码`、`验证安全码`
+     *
+     * @returns
+     * @memberof Login
+     */
     render() {
+        // 已经登录了，如果没有pin则提示
+        const showSetPinCode = this.state.hasLogin && !this.props.pin;
+        // 没有登录，如果有pin则也提示
+        const showValidatePinCode = !this.state.hasLogin && this.props.pin;
+
         return (
             <div className={styles.container}>
                 <SystemBar />
@@ -152,14 +234,15 @@ export default class Login extends Component {
                         />
                     </g>
                 </svg>
-                <form className={styles.login} onSubmit={evt => this.handleSubmit(evt)}>
-                    {this.getAkSkFields()}
-                    <div className={styles.pin}>
-                        <input type="text" placeholder="输入PIN码" ref="pin" />
-                        {this.getLoginRender()}
-                    </div>
-                    {this.getLoginError()}
-                </form>
+                {
+                    showValidatePinCode && this.renderValidatePinFields()
+                }
+                {
+                    showSetPinCode && this.renderSetPinFields()
+                }
+                {
+                    !showValidatePinCode && !showSetPinCode && this.renderAkSkFields()
+                }
             </div>
         );
     }

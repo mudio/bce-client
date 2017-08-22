@@ -5,12 +5,12 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {BosClient} from 'bce-sdk-js';
 import React, {Component} from 'react';
 
 import styles from './Extensions.css';
 import {REGION_BJ} from '../../utils/region';
 import SystemBar from './common/SystemBar';
-import {getRegionClient} from '../api/client';
 
 export default class Extensions extends Component {
     constructor(props) {
@@ -22,7 +22,7 @@ export default class Extensions extends Component {
     }
 
     componentDidMount() {
-        const _client = getRegionClient(REGION_BJ);
+        const _client = new BosClient(REGION_BJ);
 
         _client.getObject('bce-client', 'update/extensions.json').then(
             res => {
