@@ -7,12 +7,14 @@
 
 /* eslint react/no-string-refs: 0, max-len: 0 */
 
+
 import PropTypes from 'prop-types';
 import {ipcRenderer} from 'electron';
 import React, {Component} from 'react';
 
 import styles from './Login.css';
 import SystemBar from './common/SystemBar';
+import BrowserLink from './common/BrowserLink';
 import GlobalConfig from '../../main/ConfigManager';
 
 const credentials = GlobalConfig.get('credentials') || {};
@@ -33,19 +35,6 @@ export default class Login extends Component {
         this.state = {errMsg: '', hasLogin: false};
     }
 
-    getLoginError() {
-        const msg = this.state.errMsg;
-
-        if (msg) {
-            return (
-                <div className={styles.error}>
-                    <i className="fa fa-exclamation-triangle" />
-                    {msg}
-                </div>
-            );
-        }
-    }
-
     setPinCode = () => {
         const pincode = this.refs.pin.value.trim();
         const confirmcode = this.refs.pinconfirm.value.trim();
@@ -61,6 +50,20 @@ export default class Login extends Component {
         } else {
             this.setState({errMsg: '安全码输入不一致！'});
         }
+    }
+
+    showTipMessage() {
+        const msg = this.state.errMsg;
+
+        if (msg) {
+            return (
+                <div className={styles.tip}>
+                    <span className={styles.text}>{msg}</span>
+                </div>
+            );
+        }
+
+        return (<div className={styles.tip} />);
     }
 
     validateAkSK = evt => {
@@ -99,7 +102,7 @@ export default class Login extends Component {
         }
     }
 
-    forgotPin = () => {
+    clearAkSk = () => {
         this.props.logout();
     }
 
@@ -120,20 +123,19 @@ export default class Login extends Component {
 
         return (
             <div className={styles.loginform}>
-                <input type="text" defaultValue={accessKey} readOnly />
-                <span className={`${styles.forgotBtn} fa fa-user-times`}
-                    onClick={this.forgotPin}
-                    data-tip="切换登录AK/SK!"
-                    data-tip-align="left"
-                    tabIndex="-1"
-                />
+                <div className={styles.accesskey}>
+                    <span>AK: {accessKey}</span>
+                    <span className={styles.forgotBtn} onClick={this.clearAkSk}>更换</span>
+                </div>
                 <input type="password" placeholder="请输入安全码" ref="pin" />
                 <button data-tip="验证安全码"
                     data-tip-align="left"
                     onClick={this.validatePinCode}
                     className={`${styles.loginBtn} fa fa-arrow-circle-right`}
                 />
-                {this.getLoginError()}
+                <span className={styles.helplink} onClick={this.clearAkSk}>
+                    忘记安全码?
+                </span>
             </div>
         );
     }
@@ -154,15 +156,9 @@ export default class Login extends Component {
                     onClick={this.setPinCode}
                     className={`${styles.loginBtn} fa fa-arrow-circle-right`}
                 />
-                <div className={styles.error}>
-                    <i className="fa fa-info-circle" />
-                        设置安全码可快速登录，
-                        <span className={styles.ignorepincode} onClick={this.skipPinCodeCheck}>
-                            跳过设置
-                        </span>
-                        安全码?
-                </div>
-                {this.getLoginError()}
+                <span className={styles.helplink} onClick={this.skipPinCodeCheck}>
+                    跳过设置安全码?
+                </span>
             </div>
         );
     }
@@ -178,14 +174,18 @@ export default class Login extends Component {
 
         return (
             <form className={styles.loginform} onSubmit={this.validateAkSK}>
-                <input ref="ak" type="text" placeholder="Access Key ID" defaultValue={credentials.ak} />
-                <input ref="sk" type="text" placeholder="Secret Access Key" defaultValue={credentials.sk} />
+                <input ref="ak" type="text" placeholder="Access Key ID (AK)" defaultValue={credentials.ak} />
+                <input ref="sk" type="text" placeholder="Secret Access Key (SK)" defaultValue={credentials.sk} />
                 {
                     loading
                         ? <i className={`${styles.loading} fa fa-spinner fa-spin`} />
                         : <button className={`${styles.loginBtn} fa fa-arrow-circle-right`} data-tip="登录" data-tip-align="left" />
                 }
-                {this.getLoginError()}
+                <BrowserLink className={styles.helplink}
+                    linkTo="https://cloud.baidu.com/doc/Reference/GetAKSK.html#.E5.A6.82.E4.BD.95.E8.8E.B7.E5.8F.96AK.20.2F.20SK"
+                >
+                    如何获取AK/SK?
+                </BrowserLink >
             </form>
         );
     }
@@ -234,6 +234,7 @@ export default class Login extends Component {
                         />
                     </g>
                 </svg>
+                {this.showTipMessage()}
                 {
                     showValidatePinCode && this.renderValidatePinFields()
                 }
