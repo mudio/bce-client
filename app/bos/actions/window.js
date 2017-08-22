@@ -117,7 +117,7 @@ export const COPY_OBJECT_FAILURE = 'COPY_OBJECT_FAILURE';
  * 2. 在计算签名之前，用户需要针对x-bce-copy-source字段中为非标准ASCII字符（例如：中文）的内容做一次url-encode。
  * 3. 为了保持复制过程中的http连接，CopyObject接口的http结果可能使用Transfer-Encoded: Chunked编码方式。
  * 4. CopyObject过程中，如果发生服务器端错误，http status code可能返回2XX但是复制失败，复制结果请根据http body中的json判定。
-**/
+* */
 export function copyObject(sourceBucketName, sourceKey, targetBucketName, targetKey, options) {
     return {
         [API_TYPE]: {
