@@ -97,7 +97,7 @@
     "css-modules-require-hook": "^4.1.0",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^1.7.6",
+    "electron": "^1.7.5",
     "electron-builder": "^18.8.1",
     "electron-debug": "^1.4.0",
     "electron-devtools-installer": "^2.2.0",
