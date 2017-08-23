@@ -1,0 +1,28 @@
+
+.container {
+    border: none;
+    background: transparent;
+}
+
+.container g {
+    fill: none;
+    stroke: none;
+    stroke-width: 1;
+    fill-rule: evenodd;
+}
+
+.container path {
+    fill: #2EACFC;
+}
+
+.container circle {
+    stroke: #2EACFC;
+}
+
+.container:hover path {
+    fill: #444c63;
+}
+
+.container:hover circle {
+    fill: #2EACFC;
+}

@@ -8,7 +8,7 @@
     -webkit-app-region: drag;
 }
 
-.container svg {
+.logo {
     width: 100px;
     margin: 50px auto 20px auto;
 }
@@ -37,19 +37,16 @@
 }
 
 .loginBtn {
-    top: 40px;
-    right: 0px;
-    border: none;
+    right: 0;
+    top: 50px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    font-size: 26px;
-    color: #8692b2;
-    background: none;
-    line-height: 40px;
     position: absolute;
 }
 
-.loginBtn:hover {
-    color: #2eacfc;
+.loginBtn:hover svg {
+    fill: red;
 }
 
 .helplink {
@@ -93,11 +90,16 @@
     align-self: center;
 }
 
-.tip .text {
+.tip .text :global {
     display: inline-block;
     padding: 0 10px;
     color: #f66664;
     line-height: 30px;
     border-radius: 15px;
+    animation: shake both .3s;
     background: rgba(41, 47, 65, .3);
+}
+
+.text.info {
+    color: #FFB129;
 }

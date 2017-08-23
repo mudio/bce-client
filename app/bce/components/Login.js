@@ -7,12 +7,13 @@
 
 /* eslint react/no-string-refs: 0, max-len: 0 */
 
-
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import {ipcRenderer} from 'electron';
 import React, {Component} from 'react';
 
 import styles from './Login.css';
+import Button from './common/Button';
 import SystemBar from './common/SystemBar';
 import BrowserLink from './common/BrowserLink';
 import GlobalConfig from '../../main/ConfigManager';
@@ -32,28 +33,42 @@ export default class Login extends Component {
 
     constructor(...args) {
         super(...args);
-        this.state = {errMsg: '', hasLogin: false};
+        this.state = {errMsg: null, hasLogin: false};
     }
 
     setPinCode = () => {
         const pincode = this.refs.pin.value.trim();
         const confirmcode = this.refs.pinconfirm.value.trim();
 
-        if (!pincode) {
-            this.setState({errMsg: '请输入安全码！'});
-            return;
-        }
+        this.setState({errMsg: null});
 
-        if (pincode === confirmcode) {
-            this.props.setPinCode(pincode);
-            ipcRenderer.send('notify', 'login_success');
-        } else {
-            this.setState({errMsg: '安全码输入不一致！'});
-        }
+        setImmediate(() => {
+            if (!pincode) {
+                this.setState({errMsg: '请输入安全码'});
+                return;
+            }
+
+            if (pincode === confirmcode) {
+                this.props.setPinCode(pincode);
+                ipcRenderer.send('notify', 'login_success');
+            } else {
+                this.setState({errMsg: '安全码输入不一致'});
+            }
+        });
     }
 
     showTipMessage() {
         const msg = this.state.errMsg;
+
+        if (msg && msg.info) {
+            return (
+                <div className={styles.tip}>
+                    <span className={classnames(styles.text, styles.info)}>
+                        {msg.info}
+                    </span>
+                </div>
+            );
+        }
 
         if (msg) {
             return (
@@ -76,20 +91,21 @@ export default class Login extends Component {
             this.setState({errMsg: ''});
 
             return this.props.login(_ak, _sk).then(
-                () => this.setState({hasLogin: true}),
+                () => this.setState({
+                    hasLogin: true,
+                    errMsg: {info: '您可以设置安全码以便于以后快速登录'}
+                }),
                 err => {
-                    if (err.code === 'SignatureDoesNotMatch') {
-                        this.setState({errMsg: 'AK/SK效验错误，请核实后重试！'});
-                    } else if (err.code === 'ETIMEDOUT') {
-                        this.setState({errMsg: '连接超时！'});
+                    if (err.code === 'ETIMEDOUT') {
+                        this.setState({errMsg: '网络连接超时'});
                     } else {
-                        this.setState({errMsg: '网络错误！'});
+                        this.setState({errMsg: 'AK/SK效验错误'});
                     }
                 }
             );
         }
 
-        this.setState({errMsg: 'AK/SK 格式错误！'});
+        this.setState({errMsg: 'AK/SK 格式错误'});
     }
 
     validatePinCode = () => {
@@ -98,7 +114,7 @@ export default class Login extends Component {
         if (pincode === this.props.pin) {
             ipcRenderer.send('notify', 'login_success');
         } else {
-            this.setState({errMsg: '安全码错误！'});
+            this.setState({errMsg: '安全码错误'});
         }
     }
 
@@ -122,21 +138,17 @@ export default class Login extends Component {
         const accessKey = this.props.ak.replace(/^([\w]{8})[\w]+([\w]{8}$)/g, '$1****************$2');
 
         return (
-            <div className={styles.loginform}>
+            <form className={styles.loginform} onSubmit={this.validatePinCode}>
                 <div className={styles.accesskey}>
                     <span>AK: {accessKey}</span>
                     <span className={styles.forgotBtn} onClick={this.clearAkSk}>更换</span>
                 </div>
                 <input type="password" placeholder="请输入安全码" ref="pin" />
-                <button data-tip="验证安全码"
-                    data-tip-align="left"
-                    onClick={this.validatePinCode}
-                    className={`${styles.loginBtn} fa fa-arrow-circle-right`}
-                />
+                <Button data-tip="验证安全码" className={styles.loginBtn} />
                 <span className={styles.helplink} onClick={this.clearAkSk}>
-                    忘记安全码?
+                    忘记安全码
                 </span>
-            </div>
+            </form>
         );
     }
 
@@ -148,18 +160,14 @@ export default class Login extends Component {
      */
     renderSetPinFields() {
         return (
-            <div className={styles.loginform}>
+            <form className={styles.loginform} onSubmit={this.setPinCode}>
                 <input type="password" placeholder="请输入安全码" ref="pin" />
                 <input type="password" placeholder="请再次输入安全码" ref="pinconfirm" />
-                <button data-tip="设置安全码"
-                    data-tip-align="left"
-                    onClick={this.setPinCode}
-                    className={`${styles.loginBtn} fa fa-arrow-circle-right`}
-                />
+                <Button data-tip="设置安全码" className={styles.loginBtn} />
                 <span className={styles.helplink} onClick={this.skipPinCodeCheck}>
-                    跳过设置安全码?
+                    跳过设置
                 </span>
-            </div>
+            </form>
         );
     }
 
@@ -179,7 +187,7 @@ export default class Login extends Component {
                 {
                     loading
                         ? <i className={`${styles.loading} fa fa-spinner fa-spin`} />
-                        : <button className={`${styles.loginBtn} fa fa-arrow-circle-right`} data-tip="登录" data-tip-align="left" />
+                        : <Button className={styles.loginBtn} data-tip="登录" />
                 }
                 <BrowserLink className={styles.helplink}
                     linkTo="https://cloud.baidu.com/doc/Reference/GetAKSK.html#.E5.A6.82.E4.BD.95.E8.8E.B7.E5.8F.96AK.20.2F.20SK"
@@ -205,7 +213,7 @@ export default class Login extends Component {
         return (
             <div className={styles.container}>
                 <SystemBar />
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150">
+                <svg className={styles.logo} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150">
                     <g fill="#2eacfc">
                         <path d="M50.597,59.606V42.301c0-3.35-1.814-6.448-4.76-8.121l-12.029-6.842v41.819c0,1.048,0.568,2.017,1.489,2.539
                             l36.906,20.996V79.007c0-3.35-1.814-6.447-4.758-8.124l-15.361-8.737C51.162,61.621,50.597,60.656,50.597,59.606"
