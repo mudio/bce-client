@@ -16,11 +16,7 @@ matrix:
   fast_finish: true
 
 platform:
-  - x64
-
-branches:
-  only:
-    - master
+  - x32
 
 # Install scripts. (runs after repo cloning)
 install:
