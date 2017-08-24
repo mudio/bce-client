@@ -10,15 +10,20 @@ export default {
     module: {
         rules: [{
             test: /\.jsx?$/,
-            use: 'babel-loader',
-            exclude: /node_modules/
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    cacheDirectory: true
+                }
+            }
         }]
     },
 
     output: {
         path: path.join(__dirname, 'static'),
         filename: 'bundle.js',
-    // https://github.com/webpack/webpack/issues/1114
+        // https://github.com/webpack/webpack/issues/1114
         libraryTarget: 'commonjs2'
     },
 
@@ -34,6 +39,9 @@ export default {
     },
 
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+        }),
         new webpack.NamedModulesPlugin(),
     ],
 

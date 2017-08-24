@@ -5,9 +5,17 @@
 import webpack from 'webpack';
 import merge from 'webpack-merge';
 import BabiliPlugin from 'babili-webpack-plugin';
+import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer';
+
 import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
+    /**
+     * Set target to Electron specific node.js env.
+     * https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
+     */
+    target: 'electron-main',
+
     devtool: 'source-map',
 
     entry: './app/main',
@@ -24,6 +32,11 @@ export default merge(baseConfig, {
          */
         new BabiliPlugin(),
 
+        new BundleAnalyzerPlugin({
+            analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+            openAnalyzer: process.env.OPEN_ANALYZER === 'true'
+        }),
+
         /**
          * Create global constants which can be configured at compile time.
          *
@@ -34,17 +47,10 @@ export default merge(baseConfig, {
          * development checks
          */
         new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+            'process.env.DEBUG_PROD': JSON.stringify(process.env.DEBUG_PROD || 'false')
         })
     ],
-
-    /**
-     * Set target to Electron specific node.js env.
-     * https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
-     */
-    target: 'electron-main',
 
     /**
      * Disables webpack processing of __dirname and __filename.

@@ -21,7 +21,9 @@
         <script>
             {
                 const script = document.createElement('script');
-                script.src = (process.env.HOT) ? 'http://localhost:3000/static/bundle.js' : './bundle.js';
+                script.src = (process.env.HOT)
+                    ? 'http://localhost:3000/static/renderer.dev.js'
+                    : './renderer.prod.js';
                 // HACK: Writing the script path should be done with webpack
                 document.body.appendChild(script);
             }

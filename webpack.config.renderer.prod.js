@@ -1,67 +1,62 @@
-/* eslint-disable no-console */
 /**
- * Build config for development process that uses Hot-Module-Replacement
- * https://webpack.js.org/concepts/hot-module-replacement/
+ * Build config for electron 'Renderer Process' file
  */
+
 import path from 'path';
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-import {spawn} from 'child_process';
+import BabiliPlugin from 'babili-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import ExtractTextPlugin from 'extract-text-webpack-plugin';
+import {BundleAnalyzerPlugin} from 'webpack-bundle-analyzer';
+
 import baseConfig from './webpack.config.base';
 
-const port = process.env.PORT || 3000;
-const publicPath = `http://localhost:${port}/static`;
+export default merge.smart(baseConfig, {
+    // https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
+    target: 'electron-renderer',
 
-export default merge(baseConfig, {
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
 
-    entry: [
-        'react-hot-loader/patch',
-        `webpack-dev-server/client?http://localhost:${port}/`,
-        'webpack/hot/only-dev-server',
-        path.join(__dirname, './app/bce/index'),
-    ],
+    entry: './app/bce/index',
 
     output: {
-        publicPath: `http://localhost:${port}/static/`
+        publicPath: './',
+        filename: 'renderer.prod.js',
+        path: path.join(__dirname, './static')
     },
 
     module: {
         rules: [
+            // Extract all antd style to style.css as is
             {
-                test: /antd[\w./\\]+css$/, // 处理antd样式
-                use: [
-                    {loader: 'style-loader'},
-                    {
-                        loader: 'css-loader',
-                        options: {sourceMap: true},
-                    }
-                ]
+                test: /antd[\w./\\]+css$/,
+                use: ExtractTextPlugin.extract({
+                    use: 'css-loader',
+                    fallback: 'style-loader',
+                })
             },
+            // Extract all .global.css to style.css as is
             {
                 test: /\.global\.css$/,
-                use: [
-                    {loader: 'style-loader'},
-                    {
-                        loader: 'css-loader',
-                        options: {sourceMap: true},
-                    }
-                ]
+                use: ExtractTextPlugin.extract({
+                    use: 'css-loader',
+                    fallback: 'style-loader',
+                })
             },
+            // Pipe other styles through css modules and append to style.css
             {
-                test: /^((?!\.global|antd).)*\.css$/, // 不要处理global/antd样式
-                use: [
-                    {loader: 'style-loader'},
-                    {
+                test: /^((?!\.global|antd).)*\.css$/,
+                use: ExtractTextPlugin.extract({
+                    use: {
                         loader: 'css-loader',
                         options: {
                             modules: true,
-                            sourceMap: true,
                             importLoaders: 1,
                             localIdentName: '[name]__[local]__[hash:base64:5]',
                         }
-                    },
-                ]
+                    }
+                }),
             },
             {
                 test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -115,9 +110,6 @@ export default merge(baseConfig, {
     },
 
     plugins: [
-        // https://webpack.js.org/concepts/hot-module-replacement/
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
         /**
          * Create global constants which can be configured at compile time.
          *
@@ -128,32 +120,38 @@ export default merge(baseConfig, {
          * development checks
          */
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('development')
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
         }),
-        // turn debug mode on.
-        new webpack.LoaderOptionsPlugin({
-            debug: true
+
+        /**
+         * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
+         */
+        new BabiliPlugin(),
+
+        new ExtractTextPlugin('style.css'),
+
+        new BundleAnalyzerPlugin({
+            analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
+            openAnalyzer: process.env.OPEN_ANALYZER === 'true'
         }),
-    ],
 
-    /**
-     * https://github.com/chentsulin/webpack-target-electron-renderer#how-this-module-works
-     */
-    target: 'electron-renderer',
+        /**
+         * Dynamically generate app.html page
+         */
+        new HtmlWebpackPlugin({
+            filename: 'app.html',
+            template: 'app/app.html',
+            inject: false
+        }),
 
-    devServer: {
-        port,
-        hot: true,
-        inline: false,
-        historyApiFallback: true,
-        contentBase: path.join(__dirname, 'static'),
-        publicPath,
-        setup() {
-            if (process.env.START_HOT) {
-                spawn('npm', ['run', 'start'], {shell: true, env: process.env, stdio: 'inherit'})
-                    .on('close', code => process.exit(code))
-                    .on('error', spawnError => console.error(spawnError));
-            }
-        }
-    },
+        /**
+         * Dynamically generate login.html page
+         */
+        new HtmlWebpackPlugin({
+            filename: 'login.html',
+            template: 'app/login.html',
+            inject: false
+        })
+    ]
 });
+
