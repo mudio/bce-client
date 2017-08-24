@@ -119,7 +119,7 @@ export default class DownloadQueue extends EventEmitter {
                 uuid, name, region, bucket, prefix
             );
 
-             // 子任务完成
+            // 子任务完成
             if (metaKey) {
                 queueMap.waitingQueue = queueMap.waitingQueue.filter(key => key !== metaKey);
                 queueMap.completeQueue = [metaKey, ...queueMap.completeQueue];

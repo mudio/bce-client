@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint no-multi-spaces: 0 */
+
 export const UploadConfig = {
     MetaLimit: 5,               // 最多跑五个任务
     RateLimit: 200,             // kb/s 暂不支持

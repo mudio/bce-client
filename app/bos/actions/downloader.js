@@ -12,28 +12,37 @@ import {getRegionClient} from '../api/client';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
 
 export function downloadStart(taskIds = []) {
+    /**
+     * 开始任务
+     * 如果为空，顺序开始等待任务， 不为空，开始指定任务
+     */
     return {
         [DownloadCommandType]: {
-            command: DownloadNotify.Start,      // 开始任务
-            taskIds                             // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+            command: DownloadNotify.Start, taskIds
         }
     };
 }
 
 export function downloadRemove(taskIds = []) {
+    /**
+     * 删除任务
+     * 如果为空，顺序开始等待任务， 不为空，开始指定任务
+     */
     return {
         [DownloadCommandType]: {
-            command: DownloadNotify.Remove,    // 删除任务
-            taskIds                            // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+            command: DownloadNotify.Remove, taskIds
         }
     };
 }
 
 export function downloadSuspend(taskIds = []) {
+    /**
+     * 删除任务
+     * 如果为空，顺序开始等待任务， 不为空，开始指定任务
+     */
     return {
         [DownloadCommandType]: {
-            command: DownloadNotify.Suspending,    // 删除任务
-            taskIds                            // 如果为空，顺序开始等待任务， 不为空，开始指定任务
+            command: DownloadNotify.Suspending, taskIds
         }
     };
 }

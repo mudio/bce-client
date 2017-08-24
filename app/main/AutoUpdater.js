@@ -68,8 +68,7 @@ export default class AutoUpdater {
             }
 
             res.resume();
-        })
-        .on('error', err => log.error(err.message));
+        }).on('error', err => log.error(err.message));
     }
 
     notify(title, message = '') {
