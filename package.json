@@ -154,6 +154,10 @@
     "semver": "^5.4.1",
     "uuid": "^3.1.0"
   },
+  "optionalDependencies": {
+    "7zip-bin-mac": "^1.0.1",
+    "7zip-bin-win": "^2.1.0"
+  },
   "devEngines": {
     "node": ">=7.x",
     "npm": ">=3.x"
