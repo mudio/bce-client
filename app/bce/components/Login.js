@@ -19,6 +19,7 @@ import BrowserLink from './common/BrowserLink';
 import GlobalConfig from '../../main/ConfigManager';
 
 const credentials = GlobalConfig.get('credentials') || {};
+const akskHelpLink = 'https://cloud.baidu.com/doc/Reference/GetAKSK.html#.E5.A6.82.E4.BD.95.E8.8E.B7.E5.8F.96AK.20.2F.20SK';
 
 export default class Login extends Component {
     static propTypes = {
@@ -33,23 +34,35 @@ export default class Login extends Component {
 
     constructor(...args) {
         super(...args);
-        this.state = {errMsg: null, hasLogin: false};
+
+        this.state = {
+            ak: credentials.ak,
+            sk: credentials.sk,
+            pin: '',
+            pinconfirm: '',
+            errMsg: null,
+            hasLogin: false,
+        };
     }
 
+    /**
+     * 设置安全码
+     *
+     * @memberof Login
+     */
     setPinCode = () => {
-        const pincode = this.refs.pin.value.trim();
-        const confirmcode = this.refs.pinconfirm.value.trim();
+        const {pin, pinconfirm} = this.state;
 
         this.setState({errMsg: null});
-
+        // 为了动画效果
         setImmediate(() => {
-            if (!pincode) {
+            if (!pin) {
                 this.setState({errMsg: '请输入安全码'});
                 return;
             }
 
-            if (pincode === confirmcode) {
-                this.props.setPinCode(pincode);
+            if (pin === pinconfirm) {
+                this.props.setPinCode(pin);
                 ipcRenderer.send('notify', 'login_success');
             } else {
                 this.setState({errMsg: '安全码输入不一致'});
@@ -57,6 +70,12 @@ export default class Login extends Component {
         });
     }
 
+    /**
+     * 展示提示信息
+     *
+     * @returns
+     * @memberof Login
+     */
     showTipMessage() {
         const msg = this.state.errMsg;
 
@@ -81,16 +100,20 @@ export default class Login extends Component {
         return (<div className={styles.tip} />);
     }
 
+    /**
+     * 效验AK/SK
+     *
+     * @memberof Login
+     */
     validateAkSK = evt => {
         evt.preventDefault();
 
-        const _ak = this.refs.ak.value.trim();
-        const _sk = this.refs.sk.value.trim();
+        const {ak, sk} = this.state;
 
-        if (_ak && _sk) {
+        if (ak && sk) {
             this.setState({errMsg: ''});
 
-            return this.props.login(_ak, _sk).then(
+            return this.props.login(ak, sk).then(
                 () => this.setState({
                     hasLogin: true,
                     errMsg: {info: '您可以设置安全码以便于以后快速登录'}
@@ -108,24 +131,42 @@ export default class Login extends Component {
         this.setState({errMsg: 'AK/SK 格式错误'});
     }
 
+    /**
+     * 效验安全码
+     *
+     * @memberof Login
+     */
     validatePinCode = () => {
-        const pincode = this.refs.pin.value.trim();
-
-        if (pincode === this.props.pin) {
+        if (this.state.pin === this.props.pin) {
             ipcRenderer.send('notify', 'login_success');
         } else {
             this.setState({errMsg: '安全码错误'});
         }
     }
 
+    /**
+     * 清除安全码
+     *
+     * @memberof Login
+     */
     clearAkSk = () => {
         this.props.logout();
     }
 
+    /**
+     * 跳过设置安全码
+     *
+     * @memberof Login
+     */
     skipPinCodeCheck = () => {
         if (this.state.hasLogin) {
             ipcRenderer.send('notify', 'login_success');
         }
+    }
+
+    handleInputChange = evt => {
+        const {name, value} = evt.target;
+        this.setState({[name]: value.trim()});
     }
 
     /**
@@ -143,7 +184,12 @@ export default class Login extends Component {
                     <span>AK: {accessKey}</span>
                     <span className={styles.forgotBtn} onClick={this.clearAkSk}>更换</span>
                 </div>
-                <input type="password" placeholder="请输入安全码" ref="pin" />
+                <input type="password"
+                    name="pin"
+                    value={this.state.pin}
+                    placeholder="请输入安全码"
+                    onChange={this.handleInputChange}
+                />
                 <Button data-tip="验证安全码" className={styles.loginBtn} />
                 <span className={styles.helplink} onClick={this.clearAkSk}>
                     忘记安全码
@@ -161,8 +207,18 @@ export default class Login extends Component {
     renderSetPinFields() {
         return (
             <form className={styles.loginform} onSubmit={this.setPinCode}>
-                <input type="password" placeholder="请输入安全码" ref="pin" />
-                <input type="password" placeholder="请再次输入安全码" ref="pinconfirm" />
+                <input type="password"
+                    name="pin"
+                    value={this.state.pin}
+                    onChange={this.handleInputChange}
+                    placeholder="请输入安全码"
+                />
+                <input type="password"
+                    name="pinconfirm"
+                    value={this.state.pinconfirm}
+                    onChange={this.handleInputChange}
+                    placeholder="请再次输入安全码"
+                />
                 <Button data-tip="设置安全码" className={styles.loginBtn} />
                 <span className={styles.helplink} onClick={this.skipPinCodeCheck}>
                     跳过设置
@@ -180,18 +236,30 @@ export default class Login extends Component {
     renderAkSkFields() {
         const loading = this.props.loading;
 
+        function loadingOrLogin() {
+            if (loading) {
+                return (<i className={`${styles.loading} fa fa-spinner fa-spin`} />);
+            }
+
+            return (<Button className={styles.loginBtn} data-tip="登录" />);
+        }
+
         return (
             <form className={styles.loginform} onSubmit={this.validateAkSK}>
-                <input ref="ak" type="text" placeholder="Access Key ID (AK)" defaultValue={credentials.ak} />
-                <input ref="sk" type="text" placeholder="Secret Access Key (SK)" defaultValue={credentials.sk} />
-                {
-                    loading
-                        ? <i className={`${styles.loading} fa fa-spinner fa-spin`} />
-                        : <Button className={styles.loginBtn} data-tip="登录" />
-                }
-                <BrowserLink className={styles.helplink}
-                    linkTo="https://cloud.baidu.com/doc/Reference/GetAKSK.html#.E5.A6.82.E4.BD.95.E8.8E.B7.E5.8F.96AK.20.2F.20SK"
-                >
+                <input type="text"
+                    name="ak"
+                    value={this.state.ak}
+                    onChange={this.handleInputChange}
+                    placeholder="Access Key ID (AK)"
+                />
+                <input type="text"
+                    name="sk"
+                    value={this.state.sk}
+                    onChange={this.handleInputChange}
+                    placeholder="Secret Access Key (SK)"
+                />
+                {loadingOrLogin()}
+                <BrowserLink className={styles.helplink} linkTo={akskHelpLink}>
                     如何获取AK/SK?
                 </BrowserLink >
             </form>
@@ -209,6 +277,22 @@ export default class Login extends Component {
         const showSetPinCode = this.state.hasLogin && !this.props.pin;
         // 没有登录，如果有pin则也提示
         const showValidatePinCode = !this.state.hasLogin && this.props.pin;
+
+        const switchShow = () => {
+            if (showValidatePinCode) {
+                return this.renderValidatePinFields();
+            }
+
+            if (showSetPinCode) {
+                return this.renderSetPinFields();
+            }
+
+            if (!showValidatePinCode && !showSetPinCode) {
+                return this.renderAkSkFields();
+            }
+
+            return null;
+        };
 
         return (
             <div className={styles.container}>
@@ -243,15 +327,7 @@ export default class Login extends Component {
                     </g>
                 </svg>
                 {this.showTipMessage()}
-                {
-                    showValidatePinCode && this.renderValidatePinFields()
-                }
-                {
-                    showSetPinCode && this.renderSetPinFields()
-                }
-                {
-                    !showValidatePinCode && !showSetPinCode && this.renderAkSkFields()
-                }
+                {switchShow()}
             </div>
         );
     }
