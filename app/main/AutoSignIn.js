@@ -7,15 +7,15 @@
 
 /* eslint no-underscore-dangle: [2, { "allowAfterThis": true }] */
 
-import keytar from 'keytar';
+// import keytar from 'keytar';
 import {ipcRenderer} from 'electron';
 
-const SERVICE_NAME = 'com.baidu.bce';
-const LOGIN_NAME = 'baidu_bce';
+// const SERVICE_NAME = 'com.baidu.bce';
+// const LOGIN_NAME = 'baidu_bce';
 
 export default class AutoSignIn {
     getCredentials() {
-        const auth = keytar.getPassword(SERVICE_NAME, LOGIN_NAME);
+        const auth = ''; // keytar.getPassword(SERVICE_NAME, LOGIN_NAME);
 
         if (auth) {
             try {
