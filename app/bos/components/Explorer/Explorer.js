@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import path from 'path';
 import {remote} from 'electron';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -75,14 +76,16 @@ export default class Explorer extends Component {
 
     _download(region, bucketName, prefix, keys) {
         // 选择文件夹
-        const path = remote.dialog.showOpenDialog({properties: ['openDirectory']});
+        const selectPaths = remote.dialog.showOpenDialog({properties: ['openDirectory']});
         // 用户取消了
-        if (path === undefined) {
+        if (selectPaths === undefined) {
             return;
         }
+
         // 不支持选择多个文件夹，所以只取第一个
+        const dirname = prefix.endsWith('/') ? prefix : path.posix.dirname(prefix);
         this.props.dispatch(
-            createDownloadTask(region, bucketName, prefix, keys, path[0])
+            createDownloadTask(region, bucketName, dirname, keys, selectPaths[0])
         );
     }
 

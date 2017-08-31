@@ -13,9 +13,28 @@ import {ConnectedRouter} from 'react-router-redux';
 
 import './style/mixin.global.css';
 import Routes from './routes';
+import {DownloadStatus} from './utils/TransferStatus';
 import {configureStore, history} from './store/configureStore';
 
 const cache = JSON.parse(localStorage.getItem('bos')) || {};
+
+/**
+ * 强退、崩溃可能导致数据有问题，修复下
+ */
+if (Array.isArray(cache.downloads)) {
+    cache.downloads = cache.downloads.reduce((context, item) => {
+        if (item.status !== DownloadStatus.Init) {
+            if (item.status === DownloadStatus.Running) {
+                item.status = DownloadStatus.Paused;
+            }
+
+            context.push(item);
+        }
+
+        return context;
+    }, []);
+}
+
 window.globalStore = configureStore(cache);
 
 window.globalStore.subscribe(() => {

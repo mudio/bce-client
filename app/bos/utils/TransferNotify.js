@@ -30,11 +30,11 @@ export const DownloadNotify = {
     Init: 'download_notify_init',
     Start: 'download_notify_start',
     Error: 'download_notify_error',
-    Launch: 'download_notify_launch',
     Remove: 'download_notify_remove',
     Finish: 'download_notify_finish',
+    FinishPart: 'download_notify_finish_part',
     Progress: 'download_notify_progress',
-    Suspended: 'download_notify_suspended',
-    Suspending: 'download_notify_suspending',
+    Pausing: 'download_notify_pausing',
+    Paused: 'download_notify_paused',
     ClearFinish: 'download_notify_clear_finish'
 };

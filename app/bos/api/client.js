@@ -144,3 +144,8 @@ export function getRegionClient(region = REGION_BJ) {
     const {ak, sk} = JSON.parse(localStorage.getItem('framework')).auth;
     return new Client(region, {ak, sk});
 }
+
+export function getEndpointCredentials(region = REGION_BJ) {
+    const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+    return {credentials, endpoint: endpoint[region]};
+}

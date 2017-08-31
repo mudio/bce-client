@@ -6,13 +6,14 @@
  */
 
 import path from 'path';
-import {Modal} from 'antd';
 import electron from 'electron';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import React, {Component} from 'react';
+import {Modal, Tooltip} from 'antd';
 
 import styles from './DownloadItem.css';
+import {humanSize, humenRate} from '../../utils/utils';
 import {getText, DownloadStatus} from '../../utils/TransferStatus';
 import {downloadStart, downloadRemove, downloadSuspend} from '../../actions/downloader';
 
@@ -20,33 +21,30 @@ const {shell} = electron;
 
 export default class DownloadItem extends Component {
     static propTypes = {
+        rate: PropTypes.number,
         error: PropTypes.string,
+        keymap: PropTypes.object,
+        offsetSize: PropTypes.number,
+        totalSize: PropTypes.number,
         uuid: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
         region: PropTypes.string.isRequired,
-        bucket: PropTypes.string.isRequired,
+        bucketName: PropTypes.string.isRequired,
         prefix: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
-        basedir: PropTypes.string.isRequired,
-        totalSize: PropTypes.number.isRequired,
-        offsetSize: PropTypes.number.isRequired,
-        keymap: PropTypes.shape({
-            error: PropTypes.number.isRequired,
-            waiting: PropTypes.number.isRequired,
-            complete: PropTypes.number.isRequired,
-        }),
+        baseDir: PropTypes.string.isRequired,
+        objectKey: PropTypes.string.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     getLoader() {
-        const {totalSize, offsetSize = 0, status} = this.props;
+        const {totalSize = 1, offsetSize = 0, status} = this.props;
 
         const klass = classnames(
             styles.loader,
             {[styles.error]: status === DownloadStatus.Error}
         );
 
-        const width = 100 * offsetSize / totalSize; // eslint-disable-line no-mixed-operators
+        const width = Math.min(100, 100 * offsetSize / totalSize); // eslint-disable-line no-mixed-operators
 
         return (
             <div className={styles.progress}>
@@ -58,63 +56,50 @@ export default class DownloadItem extends Component {
         );
     }
 
-    getSize() {
-        const {totalSize = 0, offsetSize = 0} = this.props;
-        const unitKB = 1024;
-        const unitMB = 1024 * 1024;
-        const unitGB = 1024 * 1024 * 1024;
-
-        function humanSize(size = 0) {
-            if (size >= unitGB) {
-                return `${(size / unitGB).toFixed(0)}GB`;
-            } else if (size >= unitMB && size < unitGB) {
-                return `${(size / unitMB).toFixed(0)}MB`;
-            }
-            return `${(size / unitKB).toFixed(0)}KB`;
-        }
-
-        return `${humanSize(offsetSize)}  /  ${humanSize(totalSize)}`;
-    }
-
     getStatus() {
-        const {
-            keymap,
-            status,
-            totalSize,
-            offsetSize = 0,
-        } = this.props;
+        const {status, rate, offsetSize = 0, totalSize} = this.props;
         const progress = ~~(100 * offsetSize / totalSize); // eslint-disable-line
 
         switch (status) {
         case DownloadStatus.Init:
             return (
-                <div className={styles.status}>
-                    <i className="fa fa-spinner fa-pulse" />
-                    {getText(status)}
+                <div className={styles.statusWrap}>
+                    <div className={styles.status}>
+                        <i className="fa fa-spinner fa-pulse" />
+                        {getText(status)}
+                    </div>
                 </div>
             );
         case DownloadStatus.Running: {
             return (
-                <div className={styles.status}>{progress}%</div>
+                <div className={styles.statusWrap}>
+                    <div>{humenRate(rate)}</div>
+                    <div className={styles.status}>{progress}%</div>
+                </div>
             );
         }
         case DownloadStatus.Error: {
-            const errTip = `已完成任务：${keymap.complete}个\n未完成任务：${keymap.waiting}个\n运行错误数：${keymap.error}个`;
             return (
-                <div className={classnames(styles.status, styles.error)}>
-                    <i className="fa fa-exclamation-triangle" title={errTip} />
-                    {progress}%
+                <div className={styles.statusWrap}>
+                    <div className={classnames(styles.status, styles.error)}>
+                        <i className="fa fa-exclamation-triangle" />
+                        {progress}%
+                    </div>
                 </div>
             );
         }
         default:
-            return (<div className={styles.status}>{getText(status)}</div>);
+            return (
+                <div className={styles.statusWrap}>
+                    <div className={styles.status}>{getText(status)}</div>
+                </div>
+            );
         }
     }
 
-
     _onTrash = () => {
-        const {uuid, name, dispatch} = this.props;
+        const {uuid, dispatch, prefix, objectKey} = this.props;
+        const name = path.posix.relative(prefix, objectKey).split('/')[0];
 
         Modal.confirm({
             title: '删除提示',
@@ -137,17 +122,17 @@ export default class DownloadItem extends Component {
     _onStart = () => {
         const {uuid, status, dispatch} = this.props;
 
-        if (status === DownloadStatus.Suspended
+        if (status === DownloadStatus.Paused
             || status === DownloadStatus.Error) {
             dispatch(downloadStart([uuid]));
         }
     }
 
     _showItemInFolder = () => {
-        const {name, basedir} = this.props;
-        const localDir = path.join(basedir, name);
+        const {baseDir, prefix, objectKey} = this.props;
+        const name = path.posix.relative(prefix, objectKey).split('/')[0];
 
-        shell.showItemInFolder(localDir);
+        shell.showItemInFolder(path.join(baseDir, name));
     }
 
     renderOperation() {
@@ -156,7 +141,7 @@ export default class DownloadItem extends Component {
         const start = () => {
             const className = classnames(
                 'fa', 'fa-play', 'fa-fw',
-                {[styles.hidden]: status !== DownloadStatus.Error && status !== DownloadStatus.Suspended}
+                {[styles.hidden]: status !== DownloadStatus.Error && status !== DownloadStatus.Paused}
             );
 
             return (
@@ -178,8 +163,7 @@ export default class DownloadItem extends Component {
         const trash = () => {
             const hidden = status !== DownloadStatus.Error
                 && status !== DownloadStatus.Finish
-                && status !== DownloadStatus.Suspended
-                && status !== DownloadStatus.Suspending;
+                && status !== DownloadStatus.Paused;
 
             const className = classnames(
                 'fa', 'fa-trash', 'fa-fw', styles.trash,
@@ -202,26 +186,41 @@ export default class DownloadItem extends Component {
     }
 
     render() {
-        const {region, bucket, prefix, name} = this.props;
-        let style = '';
+        const {region, bucketName, prefix, objectKey, status} = this.props;
+        // remove `.`
+        const extname = path.extname(objectKey).slice(1);
+        const name = path.posix.relative(prefix, objectKey).split('/')[0];
+        const isFolder = objectKey.endsWith('/');
 
-        if (name.endsWith('/')) {
-            style = classnames(styles.fileicon, 'asset-folder');
-        } else {
-            const ext = name.split('.').pop().toLowerCase();
-            style = classnames(styles.fileicon, 'asset-normal', `asset-${ext}`);
+        const style = classnames(styles.fileicon, {
+            'asset-folder': isFolder,
+            'asset-normal': !isFolder,
+            [`asset-${extname}`]: !isFolder,
+        });
+
+        if (status === DownloadStatus.Init) {
+            return (
+                <div className={styles.container}>
+                    <i className={style} />
+                    <div className={styles.summary}>
+                        <Tooltip title={`${region}://${bucketName}/${prefix}${name}`}>
+                            {name}
+                        </Tooltip>
+                    </div>
+                    {this.getLoader()}
+                </div>
+            );
         }
 
+        const {totalSize = 0, offsetSize = 0} = this.props;
         return (
             <div className={styles.container}>
                 <i className={style} />
                 <div className={styles.summary}>
-                    <div>
-                        {region}://{bucket}/{prefix}{name}
-                    </div>
-                    <div>
-                        {this.getSize()}
-                    </div>
+                    <Tooltip title={`${region}://${bucketName}/${prefix}${name}`}>
+                        {name}
+                    </Tooltip>
+                    <div>{humanSize(offsetSize)} / {humanSize(totalSize)}</div>
                 </div>
                 {this.getLoader()}
                 {this.renderOperation()}

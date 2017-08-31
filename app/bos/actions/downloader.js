@@ -5,8 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint object-property-newline: 0 */
-
 import {getUuid} from '../../utils/helper';
 import {getRegionClient} from '../api/client';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
@@ -18,7 +16,7 @@ export function downloadStart(taskIds = []) {
      */
     return {
         [DownloadCommandType]: {
-            command: DownloadNotify.Start, taskIds
+            command: DownloadNotify.Init, taskIds
         }
     };
 }
@@ -37,60 +35,57 @@ export function downloadRemove(taskIds = []) {
 
 export function downloadSuspend(taskIds = []) {
     /**
-     * 删除任务
-     * 如果为空，顺序开始等待任务， 不为空，开始指定任务
+     * 暂停任务
      */
     return {
         [DownloadCommandType]: {
-            command: DownloadNotify.Suspending, taskIds
+            command: DownloadNotify.Pausing, taskIds
         }
     };
 }
 
-export function createDownloadTask(region, bucket, prefix, keys, basedir) {
+export function createDownloadTask(region, bucketName, prefix, objectKeys, baseDir) {
     return dispatch => {
         const client = getRegionClient(region);
 
-        keys.forEach(object => {
+        objectKeys.forEach(objectKey => {
             const uuid = getUuid();
-            const name = object.replace(prefix, '');
+            const isFolder = objectKey.endsWith('/');
+
             // 初始化任务
             dispatch({
-                uuid, region, bucket, prefix, name, basedir, type: DownloadNotify.Init
+                type: DownloadNotify.Init, uuid, region, bucketName, prefix, baseDir, objectKey
             });
 
-            client.listAllObjects(bucket, object).then(
+            client.listAllObjects(bucketName, objectKey).then(
                 contents => {
                     let totalSize = 0;
-                    const metaKeys = contents.map(item => {
-                        // 创建任务uuid
-                        const metaKey = getUuid();
-                        const metaFile = {
-                            offsetSize: 0,
-                            eTag: item.eTag,
-                            totalSize: item.size,
-                            relative: item.key.replace(prefix, ''),
-                        };
 
-                        totalSize += item.size;
+                    const keymap = contents.reduce((context, item) => {
+                        /**
+                         * 如果不是目录，前缀匹配可能不准确
+                         */
+                        if (!isFolder && item.key === objectKey) {
+                            context[item.key] = {finish: false, size: item.size}; // eslint-disable-line
+                            totalSize += item.size;
+                        }
 
-                        localStorage.setItem(metaKey, JSON.stringify(metaFile));
+                        /**
+                         * 忽略目录形式的object
+                         */
+                        if (isFolder && !item.key.endsWith('/')) {
+                            context[item.key] = {finish: false, size: item.size}; // eslint-disable-line
+                            totalSize += item.size;
+                        }
 
-                        return metaKey;
-                    });
-                    // 建立keymap
-                    const keymapId = getUuid();
-                    localStorage.setItem(keymapId, JSON.stringify({
-                        errorQueue: [],
-                        completeQueue: [],
-                        waitingQueue: metaKeys
-                    }));
+                        return context;
+                    }, {});
+
                     // 建立新任务
                     dispatch({
-                        type: DownloadNotify.New, uuid, totalSize,
-                        keymap: {key: keymapId, waiting: keys.length, error: 0, complete: 0}
+                        type: DownloadNotify.New, uuid, totalSize, keymap
                     });
-                    // 立即开始这个任务
+
                     dispatch(downloadStart([uuid]));
                 },
                 response => dispatch({

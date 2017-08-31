@@ -60,11 +60,15 @@
     color: #8692b2;
 }
 
+.statusWrap {
+    display: flex;
+    color: #8692b2;
+    margin-top: 3px;
+}
 
 .status {
-    color: #8692b2;
-    padding-top: 3px;
-    justify-content: flex-end;
+    flex: auto;
+    text-align: right;
 }
 
 .status i {
