@@ -17,12 +17,11 @@ cache:
 install:
 - sudo spctl --master-disable
 - npm install
-- npm run postinstall
 
 before_script:
 - npm run pretest
 
 script:
 - npm run lint
-- npm run build:osx
+- npm run dist:osx
 
