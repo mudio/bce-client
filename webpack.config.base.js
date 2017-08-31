@@ -45,5 +45,10 @@ export default {
         new webpack.NamedModulesPlugin(),
     ],
 
+    node: {
+        __dirname: true,
+        __filename: true
+    },
+
     externals: Object.keys(externals || {})
 };
