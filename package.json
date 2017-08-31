@@ -133,6 +133,7 @@
     "antd": "^2.12.7",
     "async": "^2.5.0",
     "bce-sdk-js": "^0.2.7",
+    "bce-service-bos-transport": "github:mudio/bce-service-bos-transport",
     "classnames": "^2.2.5",
     "configstore": "^3.1.1",
     "electron-log": "^2.2.7",
