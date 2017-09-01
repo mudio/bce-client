@@ -28,6 +28,8 @@
       "category": "public.app-category.developer-tools"
     },
     "dmg": {
+      "title": "安装${productName}",
+      "icon": "build/install.icns",
       "contents": [
         {
           "x": 400,
