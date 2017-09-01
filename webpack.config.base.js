@@ -45,9 +45,14 @@ export default {
         new webpack.NamedModulesPlugin(),
     ],
 
+    /**
+     * Disables webpack processing of __dirname and __filename.
+     * If you run the bundle in node.js it falls back to these values of node.js.
+     * https://github.com/webpack/webpack/issues/2010
+     */
     node: {
-        __dirname: true,
-        __filename: true
+        __dirname: false,
+        __filename: false
     },
 
     externals: Object.keys(externals || {})

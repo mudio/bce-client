@@ -51,12 +51,12 @@ class Bootstrap extends EventEmitter {
         return this._process;
     }
 
-    _onError() {
-        logger.error('error');
+    _onError(err) {
+        logger.error(`process ${this._process.pid} error ${err.message}`);
     }
 
-    _onExit() {
-        logger.warn('exit');
+    _onExit(code) {
+        logger.warn(`process ${this._process.pid} exit ${code}`);
     }
 
     _onMessage(body) {
