@@ -10,25 +10,12 @@ import {DownloadNotify} from '../utils/TransferNotify';
 
 export default function downloads(state = [], action) {
     switch (action.type) {
-    case DownloadNotify.Init: {
-        const task = Object.assign({status: DownloadStatus.Init}, action);
+    case DownloadNotify.New: {
+        const task = Object.assign({status: DownloadStatus.Waiting}, action);
 
         delete task.type;
 
         return [task, ...state];
-    }
-    case DownloadNotify.New: {
-        return state.map(item => {
-            if (item.uuid === action.uuid) {
-                return Object.assign(item, {
-                    totalSize: action.totalSize,
-                    status: DownloadStatus.Paused,
-                    keymap: action.keymap
-                });
-            }
-
-            return item;
-        });
     }
     case DownloadNotify.Start:
         return state.map(item => {
@@ -84,10 +71,10 @@ export default function downloads(state = [], action) {
     }
     case DownloadNotify.Error: {
         return state.map(item => {
-            const {uuid, error, keymap} = action;
+            const {uuid, error} = action;
 
             if (item.uuid === uuid) {
-                return Object.assign(item, {error, keymap, status: DownloadStatus.Error});
+                return Object.assign(item, {error, status: DownloadStatus.Error});
             }
 
             return item;

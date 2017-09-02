@@ -5,6 +5,9 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import path from 'path';
+import {notification} from 'antd';
+
 import {getUuid} from '../../utils/helper';
 import {getRegionClient} from '../api/client';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
@@ -16,7 +19,7 @@ export function downloadStart(taskIds = []) {
      */
     return {
         [DownloadCommandType]: {
-            command: DownloadNotify.Init, taskIds
+            command: DownloadNotify.Boot, taskIds
         }
     };
 }
@@ -52,11 +55,6 @@ export function createDownloadTask(region, bucketName, prefix, objectKeys, baseD
             const uuid = getUuid();
             const isFolder = objectKey.endsWith('/');
 
-            // 初始化任务
-            dispatch({
-                type: DownloadNotify.Init, uuid, region, bucketName, prefix, baseDir, objectKey
-            });
-
             client.listAllObjects(bucketName, objectKey).then(
                 contents => {
                     let totalSize = 0;
@@ -83,14 +81,28 @@ export function createDownloadTask(region, bucketName, prefix, objectKeys, baseD
 
                     // 建立新任务
                     dispatch({
-                        type: DownloadNotify.New, uuid, totalSize, keymap
+                        type: DownloadNotify.New,
+                        uuid,
+                        region,
+                        bucketName,
+                        prefix,
+                        baseDir,
+                        objectKey,
+                        totalSize,
+                        keymap
+                    });
+
+                    const name = path.posix.relative(prefix, objectKey).split('/')[0];
+                    notification.success({
+                        message: '开始下载',
+                        description: `准备下载 ${name}，共计 ${Object.keys(keymap).length} 个文件`
                     });
 
                     dispatch(downloadStart([uuid]));
                 },
-                response => dispatch({
-                    type: DownloadNotify.Error,
-                    error: response.body
+                response => notification.error({
+                    message: '下载失败',
+                    description: `下载 ${name} 发生错误：${response.body}`
                 })
             );
         });

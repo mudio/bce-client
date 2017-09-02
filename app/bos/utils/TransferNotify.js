@@ -27,7 +27,7 @@ export const UploadNotify = {
 
 export const DownloadNotify = {
     New: 'download_notify_new',
-    Init: 'download_notify_init',
+    Boot: 'download_notify_boot',
     Start: 'download_notify_start',
     Error: 'download_notify_error',
     Remove: 'download_notify_remove',

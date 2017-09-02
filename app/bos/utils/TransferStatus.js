@@ -33,7 +33,6 @@ const uploadStatusTextMap = {
 };
 
 export const DownloadStatus = {
-    Init: 'download_init',
     Error: 'download_error',
     Finish: 'download_finish',
     Waiting: 'download_waiting',
@@ -42,7 +41,6 @@ export const DownloadStatus = {
 };
 
 const downloadStatusTextMap = {
-    [DownloadStatus.Init]: '初始化中',
     [DownloadStatus.Error]: '下载错误',
     [DownloadStatus.Finish]: '下载完成',
     [DownloadStatus.Waiting]: '等待下载',

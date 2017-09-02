@@ -22,17 +22,13 @@ const cache = JSON.parse(localStorage.getItem('bos')) || {};
  * 强退、崩溃可能导致数据有问题，修复下
  */
 if (Array.isArray(cache.downloads)) {
-    cache.downloads = cache.downloads.reduce((context, item) => {
-        if (item.status !== DownloadStatus.Init) {
-            if (item.status === DownloadStatus.Running) {
-                item.status = DownloadStatus.Paused;
-            }
-
-            context.push(item);
+    cache.downloads = cache.downloads.map(item => {
+        if (item.status === DownloadStatus.Running) {
+            item.status = DownloadStatus.Paused;
         }
 
-        return context;
-    }, []);
+        return item;
+    });
 }
 
 window.globalStore = configureStore(cache);

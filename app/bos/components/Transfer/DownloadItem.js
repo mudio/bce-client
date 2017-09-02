@@ -57,19 +57,10 @@ export default class DownloadItem extends Component {
     }
 
     getStatus() {
-        const {status, rate, offsetSize = 0, totalSize} = this.props;
+        const {status, rate, offsetSize = 0, totalSize, error} = this.props;
         const progress = ~~(100 * offsetSize / totalSize); // eslint-disable-line
 
         switch (status) {
-        case DownloadStatus.Init:
-            return (
-                <div className={styles.statusWrap}>
-                    <div className={styles.status}>
-                        <i className="fa fa-spinner fa-pulse" />
-                        {getText(status)}
-                    </div>
-                </div>
-            );
         case DownloadStatus.Running: {
             return (
                 <div className={styles.statusWrap}>
@@ -82,8 +73,10 @@ export default class DownloadItem extends Component {
             return (
                 <div className={styles.statusWrap}>
                     <div className={classnames(styles.status, styles.error)}>
-                        <i className="fa fa-exclamation-triangle" />
-                        {progress}%
+                        <Tooltip title={error}>
+                            <i className="fa fa-exclamation-triangle" />
+                            {getText(status)}
+                        </Tooltip>
                     </div>
                 </div>
             );
@@ -103,7 +96,7 @@ export default class DownloadItem extends Component {
 
         Modal.confirm({
             title: '删除提示',
-            content: `您确定删除 ${name} 吗?`,
+            content: `此操作不会删除本地文件，您确定删除 ${name} 吗?`,
             onOk() {
                 dispatch(downloadRemove([uuid]));
             }
@@ -186,7 +179,7 @@ export default class DownloadItem extends Component {
     }
 
     render() {
-        const {region, bucketName, prefix, objectKey, status} = this.props;
+        const {region, bucketName, prefix, objectKey} = this.props;
         // remove `.`
         const extname = path.extname(objectKey).slice(1);
         const name = path.posix.relative(prefix, objectKey).split('/')[0];
@@ -197,20 +190,6 @@ export default class DownloadItem extends Component {
             'asset-normal': !isFolder,
             [`asset-${extname}`]: !isFolder,
         });
-
-        if (status === DownloadStatus.Init) {
-            return (
-                <div className={styles.container}>
-                    <i className={style} />
-                    <div className={styles.summary}>
-                        <Tooltip title={`${region}://${bucketName}/${prefix}${name}`}>
-                            {name}
-                        </Tooltip>
-                    </div>
-                    {this.getLoader()}
-                </div>
-            );
-        }
 
         const {totalSize = 0, offsetSize = 0} = this.props;
         return (

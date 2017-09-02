@@ -13,17 +13,17 @@ import {downloadProcesser} from './bootstrap';
 import {DownloadStatus} from '../utils/TransferStatus';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
 
-function initTask(taskIds = []) {
+function bootTask(taskIds = []) {
     window.globalStore.getState().downloads.forEach(item => {
         if (taskIds.length > 0 && !taskIds.includes(item.uuid)) {
             return;
         }
 
-        if (item.status !== DownloadStatus.Paused) {
+        if (item.status === DownloadStatus.Finish) {
             return;
         }
 
-        const {uuid, bucketName, baseDir, totalSize, prefix, keymap} = item;
+        const {uuid, bucketName, baseDir, prefix, keymap} = item;
         const task = Object.entries(keymap).find(entry => !entry[1].finish);
 
         if (task) {
@@ -32,7 +32,7 @@ function initTask(taskIds = []) {
             const localPath = path.join(baseDir, relativePath);
 
             downloadProcesser.add({
-                uuid, bucketName, localPath, objectKey, totalSize
+                uuid, bucketName, localPath, objectKey
             });
         }
     });
@@ -68,7 +68,7 @@ function finishTask({uuid, objectKey}) {
                         {type: DownloadNotify.FinishPart, uuid, objectKey}
                     );
 
-                    return initTask([uuid]);
+                    return bootTask([uuid]);
                 }
 
                 const name = path.posix.relative(item.prefix, objectKey).split('/')[0];
@@ -152,8 +152,8 @@ export default function download() {
         const {command, uuid} = downloadCommand;
 
         switch (command) {
-        case DownloadNotify.Init:
-            return initTask(downloadCommand.taskIds);
+        case DownloadNotify.Boot:
+            return bootTask(downloadCommand.taskIds);
         case DownloadNotify.Start:
             return next({type: DownloadNotify.Start, uuid});
         case DownloadNotify.Finish:
@@ -166,6 +166,8 @@ export default function download() {
             return pauseTask(downloadCommand.taskIds);
         case DownloadNotify.Paused:
             return next({type: DownloadNotify.Paused, uuid});
+        case DownloadNotify.Error:
+            return next({type: DownloadNotify.Error, uuid, error: downloadCommand.error});
         default:
             warn('Invalid MiddleWare Command %s', command);
             return next({type: command, uuid});
