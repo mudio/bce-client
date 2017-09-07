@@ -9,10 +9,10 @@
 
 import path from 'path';
 import walk from 'fs-walk';
+import {notification} from 'antd';
 
+import {humanSize} from '../utils/utils';
 import {getUuid} from '../../utils/helper';
-import {error} from '../../utils/logger';
-import {TransType} from '../utils/BosType';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 
 export function uploadStart(taskIds = []) {
@@ -22,7 +22,7 @@ export function uploadStart(taskIds = []) {
      */
     return {
         [UploadCommandType]: {
-            command: UploadNotify.Start, taskIds
+            command: UploadNotify.Boot, taskIds
         }
     };
 }
@@ -46,9 +46,67 @@ export function uploadSuspend(taskIds = []) {
      */
     return {
         [UploadCommandType]: {
-            command: UploadNotify.Suspending, taskIds
+            command: UploadNotify.Pausing, taskIds
         }
     };
+}
+
+function _invokeFile(file, options = {}, dispatch) {
+    const uuid = getUuid();
+    const {region, bucketName, prefix} = options;
+    const baseDir = path.dirname(file.path);
+
+    dispatch({
+        uuid,
+        type: UploadNotify.New,
+        region,
+        baseDir,
+        bucketName,
+        name: file.name,
+        totalSize: file.size,
+        prefix: prefix.endsWith('/') ? prefix : path.posix.dirname(prefix),
+        keymap: {
+            [file.path]: {size: file.size, finish: false}
+        }
+    });
+
+    notification.success({
+        message: `上传 ${file.name}`,
+        description: `共计大小 ${humanSize(file.size)}。`
+    });
+
+    // 立即开始这个任务
+    dispatch(uploadStart([uuid]));
+}
+
+function _invokeFolder(relativePath, options = {}, dispatch) {
+    const uuid = getUuid();
+    const {region, bucketName, prefix, totalSize, keymap} = options;
+
+    // 建立一个新任务
+    const folderName = path.basename(relativePath);
+    const baseDir = path.dirname(relativePath);
+
+    dispatch({
+        uuid,
+        type: UploadNotify.New,
+        region,
+        name: folderName,
+        baseDir,
+        bucketName,
+        totalSize,
+        prefix: prefix.endsWith('/') ? prefix : path.posix.dirname(prefix),
+        keymap
+    });
+
+    const keys = Object.keys(keymap);
+    notification.success({
+        message: `上传 ${folderName}`,
+        description: `共计 ${keys.length} 个文件, 文件大小 ${humanSize(totalSize)}`
+    });
+
+    // 立即开始这个任务
+    dispatch(uploadStart([uuid]));
 }
 
 export function createUploadTask(dataTransferItem = [], region, bucket, prefix) {
@@ -57,100 +115,41 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
         for (let index = 0; index < dataTransferItem.length; index += 1) {
             const item = dataTransferItem[index];
             const entry = item.webkitGetAsEntry();
-            // 创建一个uuid来标识任务
-            const uuid = getUuid();
 
             if (entry.isFile) {
-                entry.file(file => {
-                    // 准备任务
-                    dispatch({
-                        uuid,
-                        name: file.name,
-                        basedir: file.path,
-                        type: UploadNotify.Prepare,
-                        category: TransType.File,
-                        region, bucket, prefix
-                    });
-
-                    // 存储文件信息
-                    const key = getUuid();
-                    localStorage.setItem(key, JSON.stringify({
-                        path: file.path,
-                        relative: file.name,
-                        totalSize: file.size
-                    }));
-
-                    // 建立keymap
-                    const keymapId = getUuid();
-                    localStorage.setItem(keymapId, JSON.stringify({
-                        errorQueue: [],
-                        completeQueue: [],
-                        waitingQueue: [key]
-                    }));
-
-                    // 建立一个新任务
-                    dispatch({
-                        type: UploadNotify.New, uuid, totalSize: file.size,
-                        keymap: {key: keymapId, waiting: 1, error: 0, complete: 0}
-                    });
-
-                    // 立即开始这个任务
-                    dispatch(uploadStart([uuid]));
-                });
+                entry.file(file => _invokeFile(
+                    file, {region, bucketName: bucket, prefix}, dispatch // eslint-disable-line no-loop-func
+                ));
             } else {
-                const keys = [];
+                const keymap = {};
                 let totalSize = 0;
-                const filePath = item.getAsFile().path;
-                // 准备任务
-                dispatch({
-                    uuid,
-                    name: entry.name,
-                    basedir: filePath,
-                    type: UploadNotify.Prepare,
-                    category: TransType.Directory,
-                    region, bucket, prefix, totalSize
-                });
+                const _fileRelativePath = item.getAsFile().path;
 
-                walk.files(filePath, (basedir, filename, stat, next) => {
-                    const key = getUuid();
-                    const absolutePath = path.join(basedir, filename);
-                    const relativePath = absolutePath.replace(filePath, entry.fullPath);
+                walk.files(
+                    _fileRelativePath,
+                    (basedir, filename, stat, next) => { // eslint-disable-line no-loop-func
+                        const _localPath = path.join(basedir, filename);
 
-                    // 存储任务
-                    localStorage.setItem(key, JSON.stringify({
-                        relative: relativePath,
-                        path: absolutePath,
-                        totalSize: stat.size
-                    }));
+                        keymap[_localPath] = {size: stat.size, finish: false};
+                        totalSize += stat.size;
 
-                    keys.push(key);
-                    totalSize += stat.size;
+                        next();
+                    },
+                    err => { // eslint-disable-line no-loop-func
+                        if (err) {
+                            return notification.error({
+                                message: `上传 ${entry.name} 错误`,
+                                description: err.message
+                            });
+                        }
 
-                    next();
-                }, err => {
-                    if (err) {
-                        error('walk %s error = %s', entry.name, err.message);
-                        dispatch({type: UploadNotify.Remove, uuid});
-                        return;
+                        _invokeFolder(
+                            _fileRelativePath,
+                            {region, bucketName: bucket, prefix, totalSize, keymap},
+                            dispatch
+                        );
                     }
-
-                    // 建立keymap
-                    const keymapId = getUuid();
-                    localStorage.setItem(keymapId, JSON.stringify({
-                        errorQueue: [],
-                        completeQueue: [],
-                        waitingQueue: keys
-                    }));
-
-                    // 建立一个新任务
-                    dispatch({
-                        type: UploadNotify.New, uuid, totalSize,
-                        keymap: {key: keymapId, waiting: keys.length, error: 0, complete: 0}
-                    });
-
-                    // 立即开始这个任务
-                    dispatch(uploadStart([uuid]));
-                });
+                );
                 // end walk
             }
         }

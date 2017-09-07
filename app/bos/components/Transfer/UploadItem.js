@@ -5,112 +5,84 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {Modal} from 'antd';
-import electron from 'electron';
+import path from 'path';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import {Modal, Tooltip} from 'antd';
 import React, {Component} from 'react';
 
-import styles from './UploadItem.css';
-import {TransType} from '../../utils/BosType';
+import styles from './DownloadItem.css';
+import {humanSize, humenRate} from '../../utils/utils';
 import {getText, UploadStatus} from '../../utils/TransferStatus';
 import {uploadRemove, uploadStart, uploadSuspend} from '../../actions/uploader';
-
-const {shell} = electron;
 
 export default class UploadItem extends Component {
     static propTypes = {
         error: PropTypes.string,
+        rate: PropTypes.number,
+        offsetSize: PropTypes.number,
         uuid: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         region: PropTypes.string.isRequired,
-        bucket: PropTypes.string.isRequired,
+        bucketName: PropTypes.string.isRequired,
         prefix: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
-        basedir: PropTypes.string.isRequired,
-        category: PropTypes.string.isRequired,
         totalSize: PropTypes.number.isRequired,
-        offsetSize: PropTypes.number.isRequired,
-        keymap: PropTypes.shape({
-            key: PropTypes.string,
-            error: PropTypes.number.isRequired,
-            waiting: PropTypes.number.isRequired,
-            complete: PropTypes.number.isRequired,
-        }),
+        keymap: PropTypes.object.isRequired,
         dispatch: PropTypes.func.isRequired
     };
 
     getLoader() {
-        const {totalSize, offsetSize = 0, status} = this.props;
+        const {totalSize = 1, offsetSize = 0, status} = this.props;
 
         const klass = classnames(
             styles.loader,
             {[styles.error]: status === UploadStatus.Error}
         );
 
-        const width = 100 * offsetSize / totalSize; // eslint-disable-line no-mixed-operators
+        const width = Math.min(100, 100 * offsetSize / totalSize); // eslint-disable-line no-mixed-operators
 
         return (
-            <div>
-                <span className={styles.progress}>
-                    <span className={classnames(styles.loader, klass)} style={{width: `${width}%`}} />
-                </span>
+            <div className={styles.progress}>
+                <div className={styles.loader}>
+                    <div className={classnames(styles.step, klass)} style={{width: `${width}%`}} />
+                </div>
                 {this.getStatus()}
             </div>
         );
     }
 
-    getSize() {
-        const {totalSize = 0, offsetSize = 0} = this.props;
-        const unitKB = 1024;
-        const unitMB = 1024 * 1024;
-        const unitGB = 1024 * 1024 * 1024;
-
-        function humanSize(size = 0) {
-            if (size >= unitGB) {
-                return `${(size / unitGB).toFixed(0)}GB`;
-            } else if (size >= unitMB && size < unitGB) {
-                return `${(size / unitMB).toFixed(0)}MB`;
-            }
-            return `${(size / unitKB).toFixed(0)}KB`;
-        }
-
-        return `${humanSize(offsetSize)}  /  ${humanSize(totalSize)}`;
-    }
-
     getStatus() {
-        const {
-            keymap,
-            status,
-            totalSize,
-            offsetSize = 0,
-        } = this.props;
+        const {status, rate, offsetSize = 0, totalSize, error} = this.props;
         const progress = ~~(100 * offsetSize / totalSize); // eslint-disable-line
 
         switch (status) {
-        case UploadStatus.Indexing:
-            return (
-                <div className={styles.status}>
-                    <i className="fa fa-spinner fa-pulse" />
-                    {getText(status)}
-                </div>
-            );
         case UploadStatus.Running: {
             return (
-                <div className={styles.status}>{progress}%</div>
+                <div className={styles.statusWrap}>
+                    <div>{humenRate(rate)}</div>
+                    <div className={styles.status}>{progress}%</div>
+                </div>
             );
         }
         case UploadStatus.Error: {
-            const errTip = `已完成任务：${keymap.complete}个\n未完成任务：${keymap.waiting}个\n运行错误数：${keymap.error}个`;
             return (
-                <div className={classnames(styles.status, styles.error)}>
-                    <i className="fa fa-exclamation-triangle" title={errTip} />
-                    {progress}%
+                <div className={styles.statusWrap}>
+                    <div className={classnames(styles.status, styles.error)}>
+                        <Tooltip title={error}>
+                            <i className="fa fa-exclamation-triangle" />
+                            {getText(status)}
+                        </Tooltip>
+                    </div>
                 </div>
             );
         }
         default:
-            return (<div className={styles.status}>{getText(status)}</div>);
+            return (
+                <div className={styles.statusWrap}>
+                    <div className={styles.status}>{getText(status)}</div>
+                </div>
+            );
         }
     }
 
@@ -129,7 +101,7 @@ export default class UploadItem extends Component {
     _onStart = () => {
         const {uuid, status, dispatch} = this.props;
 
-        if (status === UploadStatus.Suspended
+        if (status === UploadStatus.Paused
             || status === UploadStatus.Error) {
             dispatch(uploadStart([uuid]));
         }
@@ -144,17 +116,13 @@ export default class UploadItem extends Component {
         }
     }
 
-    _showItemInFolder = () => {
-        shell.showItemInFolder(this.props.basedir);
-    }
-
     renderOperation() {
         const {status} = this.props;
 
         const start = () => {
             const className = classnames(
                 'fa', 'fa-play', 'fa-fw',
-                {[styles.hidden]: status !== UploadStatus.Error && status !== UploadStatus.Suspended}
+                {[styles.hidden]: status !== UploadStatus.Error && status !== UploadStatus.Paused}
             );
 
             return (
@@ -175,9 +143,8 @@ export default class UploadItem extends Component {
 
         const trash = () => {
             const hidden = status !== UploadStatus.Error
-                && status !== UploadStatus.Finish
-                && status !== UploadStatus.Suspended
-                && status !== UploadStatus.Suspending;
+                        && status !== UploadStatus.Finish
+                        && status !== UploadStatus.Paused;
 
             const className = classnames(
                 'fa', 'fa-trash', 'fa-fw', styles.trash,
@@ -193,33 +160,30 @@ export default class UploadItem extends Component {
             <div className={styles.operation} >
                 {start()}
                 {pause()}
-                <i className="fa fa-folder-open" title="打开目录" onClick={this._showItemInFolder} />
                 {trash()}
             </div>
         );
     }
 
     render() {
-        const {region, bucket, prefix, name, category} = this.props;
-        let style = '';
+        const {region, bucketName, prefix, name, keymap, totalSize, offsetSize = 0} = this.props;
 
-        if (category === TransType.Directory) {
-            style = classnames(styles.fileicon, 'asset-folder');
-        } else {
-            const ext = name.split('.').pop().toLowerCase();
-            style = classnames(styles.fileicon, 'asset-normal', `asset-${ext}`);
-        }
+        const extname = path.extname(name);
+        const keys = Object.keys(keymap);
+        const style = classnames(styles.fileicon, {
+            'asset-folder': keys.length > 1,
+            'asset-normal': keys.length <= 1,
+            [`asset-${extname}`]: keys.length <= 1
+        });
 
         return (
             <div className={styles.container}>
                 <i className={style} />
                 <div className={styles.summary}>
-                    <div>
-                        {region}://{bucket}/{prefix}{name}
-                    </div>
-                    <div>
-                        {this.getSize()}
-                    </div>
+                    <Tooltip title={`${region}://${bucketName}/${path.posix.join(prefix, name)}`}>
+                        {name}
+                    </Tooltip>
+                    <div>{humanSize(offsetSize)} / {humanSize(totalSize)}</div>
                 </div>
                 {this.getLoader()}
                 {this.renderOperation()}

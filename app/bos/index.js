@@ -12,9 +12,10 @@ import {Provider} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 
 import './style/mixin.global.css';
+
 import Routes from './routes';
-import {DownloadStatus} from './utils/TransferStatus';
 import {configureStore, history} from './store/configureStore';
+import {DownloadStatus, UploadStatus} from './utils/TransferStatus';
 
 const cache = JSON.parse(localStorage.getItem('bos')) || {};
 
@@ -25,6 +26,15 @@ if (Array.isArray(cache.downloads)) {
     cache.downloads = cache.downloads.map(item => {
         if (item.status === DownloadStatus.Running) {
             item.status = DownloadStatus.Paused;
+        }
+
+        return item;
+    });
+
+    cache.uploads = cache.uploads.map(item => {
+        if (item.status === UploadStatus.Running
+            || item.status === UploadStatus.Waiting) {
+            item.status = UploadStatus.Paused;
         }
 
         return item;

@@ -9,11 +9,14 @@ import fs from 'fs';
 import path from 'path';
 import {EventEmitter} from 'events';
 import childProcess from 'child_process';
-import {DownloadCommand} from 'bce-service-bos-transport';
+import {UploadCommand, DownloadCommand} from 'bce-service-bos-transport';
 
 import logger from '../../utils/logger';
 import {getEndpointCredentials} from '../api/client';
-import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
+import {
+    DownloadNotify, DownloadCommandType,
+    UploadNotify, UploadCommandType,
+} from '../utils/TransferNotify';
 
 class Bootstrap extends EventEmitter {
     constructor(filename) {
@@ -24,7 +27,9 @@ class Bootstrap extends EventEmitter {
 
     add(config) {
         const _instance = this._getInstance();
-        _instance.send({category: 'addItem', config});
+        const {endpoint} = getEndpointCredentials(config.region);
+
+        _instance.send({category: 'addItem', config, endpoint});
     }
 
     remove(uuid) {
@@ -59,6 +64,70 @@ class Bootstrap extends EventEmitter {
         logger.warn(`process ${this._process.pid} exit ${code}`);
     }
 
+    _handleDownloadCommand(message) {
+        const command = message.command;
+
+        switch (command) {
+        case DownloadCommand.NotifyStart: {
+            message.command = DownloadNotify.Start;
+            break;
+        }
+        case DownloadCommand.NotifyPaused: {
+            // 忽略这个事件
+            return;
+        }
+        case DownloadCommand.NotifyFinished: {
+            message.command = DownloadNotify.Finish;
+            break;
+        }
+        case DownloadCommand.NotifyError: {
+            message.command = DownloadNotify.Error;
+            break;
+        }
+        case DownloadCommand.NotifyProgress: {
+            message.command = DownloadNotify.Progress;
+            break;
+        }
+        default:
+            logger.warn(`Invalid transport command = ${command}`);
+            return;
+        }
+
+        window.globalStore.dispatch({[DownloadCommandType]: message});
+    }
+
+    _handleUploadCommand(message) {
+        const command = message.command;
+
+        switch (command) {
+        case UploadCommand.NotifyStart: {
+            message.command = UploadNotify.Start;
+            break;
+        }
+        case UploadCommand.NotifyFinished: {
+            message.command = UploadNotify.Finish;
+            break;
+        }
+        case UploadCommand.NotifyProgress: {
+            message.command = UploadNotify.Progress;
+            break;
+        }
+        case UploadCommand.NotifyPaused: {
+            // 忽略这个事件
+            return;
+        }
+        case UploadCommand.NotifyError: {
+            message.command = UploadNotify.Error;
+            break;
+        }
+        default:
+            logger.warn(`Invalid transport command = ${command}`);
+            return;
+        }
+
+        window.globalStore.dispatch({[UploadCommandType]: message});
+    }
+
     _onMessage(body) {
         if (typeof body === 'string') {
             logger.debug(body);
@@ -70,47 +139,23 @@ class Bootstrap extends EventEmitter {
                 logger[message.type](message.message);
             }
 
-            if (category === 'cmd' && message.command.startsWith('download')) {
-                const command = message.command;
-
-                switch (command) {
-                case DownloadCommand.NotifyStart: {
-                    message.command = DownloadNotify.Start;
-                    break;
+            if (category === 'cmd') {
+                if (message.command.startsWith('download')) {
+                    this._handleDownloadCommand(message);
+                } else if (message.command.startsWith('upload')) {
+                    this._handleUploadCommand(message);
                 }
-                case DownloadCommand.NotifyPaused: {
-                    message.command = DownloadNotify.Paused;
-                    break;
-                }
-                case DownloadCommand.NotifyFinished: {
-                    message.command = DownloadNotify.Finish;
-                    break;
-                }
-                case DownloadCommand.NotifyError: {
-                    message.command = DownloadNotify.Error;
-                    break;
-                }
-                case DownloadCommand.NotifyRate: {
-                    message.command = DownloadNotify.Progress;
-                    break;
-                }
-                default:
-                    return;
-                }
-
-                window.globalStore.dispatch({[DownloadCommandType]: message});
             }
         }
     }
 
     _fork() {
         const cwd = path.join(__dirname, '..');
-        const {endpoint, credentials} = getEndpointCredentials();
+        const {credentials} = getEndpointCredentials();
 
         const env = {
             BCE_AK: credentials.ak,
-            BCE_SK: credentials.sk,
-            BCE_BOS_ENDPOINT: endpoint
+            BCE_SK: credentials.sk
         };
 
         if (fs.existsSync(path.join(cwd, 'app.asar'))) {
@@ -120,6 +165,13 @@ class Bootstrap extends EventEmitter {
         return childProcess.fork(
             path.join('../bce-service-bos-transport/dist/', this._filename), [], {env, cwd: process.cwd()}
         );
+    }
+
+    kill() {
+        if (this._process || this._process.connected) {
+            this._process.kill();
+            this._process = null;
+        }
     }
 }
 

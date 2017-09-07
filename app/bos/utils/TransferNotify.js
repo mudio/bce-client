@@ -13,15 +13,16 @@ export const DownloadCommandType = Symbol.for(_downloadType);
 
 export const UploadNotify = {
     New: 'upload_notify_new',
+    Boot: 'upload_notify_boot',
     Start: 'upload_notify_start',
+    Waiting: 'upload_notify_waiting',
     Error: 'upload_notify_error',
-    Finish: 'upload_notify_finish',
     Remove: 'upload_notify_remove',
-    Launch: 'upload_notify_launch',
-    Prepare: 'upload_notify_prepare',
+    Finish: 'upload_notify_finish',
+    FinishPart: 'upload_notify_finish_part',
     Progress: 'upload_notify_progress',
-    Suspended: 'upload_notify_suspended',
-    Suspending: 'upload_notify_suspending',
+    Pausing: 'upload_notify_pausing',
+    Paused: 'upload_notify_paused',
     ClearFinish: 'upload_notify_clear_finish'
 };
 

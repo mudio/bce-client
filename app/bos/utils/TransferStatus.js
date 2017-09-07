@@ -8,28 +8,17 @@
 export const UploadStatus = {
     Error: 'upload_error',
     Finish: 'upload_finish',
-    Staring: 'upload_staring',
     Waiting: 'upload_waiting',
     Running: 'upload_running',
-    Removing: 'upload_removing',
-    Indexing: 'upload_indexing',
-    Unstarted: 'upload_unstarted',
-    Suspended: 'upload_suspended',
-    Suspending: 'upload_suspending'
+    Paused: 'upload_paused'
 };
 
 const uploadStatusTextMap = {
     [UploadStatus.Error]: '错误',
     [UploadStatus.Finish]: '上传完成',
-    [UploadStatus.Staring]: '启动中',
     [UploadStatus.Waiting]: '等待中',
     [UploadStatus.Running]: '运行中',
-    [UploadStatus.Suspend]: '已暂停',
-    [UploadStatus.Removing]: '删除中',
-    [UploadStatus.Indexing]: '索引中',
-    [UploadStatus.Unstarted]: '未开始',
-    [UploadStatus.Suspended]: '已暂停',
-    [UploadStatus.Suspending]: '暂停中'
+    [UploadStatus.Paused]: '已暂停'
 };
 
 export const DownloadStatus = {

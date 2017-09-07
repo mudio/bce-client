@@ -23,7 +23,7 @@ function bootTask(taskIds = []) {
             return;
         }
 
-        const {uuid, bucketName, baseDir, prefix, keymap} = item;
+        const {uuid, region, bucketName, baseDir, prefix, keymap} = item;
         const task = Object.entries(keymap).find(entry => !entry[1].finish);
 
         if (task) {
@@ -32,7 +32,7 @@ function bootTask(taskIds = []) {
             const localPath = path.join(baseDir, relativePath);
 
             downloadProcesser.add({
-                uuid, bucketName, localPath, objectKey
+                uuid, region, bucketName, localPath, objectKey
             });
         }
     });
