@@ -5,8 +5,8 @@
 os: unstable
 
 cache:
-  - node_modules -> package.json
-  - static/node_modules -> static/package.json
+  - 'node_modules -> appveyor.yml,package.json,package-lock.json'
+  - 'static/node_modules -> appveyor.yml,static/package.json,static/package-lock.json'
 
 environment:
   matrix:
@@ -24,7 +24,7 @@ install:
   - set CI=true
   - npm -g install npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
-  - npm install
+  - npm install -f
 
 # Post-install test scripts.
 test_script:
