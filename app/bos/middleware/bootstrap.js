@@ -170,7 +170,6 @@ class Bootstrap extends EventEmitter {
     kill() {
         if (this._process || this._process.connected) {
             this._process.kill();
-            this._process = null;
         }
     }
 }

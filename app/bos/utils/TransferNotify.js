@@ -30,6 +30,7 @@ export const DownloadNotify = {
     New: 'download_notify_new',
     Boot: 'download_notify_boot',
     Start: 'download_notify_start',
+    Waiting: 'upload_notify_waiting',
     Error: 'download_notify_error',
     Remove: 'download_notify_remove',
     Finish: 'download_notify_finish',

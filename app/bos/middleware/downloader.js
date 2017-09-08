@@ -23,6 +23,12 @@ function bootTask(taskIds = []) {
             return;
         }
 
+        // 让任务转为等待状态。
+        if (item.status !== DownloadStatus.Running
+            && item.status !== DownloadStatus.Waiting) {
+            window.globalStore.dispatch({type: DownloadNotify.Waiting, uuid: item.uuid});
+        }
+
         const {uuid, region, bucketName, baseDir, prefix, keymap} = item;
         const task = Object.entries(keymap).find(entry => !entry[1].finish);
 
@@ -90,9 +96,10 @@ function pauseTask(taskIds = []) {
     if (taskIds.length === 0) {
         const tasks = window.globalStore.getState().downloads;
 
+        downloadProcesser.kill();
+
         return tasks.forEach(({uuid, status}) => {
             if (status === DownloadStatus.Running) {
-                downloadProcesser.pause(uuid);
                 window.globalStore.dispatch({type: DownloadNotify.Paused, uuid});
             }
         });

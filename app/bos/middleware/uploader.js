@@ -26,7 +26,10 @@ function bootTask(taskIds = []) {
         }
 
         // 让任务转为等待状态。
-        window.globalStore.dispatch({type: UploadNotify.Waiting, uuid: item.uuid});
+        if (item.status !== UploadStatus.Running
+            && item.status !== UploadStatus.Waiting) {
+            window.globalStore.dispatch({type: UploadNotify.Waiting, uuid: item.uuid});
+        }
 
         const {uuid, region, bucketName, baseDir, prefix, keymap} = item;
         const task = Object.entries(keymap).find(entry => !entry[1].finish);

@@ -25,6 +25,14 @@ export default function downloads(state = [], action) {
 
             return item;
         });
+    case DownloadNotify.Waiting:
+        return state.map(item => {
+            if (action.uuid === item.uuid) {
+                return Object.assign(item, {status: DownloadStatus.Waiting});
+            }
+
+            return item;
+        });
     case DownloadNotify.Paused:
         return state.map(item => {
             if (action.uuid === item.uuid) {
