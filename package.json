@@ -27,6 +27,10 @@
     "mac": {
       "category": "public.app-category.developer-tools"
     },
+    "nsis": {
+      "installerIcon": "build/install.ico",
+      "uninstallerIcon": "build/install.ico"
+    },
     "dmg": {
       "title": "安装${productName}",
       "icon": "build/install.icns",
