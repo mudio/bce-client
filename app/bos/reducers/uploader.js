@@ -77,7 +77,9 @@ export default function uploads(state = [], action) {
             const {uuid, rate, offsetSize} = action;
 
             if (item.uuid === uuid && item.status === UploadStatus.Running) {
-                return Object.assign(item, {rate, offsetSize});
+                return Object.assign(
+                    item, {rate, offsetSize: Math.min(item.totalSize, offsetSize)}
+                );
             }
 
             return item;

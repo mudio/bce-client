@@ -37,7 +37,7 @@ function bootTask(taskIds = []) {
         if (task) {
             const [localPath, option] = task;
             const relativePath = path.relative(baseDir, localPath);
-            const objectKey = path.posix.join(prefix, relativePath);
+            const objectKey = path.posix.join(prefix, ...relativePath.split(path.sep));
 
             uploadProcesser.add({
                 uuid, region, bucketName, objectKey, localPath, uploadId: option.uploadId
