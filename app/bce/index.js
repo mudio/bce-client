@@ -6,17 +6,22 @@
  */
 
 import React from 'react';
+import {remote} from 'electron';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 
 import './style/mixin.global.css';
+import startup from '../bos/index';
 import LoginPage from './containers/LoginPage';
 import configureStore from './store/configureStore';
-import startup from '../bos/index';
-
 
 function renderLoginPage() {
     const cache = JSON.parse(localStorage.getItem('framework')) || {};
+
+    if (localStorage.getItem('version') !== remote.app.getVersion()) {
+        localStorage.clear();
+        localStorage.setItem('version', remote.app.getVersion());
+    }
 
     window.globalStore = configureStore(cache);
     window.globalStore.subscribe(() => {
