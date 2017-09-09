@@ -102,4 +102,5 @@
 
 .text.info {
     color: #FFB129;
+    animation: inherit;
 }
