@@ -1,7 +1,7 @@
 {
   "name": "bce-client",
   "productName": "百度云",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "百度云-客户端",
   "main": "main.js",
   "repository": {
