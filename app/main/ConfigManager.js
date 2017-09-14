@@ -15,9 +15,9 @@ const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
 config.all = {
     endpoint: Object.assign(
         {
-            [REGION_BJ]: 'http://bj.bcebos.com',
-            [REGION_GZ]: 'http://gz.bcebos.com',
-            [REGION_SU]: 'http://su.bcebos.com'
+            [REGION_BJ]: 'https://bj.bcebos.com',
+            [REGION_GZ]: 'https://gz.bcebos.com',
+            [REGION_SU]: 'https://su.bcebos.com'
         },
         config.all.endpoint
     ),
