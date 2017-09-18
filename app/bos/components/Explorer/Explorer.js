@@ -117,14 +117,19 @@ export default class Explorer extends Component {
             this.props.dispatch(
                 migration(config, removeSource)
             ).then(res => {
-                if (res.error) {
-                    notification.error(
-                        {message: '操作失败', description: `${res.error} => ${sourceObject}`}
-                    );
+                const {errorCount, successCount} = res;
+                const totalCount = errorCount + successCount;
+
+                if (res.errorCount > 0) {
+                    notification.error({
+                        message: '操作未完成',
+                        description: `${sourceObject} => ${targetObject}, 共计${totalCount}个文件，出错${errorCount}个`
+                    });
                 } else {
-                    notification.success(
-                        {message: '操作成功', description: `${sourceObject} => ${targetObject}`}
-                    );
+                    notification.success({
+                        message: '操作成功',
+                        description: `${sourceObject} => ${targetObject}，共计${totalCount}个文件`
+                    });
                 }
             });
         }
