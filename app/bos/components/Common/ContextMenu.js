@@ -32,14 +32,6 @@ export default class ContextMenu extends Component {
         onCommand: PropTypes.func.isRequired
     };
 
-    static defaultProps = {
-        pageX: 0,
-        pageY: 0,
-        offsetX: 0,
-        offsetY: 0,
-        datasource: []
-    };
-
     static menuCommands = {
         [MENU_COPY_COMMAND]: {name: '复制到', icon: 'copy', command: MENU_COPY_COMMAND},
         [MENU_TRASH_COMMAND]: {name: '删除', icon: 'trash', command: MENU_TRASH_COMMAND},

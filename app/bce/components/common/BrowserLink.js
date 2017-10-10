@@ -27,7 +27,7 @@ export default class BrowserLink extends Component {
         const {className, children} = this.props;
 
         return (
-            <a className={className} onClick={this.openExternalLink}>{children}</a>
+            <span className={className} onClick={this.openExternalLink}>{children}</span>
         );
     }
 }

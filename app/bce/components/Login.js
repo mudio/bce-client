@@ -234,7 +234,7 @@ export default class Login extends Component {
      * @memberof Login
      */
     renderAkSkFields() {
-        const loading = this.props.loading;
+        const {loading} = this.props;
 
         function loadingOrLogin() {
             if (loading) {

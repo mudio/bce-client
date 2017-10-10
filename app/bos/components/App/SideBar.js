@@ -40,13 +40,13 @@ class SideBar extends Component {
                     </svg>
                 </div>
                 <div className={styles.body}>
-                    <NavLink to={'/region'}
+                    <NavLink to="/region"
                         className={`${styles.item} ${styles.region}`}
                         activeClassName={styles.active}
                     >
                         全部文件
                     </NavLink>
-                    <NavLink to={'/download'}
+                    <NavLink to="/download"
                         className={`${styles.item} ${styles.download}`}
                         activeClassName={styles.active}
                     >
@@ -55,7 +55,7 @@ class SideBar extends Component {
                             downloadCount > 0 ? <span className={styles.badge}>{downloadCount}</span> : ''
                         }
                     </NavLink>
-                    <NavLink to={'/upload'}
+                    <NavLink to="/upload"
                         className={`${styles.item} ${styles.upload}`}
                         activeClassName={styles.active}
                     >
@@ -64,7 +64,7 @@ class SideBar extends Component {
                             uploadCount > 0 ? <span className={styles.badge}>{uploadCount}</span> : ''
                         }
                     </NavLink>
-                    <NavLink to={'/complete'}
+                    <NavLink to="/complete"
                         className={`${styles.item} ${styles.complete}`}
                         activeClassName={styles.active}
                     >

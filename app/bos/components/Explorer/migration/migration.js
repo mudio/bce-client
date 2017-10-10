@@ -52,8 +52,8 @@ export default class Migration extends Component {
     }
 
     onRename = () => {
-        const form = this.form;
-        const {bucket, object} = this.props;
+        const {form, props} = this;
+        const {bucket, object} = props;
 
         form.validateFields((err, values) => {
             if (err) {
@@ -77,8 +77,8 @@ export default class Migration extends Component {
     }
 
     onCopy = () => {
-        const form = this.form;
-        const {bucket, object} = this.props;
+        const {form, props} = this;
+        const {bucket, object} = props;
 
         form.validateFields((err, values) => {
             if (err) {

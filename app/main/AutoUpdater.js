@@ -48,7 +48,7 @@ export default class AutoUpdater {
 
     checkForUpdates() {
         http.get(`${feedURL}/lastest.json`, res => {
-            const statusCode = res.statusCode;
+            const {statusCode} = res;
             let rawData = '';
 
             if (statusCode === 200) {

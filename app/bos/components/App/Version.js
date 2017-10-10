@@ -43,6 +43,10 @@ class Version extends Component {
         }
     }
 
+    get notifyKey() {
+        return `update_notify_${Date.now}`;
+    }
+
     getVersionDom() {
         const {type, version, lastest} = this.props;
 
@@ -105,10 +109,6 @@ class Version extends Component {
                 </span>
             );
         }
-    }
-
-    get notifyKey() {
-        return `update_notify_${Date.now}`;
     }
 
     installUpdate = () => {

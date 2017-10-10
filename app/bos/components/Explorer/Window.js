@@ -27,7 +27,6 @@ import {
     MENU_DOWNLOAD_COMMAND
 } from '../../actions/context';
 
-
 class Window extends Component {
     static propTypes = {
         nav: PropTypes.shape({
@@ -111,7 +110,7 @@ class Window extends Component {
 
     _onCommand(cmd, config) {
         const {bucketName, prefix, nav} = this.props;
-        const region = nav.region;
+        const {region} = nav;
 
         return this.props.onCommand(cmd, Object.assign({region, bucketName, prefix}, config));
     }
@@ -129,6 +128,7 @@ class Window extends Component {
 
     _listMore = () => {
         const {bucketName, prefix, nextMarker, listMore} = this.props;
+
         listMore(bucketName, prefix, nextMarker);
     }
 

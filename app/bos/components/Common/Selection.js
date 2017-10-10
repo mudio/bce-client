@@ -28,7 +28,6 @@ export default class Selection extends Component {
     static defaultProps = {
         commands: [],
         enabled: true,
-        onCommand: _.noop,
         onSelectionChange: _.noop
     };
 

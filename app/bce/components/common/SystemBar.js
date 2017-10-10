@@ -39,7 +39,7 @@ export default class SystemBar extends Component {
             return null;
         }
 
-        const resize = this.props.resize;
+        const {resize} = this.props;
 
         return (
             <div className={styles.container}>

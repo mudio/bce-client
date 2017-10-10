@@ -137,7 +137,7 @@ export default class Explorer extends Component {
 
     updateValue(evt) {
         const target = evt.target.value;
-        const option = this.state.option;
+        const {option} = this.state;
 
         option.target = target;
 

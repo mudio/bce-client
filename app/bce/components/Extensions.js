@@ -37,7 +37,7 @@ export default class Extensions extends Component {
     }
 
     renderExtensions() {
-        const extensions = this.state.extensions;
+        const {extensions} = this.state;
 
         return extensions.map(ext => (
             <div key={ext.name} className={styles.extItem}>

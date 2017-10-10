@@ -42,10 +42,10 @@ function renderHomePage() {
     startup(document.getElementById('main'));
 }
 
-if (/login.html$/.test(location.pathname)) {
+if (/login.html$/.test(window.location.pathname)) {
     // 登陆
     renderLoginPage();
-} else if (/app.html$/.test(location.pathname)) {
+} else if (/app.html$/.test(window.location.pathname)) {
     // 首页
     renderHomePage();
 }

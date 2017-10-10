@@ -102,7 +102,7 @@ export function createDownloadTask(region, bucketName, prefix, objectKeys, baseD
                 },
                 response => notification.error({
                     message: '下载失败',
-                    description: `下载 ${name} 发生错误：${response.body}`
+                    description: `下载错误：${response.body}`
                 })
             );
         });

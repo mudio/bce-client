@@ -65,7 +65,7 @@ class Bootstrap extends EventEmitter {
     }
 
     _handleDownloadCommand(message) {
-        const command = message.command;
+        const {command} = message;
 
         switch (command) {
         case DownloadCommand.NotifyStart: {
@@ -97,7 +97,7 @@ class Bootstrap extends EventEmitter {
     }
 
     _handleUploadCommand(message) {
-        const command = message.command;
+        const {command} = message;
 
         switch (command) {
         case UploadCommand.NotifyStart: {
