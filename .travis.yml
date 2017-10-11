@@ -16,6 +16,7 @@ cache:
 
 install:
 - sudo spctl --master-disable
+- npm -g install npm@latest
 - npm install
 
 before_script:
