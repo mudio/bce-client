@@ -9,7 +9,7 @@ import Q from 'q';
 
 import {info} from '../../utils/logger';
 import {API_TYPE} from '../middleware/api';
-import {getRegionClient, Client} from '../api/client';
+import {ClientFactory, Client} from '../api/client';
 import {createUploadTask} from './uploader';
 
 export const LIST_BUCKET_REQUEST = 'LIST_BUCKET_REQUEST';
@@ -59,10 +59,9 @@ export const DELETE_OBJECT_REQUEST = 'DELETE_OBJECT_REQUEST';
 export const DELETE_OBJECT_SUCCESS = 'DELETE_OBJECT_SUCCESS';
 export const DELETE_OBJECT_FAILURE = 'DELETE_OBJECT_FAILURE';
 
-export function deleteObject(region, bucketName, prefix, objects = []) {
-    return (dispatch, getState) => {
-        const {auth} = getState();
-        const client = getRegionClient(region, auth);
+export function deleteObject(bucketName, prefix, objects = []) {
+    return async dispatch => {
+        const client = await ClientFactory.fromBucket(bucketName);
 
         const allTasks = objects.map(
             key => client.listAllObjects(bucketName, key).then(
@@ -94,10 +93,6 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
             () => dispatch(listObjects(bucketName, prefix))
         );
     };
-}
-
-export function refresh(bucketName, prefix) {
-    return dispatch => dispatch(listObjects(bucketName, prefix));
 }
 
 export function uploadFile(...args) {

@@ -5,18 +5,19 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import {ClientFactory} from '../api/client';
 import ErrorCode from '../utils/ErrorCode';
-import {getRegionClient} from '../api/client';
 
 export const API_TYPE = Symbol('Call API');
 
-export default store => next => action => {
+export default () => next => async action => {
     const callAPI = action[API_TYPE];
     if (typeof callAPI === 'undefined') {
         return next(action);
     }
 
     const {types, method, args} = callAPI;
+    const [bucket] = args;
     if (!Array.isArray(types) || types.length !== 3) {
         throw new Error('Expected an array of three action types.');
     }
@@ -25,8 +26,7 @@ export default store => next => action => {
     }
 
     const [requestType, successType, failureType] = types;
-    const {navigator, auth} = store.getState();
-    const client = getRegionClient(navigator.region, auth);
+    const _client = await ClientFactory.fromBucket(bucket);
 
     function actionWith(data) {
         const finalAction = Object.assign({}, action, data);
@@ -35,14 +35,13 @@ export default store => next => action => {
     }
     next(actionWith({type: requestType}));
 
-    return client[method](...args).then(
-        response => next(actionWith({
-            response,
-            type: successType
-        })),
-        error => next(actionWith({
-            type: failureType,
-            error: ErrorCode[error.code] || error.message
-        }))
-    );
+    try {
+        const response = await _client[method](...args);
+
+        return next(actionWith({type: successType, response}));
+    } catch (ex) {
+        const {code, message} = ex;
+
+        return next(actionWith({type: failureType, error: ErrorCode[code] || message}));
+    }
 };

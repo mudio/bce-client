@@ -7,7 +7,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {getRegionClient} from '../../../api/client';
+import {ClientFactory} from '../../../api/client';
 
 import {
     MENU_COPY_COMMAND,
@@ -36,18 +36,19 @@ export default class Migration extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.command === MENU_COPY_COMMAND) {
             // 获取buckets
-            const client = getRegionClient();
-            client.listBuckets().then(res => {
-                const buckets = res.buckets.map(
-                    bucket => ({
-                        label: bucket.name,
-                        value: bucket.name,
-                        isLeaf: false
-                    })
-                );
+            ClientFactory.getDefault().then(
+                client => client.listBuckets().then(res => {
+                    const buckets = res.buckets.map(
+                        bucket => ({
+                            label: bucket.name,
+                            value: bucket.name,
+                            isLeaf: false
+                        })
+                    );
 
-                this.setState({buckets});
-            });
+                    this.setState({buckets});
+                })
+            );
         }
     }
 
@@ -105,31 +106,32 @@ export default class Migration extends Component {
     }
 
     loadData = (selectedOptions) => {
-        const client = getRegionClient();
         const bucket = selectedOptions[0].value;
         const dataLen = selectedOptions.length;
         const targetOption = selectedOptions[dataLen - 1];
         const prefix = dataLen > 1 ? targetOption.value : '';
 
         targetOption.loading = true;
-        client.listObjects(bucket, {prefix, delimiter: '/'}).then(
-            res => {
-                targetOption.loading = false;
+        ClientFactory.fromBucket(bucket).then(
+            client => client.listObjects(bucket, {prefix, delimiter: '/'}).then(
+                res => {
+                    targetOption.loading = false;
 
-                if (res.folders.length > 0) {
-                    targetOption.children = res.folders.map(folder => ({
-                        label: folder.key.replace(/(.*\/)?(.*)\/$/, '$2'),
-                        value: folder.key,
-                        isLeaf: false
-                    }));
-                } else {
-                    targetOption.isLeaf = true;
+                    if (res.folders.length > 0) {
+                        targetOption.children = res.folders.map(folder => ({
+                            label: folder.key.replace(/(.*\/)?(.*)\/$/, '$2'),
+                            value: folder.key,
+                            isLeaf: false
+                        }));
+                    } else {
+                        targetOption.isLeaf = true;
+                    }
+
+                    this.setState({
+                        buckets: [...this.state.buckets],
+                    });
                 }
-
-                this.setState({
-                    buckets: [...this.state.buckets],
-                });
-            }
+            )
         );
     }
 

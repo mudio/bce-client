@@ -11,12 +11,11 @@ import {connect} from 'react-redux';
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 
-
 import File from './File';
-import Bucket from './Bucket';
 import Folder from './Folder';
 import styles from './Window.css';
 import Selection from '../Common/Selection';
+import {redirect} from '../../actions/navigator';
 import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';
 
@@ -29,13 +28,10 @@ import {
 
 class Window extends Component {
     static propTypes = {
-        nav: PropTypes.shape({
-            region: PropTypes.string.isRequired,
-            bucket: PropTypes.string,
-            prefix: PropTypes.string
-        }),
-        // 当前BucketName
-        bucketName: PropTypes.string,
+        region: PropTypes.string.isRequired,
+
+        bucket: PropTypes.string.isRequired,
+
         // 当前筛选前缀
         prefix: PropTypes.string,
         // 数据是否正在请求
@@ -48,18 +44,16 @@ class Window extends Component {
         isTruncated: PropTypes.bool.isRequired,
         // 下次请求起点，isTruncated为true时候有效
         nextMarker: PropTypes.string,
-        // buckets集合，最多100个
-        buckets: PropTypes.array.isRequired,
         // 文件夹集合, 这里存放多次请求的response
         folders: PropTypes.array.isRequired,
         // 文件集合，这里存放多次请求的response
         objects: PropTypes.array.isRequired,
         // func
-        redirect: PropTypes.func.isRequired,
         uploadFile: PropTypes.func.isRequired,
-        refresh: PropTypes.func.isRequired,
         listMore: PropTypes.func.isRequired,
+        listObjects: PropTypes.func.isRequired,
         onCommand: PropTypes.func.isRequired,
+        dispatch: PropTypes.func.isRequired,
         // 检测刷新
         uploadTask: PropTypes.shape({
             objects: PropTypes.array.isRequired,
@@ -72,21 +66,20 @@ class Window extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const {refresh, uploadTask, nav} = this.props;
+        const {listObjects, uploadTask, bucket, prefix} = this.props;
         const objectIntersectionLen = u.intersection(uploadTask.objects, nextProps.uploadTask.objects).length;
         const folderIntersectionLen = u.intersection(uploadTask.folders, nextProps.uploadTask.folders).length;
 
         if (objectIntersectionLen !== uploadTask.objects.length
             || folderIntersectionLen !== uploadTask.folders.length) {
-            refresh(nav.bucket, nav.prefix);
+            listObjects(bucket, prefix);
         }
     }
 
     _onDrop(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        const {nav, uploadFile} = this.props;
-        const {region, bucket, prefix} = nav;
+        const {region, bucket, prefix, uploadFile} = this.props;
 
         if (bucket) {
             const prefixes = prefix.split('/');
@@ -100,19 +93,18 @@ class Window extends Component {
 
     _onScroll() {
         const {scrollTop, scrollHeight, clientHeight} = this.refs.main;
-        const {bucketName, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
+        const {bucket, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
         const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
 
-        if (!isFetching && isTruncated && bucketName && allowListMore) {
-            listMore(bucketName, prefix, nextMarker);
+        if (!isFetching && isTruncated && bucket && allowListMore) {
+            listMore(bucket, prefix, nextMarker);
         }
     }
 
     _onCommand(cmd, config) {
-        const {bucketName, prefix, nav} = this.props;
-        const {region} = nav;
+        const {region, bucket, prefix} = this.props;
 
-        return this.props.onCommand(cmd, Object.assign({region, bucketName, prefix}, config));
+        return this.props.onCommand(cmd, Object.assign({region, bucket, prefix}, config));
     }
 
     _onSelectionChange(keys) {
@@ -127,14 +119,15 @@ class Window extends Component {
     }
 
     _listMore = () => {
-        const {bucketName, prefix, nextMarker, listMore} = this.props;
+        const {bucket, prefix, nextMarker, listMore} = this.props;
 
-        listMore(bucketName, prefix, nextMarker);
+        listMore(bucket, prefix, nextMarker);
     }
 
-    redirect(bucket = '', folder = '') {
-        const {nav, redirect} = this.props;
-        redirect(nav.region, bucket, folder);
+    redirect = (prefix = '') => {
+        const {bucket, dispatch} = this.props;
+
+        dispatch(redirect({bucket, prefix}));
     }
 
     renderLoading() {
@@ -162,11 +155,10 @@ class Window extends Component {
     }
 
     renderEmpty() {
-        const {isFetching, hasError, buckets, folders, objects} = this.props;
+        const {isFetching, hasError, folders, objects} = this.props;
 
         if (!isFetching
             && !hasError
-            && buckets.length === 0
             && folders.length === 0
             && objects.length === 0) {
             return (
@@ -178,17 +170,6 @@ class Window extends Component {
     }
 
     renderContents() {
-        const {buckets} = this.props;
-
-        if (buckets.length > 0) {
-            return buckets.map((item, index) => (
-                <Bucket key={index}
-                    item={item}
-                    onDoubleClick={bucket => this.redirect(bucket)}
-                />
-            ));
-        }
-
         return (
             <Selection commands={this.state.commands}
                 onSelectionChange={(...args) => this._onSelectionChange(...args)}
@@ -201,29 +182,18 @@ class Window extends Component {
     }
 
     renderFolders() {
-        const {bucketName, prefix, folders, nav} = this.props;
+        const {folders} = this.props;
 
-        return folders.map(folder => (
-            <Folder key={folder.key}
-                region={nav.region}
-                folder={folder}
-                prefix={prefix}
-                bucketName={bucketName}
-                onDoubleClick={_folder => this.redirect(bucketName, _folder)}
-            />
+        return folders.map((folder) => (
+            <Folder name={folder.key} {...folder} onDoubleClick={this.redirect} />
         ));
     }
 
     renderObejcts() {
-        const {bucketName, prefix, objects, nav} = this.props;
+        const {objects} = this.props;
 
-        return objects.map(object => (
-            <File key={object.key}
-                region={nav.region}
-                object={object}
-                prefix={prefix}
-                bucketName={bucketName}
-            />
+        return objects.map((object) => (
+            <File name={object.key} {...object} />
         ));
     }
 

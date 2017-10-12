@@ -9,9 +9,7 @@ import {connect} from 'react-redux';
 import Explorer from '../components/Explorer/Explorer';
 
 function mapStateToProps(state) {
-    return {
-        nav: state.navigator
-    };
+    return state.navigator;
 }
 
 export default connect(mapStateToProps)(Explorer);

@@ -19,23 +19,18 @@ function normalize(key = '') {
 
 export default class Folder extends Component {
     static propTypes = {
-        region: PropTypes.string.isRequired,
-        prefix: PropTypes.string.isRequired,
-        bucketName: PropTypes.string.isRequired,
-        folder: PropTypes.shape({
-            key: PropTypes.string.isRequired
-        }),
+        name: PropTypes.string.isRequired,
         onDoubleClick: PropTypes.func.isRequired
     };
 
     _triggerDoubleClick = () => {
-        const {folder, onDoubleClick} = this.props;
-        onDoubleClick(folder.key);
+        const {name, onDoubleClick} = this.props;
+        onDoubleClick(name);
     }
 
     render() {
-        const {folder} = this.props;
-        const folderName = normalize(folder.key);
+        const {name} = this.props;
+        const folderName = normalize(name);
 
         return (
             <div className={styles.container} onDoubleClick={this._triggerDoubleClick}>

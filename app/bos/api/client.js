@@ -140,9 +140,27 @@ export class Client extends BosClient {
     }
 }
 
-export function getRegionClient(region = REGION_BJ) {
-    const {ak, sk} = JSON.parse(localStorage.getItem('framework')).auth;
-    return new Client(region, {ak, sk});
+export class ClientFactory {
+    static fromBucket(bucketName) {
+        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        const client = new Client(REGION_BJ, credentials);
+
+        return client.listBuckets().then(res => {
+            const bucket = res.buckets.find(item => item.name === bucketName);
+
+            if (bucket) {
+                return new Client(bucket.location, credentials);
+            }
+
+            // 默认返回北京
+            return client;
+        });
+    }
+
+    static getDefault() {
+        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        return new Client(REGION_BJ, credentials);
+    }
 }
 
 export function getEndpointCredentials(region = REGION_BJ) {

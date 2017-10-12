@@ -11,11 +11,12 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Modal, notification} from 'antd';
 
-import Url from './Url';
+import Navigator from './Navigator';
 import Window from './Window';
-import Migration from './migration/migration';
 import styles from './Explorer.css';
 import SideBar from '../App/SideBar';
+import BucketWindow from './bucket_window';
+import Migration from './migration/migration';
 
 import {
     MENU_COPY_COMMAND,
@@ -25,16 +26,15 @@ import {
     MENU_DOWNLOAD_COMMAND
 } from '../../actions/context';
 
-import {redirect, trash, migration} from '../../actions/explorer';
+import {redirect} from '../../actions/navigator';
+import {trash, migration} from '../../actions/explorer';
 import {createDownloadTask} from '../../actions/downloader';
 
 export default class Explorer extends Component {
     static propTypes = {
-        nav: PropTypes.shape({
-            region: PropTypes.string.isRequired,
-            bucket: PropTypes.string,
-            prefix: PropTypes.string
-        }),
+        region: PropTypes.string.isRequired,
+        bucket: PropTypes.string,
+        prefix: PropTypes.string,
         dispatch: PropTypes.func.isRequired
     };
 
@@ -44,17 +44,17 @@ export default class Explorer extends Component {
     }
 
     componentDidMount() {
-        const {dispatch, nav} = this.props;
-        dispatch(redirect(nav.region, nav.bucket, nav.prefix));
+        const {dispatch, region, bucket, prefix} = this.props;
+        dispatch(redirect({region, bucket, prefix}));
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.nav.region !== this.props.nav.region) {
-            redirect(nextProps.nav.region);
+    componentWillReceiveProps({region}) {
+        if (region !== this.props.region) {
+            redirect({region});
         }
     }
 
-    _onCommand(cmd, config) {
+    _onCommand = (cmd, config) => {
         const {region, bucketName, prefix, keys} = config;
 
         switch (cmd) {
@@ -144,19 +144,30 @@ export default class Explorer extends Component {
         this.setState({option});
     }
 
+    _renderWindow() {
+        const {region, bucket, prefix, dispatch} = this.props;
+
+        if (!bucket) {
+            return (
+                <BucketWindow region={region} dispatch={dispatch} />
+            );
+        }
+
+        return (
+            <Window region={region} bucket={bucket} prefix={prefix} dispatch={dispatch} onCommand={this._onCommand} />
+        );
+    }
+
     render() {
-        const {nav, dispatch} = this.props;
+        const {dispatch} = this.props;
         const {visible, option} = this.state;
 
         return (
             <div className={styles.container}>
                 <SideBar />
                 <div className={styles.body}>
-                    <Url redirect={(...args) => dispatch(redirect(...args))} />
-                    <Window nav={nav}
-                        onCommand={(...args) => this._onCommand(...args)}
-                        redirect={(...args) => dispatch(redirect(...args))}
-                    />
+                    <Navigator redirect={(...args) => dispatch(redirect(...args))} />
+                    {this._renderWindow()}
                 </div>
                 <Migration {...option}
                     visible={visible}

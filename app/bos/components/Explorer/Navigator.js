@@ -13,16 +13,16 @@ import {connect} from 'react-redux';
 import classnames from 'classnames';
 import React, {Component} from 'react';
 
-import styles from './Url.css';
+import styles from './Navigator.css';
 import SystemBar from '../Common/SystemBar';
-import {getRegionClient} from '../../api/client';
+import {ClientFactory} from '../../api/client';
 import {getLocalText} from '../../../utils/region';
 import GlobalConfig from '../../../main/ConfigManager';
 
 const endpoint = GlobalConfig.get('endpoint');
 const supportRegions = Object.keys(endpoint);
 
-class Url extends Component {
+class Navigator extends Component {
     static propTypes = {
         bucket: PropTypes.string,
         prefix: PropTypes.string,
@@ -75,30 +75,27 @@ class Url extends Component {
         };
     }
 
-    _query() {
+    async _query() {
+        let records = [];
         const {value} = this.state;
-        const {region} = this.props;
-        const client = getRegionClient(region);
         const {bucket, prefix} = this._format(value);
+        const client = await ClientFactory.fromBucket(bucket);
 
-        if (prefix === null) {
-            client.listBuckets().then(res => res.buckets.reduce(
-                (context = [], item) => {
-                    if (item.name.indexOf(bucket) > -1) {
-                        context.push(`${item.name}/`);
-                    }
-                    return context;
-                }, []
-            )).then(
-                buckets => this.setState({records: buckets, index: -1})
-            );
+        if (prefix) {
+            const {name, folders} = await client.listObjects(bucket, {prefix, delimiter: '/'});
+            records = folders.map(folder => `${name}/${folder.key}`);
+            this.setState({records, index: -1});
         } else {
-            client.listObjects(bucket, {prefix, delimiter: '/'}).then(
-                res => res.folders.map(folder => `${res.name}/${folder.key}`)
-            ).then(
-                prefixs => this.setState({records: prefixs, index: -1})
-            );
+            const {buckets} = await client.listBuckets();
+            records = buckets.reduce((context = [], item) => {
+                if (item.name.indexOf(bucket) > -1) {
+                    context.push(`${item.name}/`);
+                }
+                return context;
+            }, []);
         }
+
+        this.setState({records, index: -1});
     }
 
     _onChange(event) {
@@ -115,7 +112,7 @@ class Url extends Component {
             this.setState({records: [], index: -1});
 
             if (bucket !== this.props.bucket || prefix !== this.props.prefix) {
-                redirect(region, bucket, prefix);
+                redirect({region, bucket, prefix});
             }
 
             this.invokeQuery();
@@ -165,7 +162,7 @@ class Url extends Component {
         const {region, redirect} = this.props;
 
         if (region !== selectRegion) {
-            redirect(selectRegion);
+            redirect({region: selectRegion});
         }
     }
 
@@ -175,7 +172,7 @@ class Url extends Component {
         const {bucket, prefix} = this._format(records[selectIndex]);
 
         if (this.props.bucket !== bucket || this.props.prefix !== prefix) {
-            redirect(region, bucket, prefix);
+            redirect({region, bucket, prefix});
         }
     }
 
@@ -183,7 +180,7 @@ class Url extends Component {
         const {redirect} = this.props;
         const {region, bucket, prefix} = this.state.history.pop();
 
-        redirect(region, bucket, prefix);
+        redirect({region, bucket, prefix});
     }
 
     backward = () => {
@@ -198,14 +195,14 @@ class Url extends Component {
             prefixs = prefixs.slice(0, prefixs.length - 2);
 
             if (prefixs.length === 0) {
-                return redirect(region, bucket, '');
+                return redirect({region, bucket});
             }
 
             prefixs.push('');
-            return redirect(region, bucket, prefixs.join('/'));
+            return redirect({region, bucket, prefixs: prefixs.join('/')});
         }
 
-        redirect(region);
+        redirect({region});
     }
 
     _renderMatchRecords() {
@@ -281,4 +278,4 @@ function mapStateToProps(state) {
     return Object.assign({}, state.navigator);
 }
 
-export default connect(mapStateToProps)(Url);
+export default connect(mapStateToProps)(Navigator);

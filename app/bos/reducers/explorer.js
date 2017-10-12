@@ -13,10 +13,6 @@ import {
 } from '../actions/window';
 
 const defaultState = {
-    // 当前bucket名称
-    bucketName: null,
-    // 匹配前缀
-    prefix: null,
     // 数据是否正在请求
     isFetching: false,
     // 是否出错
@@ -73,8 +69,6 @@ export default function explorer(state = defaultState, action) {
     case LIST_OBJECT_SUCCESS:
     case LIST_BUCKET_SUCCESS: {
         const {
-            name,
-            prefix,
             isTruncated = false,
             nextMarker,
             buckets = [],
@@ -83,8 +77,6 @@ export default function explorer(state = defaultState, action) {
         } = action.response;
 
         return Object.assign({}, defaultState, {
-            bucketName: name,
-            prefix,
             buckets,
             folders,
             objects,
