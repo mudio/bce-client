@@ -149,3 +149,12 @@
     color: #444c63;
     background: #f3f5f9;
 }
+
+.badge {
+    color: #fff;
+    background: #2CB663;
+    border-radius: 3px;
+    font-size: 10px;
+    padding: 2px;
+    margin-right: 2px;
+}

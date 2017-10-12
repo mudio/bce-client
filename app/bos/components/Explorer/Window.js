@@ -79,7 +79,7 @@ class Window extends Component {
     _onDrop(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        const {region, bucket, prefix, uploadFile} = this.props;
+        const {region, bucket, prefix = '', uploadFile} = this.props;
 
         if (bucket) {
             const prefixes = prefix.split('/');

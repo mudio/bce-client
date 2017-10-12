@@ -59,9 +59,9 @@ export const DELETE_OBJECT_REQUEST = 'DELETE_OBJECT_REQUEST';
 export const DELETE_OBJECT_SUCCESS = 'DELETE_OBJECT_SUCCESS';
 export const DELETE_OBJECT_FAILURE = 'DELETE_OBJECT_FAILURE';
 
-export function deleteObject(bucketName, prefix, objects = []) {
-    return async dispatch => {
-        const client = await ClientFactory.fromBucket(bucketName);
+export function deleteObject(region, bucketName, prefix, objects = []) {
+    return dispatch => {
+        const client = ClientFactory.fromRegion(region);
 
         const allTasks = objects.map(
             key => client.listAllObjects(bucketName, key).then(

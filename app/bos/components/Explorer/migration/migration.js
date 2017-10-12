@@ -35,20 +35,19 @@ export default class Migration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.command === MENU_COPY_COMMAND) {
+            const client = ClientFactory.getDefault();
             // 获取buckets
-            ClientFactory.getDefault().then(
-                client => client.listBuckets().then(res => {
-                    const buckets = res.buckets.map(
-                        bucket => ({
-                            label: bucket.name,
-                            value: bucket.name,
-                            isLeaf: false
-                        })
-                    );
+            client.listBuckets().then(res => {
+                const buckets = res.buckets.map(
+                    bucket => ({
+                        label: bucket.name,
+                        value: bucket.name,
+                        isLeaf: false
+                    })
+                );
 
-                    this.setState({buckets});
-                })
-            );
+                this.setState({buckets});
+            });
         }
     }
 
@@ -105,34 +104,32 @@ export default class Migration extends Component {
         this.form = form;
     }
 
-    loadData = (selectedOptions) => {
+    loadData = async (selectedOptions) => {
         const bucket = selectedOptions[0].value;
         const dataLen = selectedOptions.length;
         const targetOption = selectedOptions[dataLen - 1];
         const prefix = dataLen > 1 ? targetOption.value : '';
 
         targetOption.loading = true;
-        ClientFactory.fromBucket(bucket).then(
-            client => client.listObjects(bucket, {prefix, delimiter: '/'}).then(
-                res => {
-                    targetOption.loading = false;
 
-                    if (res.folders.length > 0) {
-                        targetOption.children = res.folders.map(folder => ({
-                            label: folder.key.replace(/(.*\/)?(.*)\/$/, '$2'),
-                            value: folder.key,
-                            isLeaf: false
-                        }));
-                    } else {
-                        targetOption.isLeaf = true;
-                    }
+        const client = await ClientFactory.fromBucket(bucket);
+        const {folders} = await client.listObjects(bucket, {prefix, delimiter: '/'});
 
-                    this.setState({
-                        buckets: [...this.state.buckets],
-                    });
-                }
-            )
-        );
+        targetOption.loading = false;
+
+        if (folders.length > 0) {
+            targetOption.children = folders.map(folder => ({
+                label: folder.key.replace(/(.*\/)?(.*)\/$/, '$2'),
+                value: folder.key,
+                isLeaf: false
+            }));
+        } else {
+            targetOption.isLeaf = true;
+        }
+
+        this.setState({
+            buckets: [...this.state.buckets],
+        });
     }
 
     render() {

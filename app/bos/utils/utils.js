@@ -5,6 +5,10 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint-disable prefer-destructuring */
+
+import _ from 'lodash';
+
 /**
  * 格式化速率
  *
@@ -38,3 +42,13 @@ export const humanSize = (bytesSize = 0) => {
 
     return `${(bytesSize / 1024).toFixed(2)}KB`;
 };
+
+/**
+ * alias Lodash.isString
+ */
+export const isString = _.isString;
+
+/**
+ * alias Lodash.debounce
+ */
+export const debounce = _.debounce;

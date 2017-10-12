@@ -55,7 +55,7 @@ export default class Explorer extends Component {
     }
 
     _onCommand = (cmd, config) => {
-        const {region, bucketName, prefix, keys} = config;
+        const {region, bucket, prefix, keys} = config;
 
         switch (cmd) {
         case MENU_MOVE_COMMAND:
@@ -63,13 +63,13 @@ export default class Explorer extends Component {
         case MENU_RENAME_COMMAND: {
             return this.setState({
                 visible: true,
-                option: {region, bucket: bucketName, object: keys[0], command: cmd}
+                option: {region, bucket, object: keys[0], command: cmd}
             });
         }
         case MENU_TRASH_COMMAND:
-            return this._trash(region, bucketName, prefix, keys);
+            return this._trash(region, bucket, prefix, keys);
         case MENU_DOWNLOAD_COMMAND:
-            return this._download(region, bucketName, prefix, keys);
+            return this._download(region, bucket, prefix, keys);
         default:
         }
     }

@@ -8,12 +8,14 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 
 import _ from 'lodash';
+import path from 'path';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classnames from 'classnames';
 import React, {Component} from 'react';
 
 import styles from './Navigator.css';
+import logger from '../../../utils/logger';
 import SystemBar from '../Common/SystemBar';
 import {ClientFactory} from '../../api/client';
 import {getLocalText} from '../../../utils/region';
@@ -62,40 +64,53 @@ class Navigator extends Component {
         }
     }
 
-    _format(value = '') {
-        const values = value.trim().split('/');
+    _resolveSelectItem(value = '') {
+        const [bucket, ...prefixs] = value.trim().split('/');
 
-        if (values.length <= 1) {
-            return {bucket: values[0], prefix: null};
+        if (prefixs.length === 0) {
+            return {bucket};
         }
 
-        return {
-            bucket: values[0],
-            prefix: values.slice(1).join('/')
-        };
+        return {bucket, prefix: prefixs.join('/')};
     }
 
+    /**
+     * 查询匹配
+     *
+     * @memberOf Navigator
+     */
     async _query() {
         let records = [];
         const {value} = this.state;
-        const {bucket, prefix} = this._format(value);
+        const {bucket, prefix} = this._resolveSelectItem(value);
         const client = await ClientFactory.fromBucket(bucket);
 
-        if (prefix) {
-            const {name, folders} = await client.listObjects(bucket, {prefix, delimiter: '/'});
-            records = folders.map(folder => `${name}/${folder.key}`);
-            this.setState({records, index: -1});
-        } else {
-            const {buckets} = await client.listBuckets();
-            records = buckets.reduce((context = [], item) => {
-                if (item.name.indexOf(bucket) > -1) {
-                    context.push(`${item.name}/`);
-                }
-                return context;
-            }, []);
-        }
+        try {
+            if (_.isString(prefix)) {
+                const {folders} = await client.listObjects(bucket, {prefix, delimiter: '/'});
 
-        this.setState({records, index: -1});
+                records = folders.map(folder => Object({
+                    region: client.region,
+                    bucket,
+                    prefix: folder.key
+                }));
+            } else {
+                const {buckets} = await client.listBuckets();
+                records = buckets.reduce((context = [], item) => {
+                    if (item.name.indexOf(bucket) > -1) {
+                        context.push({
+                            region: item.location,
+                            bucket: item.name
+                        });
+                    }
+                    return context;
+                }, []);
+            }
+
+            this.setState({records, index: -1});
+        } catch (ex) {
+            logger.info(ex.message);
+        }
     }
 
     _onChange(event) {
@@ -107,7 +122,7 @@ class Navigator extends Component {
         if (event.key === 'Enter') {
             const {value} = this.state;
             const {region, redirect} = this.props;
-            const {bucket, prefix} = this._format(value);
+            const {bucket, prefix} = this._resolveSelectItem(value);
 
             this.setState({records: [], index: -1});
 
@@ -124,9 +139,10 @@ class Navigator extends Component {
                 index = this.state.records.length;
             }
 
+            const {bucket, prefix = ''} = records[index - 1];
             this.setState({
                 index: index - 1,
-                value: records[index - 1]
+                value: path.posix.join(bucket, prefix, '/')
             });
             event.preventDefault();
         } else if (event.key === 'ArrowDown') {
@@ -137,23 +153,18 @@ class Navigator extends Component {
                 index = -1;
             }
 
+            const {bucket, prefix = ''} = records[index + 1];
             this.setState({
                 index: index + 1,
-                value: records[index + 1]
+                value: path.posix.join(bucket, prefix, '/')
             });
             event.preventDefault();
         }
     }
 
     _onBlur = () => {
-        const {bucket, prefix} = this.props;
-        let value = '';
-
-        if (bucket && !prefix) {
-            value = `${bucket}/`;
-        } else if (prefix) {
-            value = `${bucket}/${prefix}`;
-        }
+        const {bucket, prefix = ''} = this.props;
+        const value = path.posix.join(bucket, prefix, '/');
 
         this.setState({records: [], index: -1, value});
     }
@@ -168,8 +179,8 @@ class Navigator extends Component {
 
     _selectMatched(selectIndex) {
         const {records} = this.state;
-        const {region, redirect} = this.props;
-        const {bucket, prefix} = this._format(records[selectIndex]);
+        const {redirect} = this.props;
+        const {region, bucket, prefix} = records[selectIndex];
 
         if (this.props.bucket !== bucket || this.props.prefix !== prefix) {
             redirect({region, bucket, prefix});
@@ -186,7 +197,7 @@ class Navigator extends Component {
     backward = () => {
         const {redirect, region} = this.props;
         const {value, history} = this.state;
-        const {bucket, prefix = ''} = this._format(value);
+        const {bucket, prefix = ''} = this._resolveSelectItem(value);
         let prefixs = prefix.split('/');
 
         this.setState({history: [{region, bucket, prefix}, ...history]});
@@ -212,11 +223,13 @@ class Navigator extends Component {
             return (
                 <ul className={styles.match}>
                     {
-                        records.map((r, i) => {
+                        records.map((record, i) => {
+                            const {region, bucket, prefix = ''} = record;
                             const klass = classnames({[styles.selected]: index === i});
                             return (
                                 <li key={i} className={klass} onMouseDown={() => this._selectMatched(i)} >
-                                    {r}
+                                    <span className={styles.badge}>{getLocalText(region)}</span>
+                                    {path.posix.join(bucket, prefix, '/')}
                                 </li>
                             );
                         })

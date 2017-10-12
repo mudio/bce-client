@@ -157,6 +157,11 @@ export class ClientFactory {
         });
     }
 
+    static fromRegion(region = REGION_BJ) {
+        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        return new Client(region, credentials);
+    }
+
     static getDefault() {
         const credentials = JSON.parse(localStorage.getItem('framework')).auth;
         return new Client(REGION_BJ, credentials);

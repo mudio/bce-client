@@ -9,7 +9,7 @@ import path from 'path';
 import {notification} from 'antd';
 
 import {getUuid} from '../../utils/helper';
-import {getRegionClient} from '../api/client';
+import {ClientFactory} from '../api/client';
 import {DownloadNotify, DownloadCommandType} from '../utils/TransferNotify';
 
 export function downloadStart(taskIds = []) {
@@ -49,7 +49,7 @@ export function downloadSuspend(taskIds = []) {
 
 export function createDownloadTask(region, bucketName, prefix, objectKeys, baseDir) {
     return dispatch => {
-        const client = getRegionClient(region);
+        const client = ClientFactory.fromRegion(region);
 
         objectKeys.forEach(objectKey => {
             const uuid = getUuid();
