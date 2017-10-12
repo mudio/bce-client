@@ -164,9 +164,14 @@ class Navigator extends Component {
 
     _onBlur = () => {
         const {bucket, prefix = ''} = this.props;
-        const value = path.posix.join(bucket, prefix, '/');
 
-        this.setState({records: [], index: -1, value});
+        if (bucket) {
+            const value = path.posix.join(bucket, prefix, '/');
+            this.setState({records: [], index: -1, value});
+            return;
+        }
+
+        this.setState({records: [], index: -1, value: ''});
     }
 
     _selectRegion(selectRegion) {

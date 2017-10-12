@@ -11,8 +11,8 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Modal, notification} from 'antd';
 
-import Navigator from './Navigator';
 import Window from './Window';
+import Navigator from './Navigator';
 import styles from './Explorer.css';
 import SideBar from '../App/SideBar';
 import BucketWindow from './bucket_window';
