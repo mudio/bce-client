@@ -188,7 +188,7 @@ export default merge(baseConfig, {
             verbose: true,
             disableDotRule: false,
         },
-        setup() {
+        before() {
             if (process.env.START_HOT) {
                 console.log('Staring Main Process...');
                 spawn('npm', ['run', 'start'], {shell: true, env: process.env, stdio: 'inherit'})

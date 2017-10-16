@@ -19,9 +19,7 @@
             },
             "runtimeArgs": [
                 "-r",
-                "babel-register",
-                "-r",
-                "babel-polyfill"
+                "babel-register"
             ]
         },
         {
