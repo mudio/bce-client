@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 import React, {Component} from 'react';
 
 import Bucket from './Bucket';
-import styles from './bucket_window.css';
+import styles from './BucketWindow.css';
 import {redirect} from '../../actions/navigator';
 
 class BucketWindow extends Component {

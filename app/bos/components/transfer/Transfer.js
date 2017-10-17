@@ -10,7 +10,7 @@ import React, {Component} from 'react';
 
 import Header from './Header';
 import styles from './Transfer.css';
-import SideBar from '../App/SideBar';
+import SideBar from '../app/SideBar';
 import UploadItem from './UploadItem';
 import DownloadItem from './DownloadItem';
 import {TransCategory} from '../../utils/BosType';

@@ -10,7 +10,7 @@ import classnames from 'classnames';
 import React, {Component} from 'react';
 
 import styles from './Header.css';
-import SystemBar from '../Common/SystemBar';
+import SystemBar from '../common/SystemBar';
 import {TransCategory} from '../../utils/BosType';
 import {clearFinish} from '../../actions/transfer';
 import {uploadStart, uploadSuspend} from '../../actions/uploader';

@@ -23,6 +23,10 @@ export default class Folder extends Component {
         onDoubleClick: PropTypes.func.isRequired
     };
 
+    shouldComponentUpdate(props) {
+        return props.name !== this.props.name;
+    }
+
     _triggerDoubleClick = () => {
         const {name, onDoubleClick} = this.props;
         onDoubleClick(name);

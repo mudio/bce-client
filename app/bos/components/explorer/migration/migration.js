@@ -9,13 +9,13 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {ClientFactory} from '../../../api/client';
 
+import Copy from './Copy';
+import Rename from './Rename';
 import {
     MENU_COPY_COMMAND,
     MENU_MOVE_COMMAND,
     MENU_RENAME_COMMAND
 } from '../../../actions/context';
-import Rename from './rename';
-import Copy from './copy';
 
 export default class Migration extends Component {
     static propTypes = {

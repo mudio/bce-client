@@ -12,7 +12,7 @@ import React, {Component} from 'react';
 import {Button, Icon, notification} from 'antd';
 
 import styles from './Version.css';
-import BrowserLink from '../Common/BrowserLink';
+import BrowserLink from '../common/BrowserLink';
 import * as UpdaterActions from '../../actions/updater';
 
 class Version extends Component {

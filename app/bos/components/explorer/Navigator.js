@@ -16,7 +16,7 @@ import React, {Component} from 'react';
 
 import styles from './Navigator.css';
 import logger from '../../../utils/logger';
-import SystemBar from '../Common/SystemBar';
+import SystemBar from '../common/SystemBar';
 import {ClientFactory} from '../../api/client';
 import {getLocalText} from '../../../utils/region';
 import GlobalConfig from '../../../main/ConfigManager';

@@ -15,7 +15,7 @@ import React, {Component} from 'react';
 
 import Version from './Version';
 import styles from './SideBar.css';
-import BrowserLink from '../Common/BrowserLink';
+import BrowserLink from '../common/BrowserLink';
 import {UploadStatus, DownloadStatus} from '../../utils/TransferStatus';
 
 class SideBar extends Component {

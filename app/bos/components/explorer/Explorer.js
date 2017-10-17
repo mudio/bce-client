@@ -11,12 +11,12 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {Modal, notification} from 'antd';
 
-import Window from './Window';
 import Navigator from './Navigator';
 import styles from './Explorer.css';
-import SideBar from '../App/SideBar';
-import BucketWindow from './bucket_window';
-import Migration from './migration/migration';
+import SideBar from '../app/SideBar';
+import ObjectWindow from './ObjectWindow';
+import BucketWindow from './BucketWindow';
+import Migration from './migration/Migration';
 
 import {
     MENU_COPY_COMMAND,
@@ -145,35 +145,42 @@ export default class Explorer extends Component {
     }
 
     _renderWindow() {
+        const {visible, option} = this.state;
         const {region, bucket, prefix, dispatch} = this.props;
 
         if (!bucket) {
             return (
-                <BucketWindow region={region} dispatch={dispatch} />
+                <div className={styles.body}>
+                    <Navigator redirect={(...args) => dispatch(redirect(...args))} />
+                    <BucketWindow region={region} dispatch={dispatch} />
+                </div>
             );
         }
 
         return (
-            <Window region={region} bucket={bucket} prefix={prefix} dispatch={dispatch} onCommand={this._onCommand} />
-        );
-    }
-
-    render() {
-        const {dispatch} = this.props;
-        const {visible, option} = this.state;
-
-        return (
-            <div className={styles.container}>
-                <SideBar />
-                <div className={styles.body}>
-                    <Navigator redirect={(...args) => dispatch(redirect(...args))} />
-                    {this._renderWindow()}
-                </div>
+            <div className={styles.body}>
+                <Navigator redirect={(...args) => dispatch(redirect(...args))} />
+                <ObjectWindow
+                    region={region}
+                    bucket={bucket}
+                    prefix={prefix}
+                    dispatch={dispatch}
+                    onCommand={this._onCommand}
+                />
                 <Migration {...option}
                     visible={visible}
                     onMigration={this._onMigration}
                     onCancel={this._onCancel}
                 />
+            </div>
+        );
+    }
+
+    render() {
+        return (
+            <div className={styles.container}>
+                <SideBar />
+                {this._renderWindow()}
             </div>
         );
     }

@@ -26,6 +26,10 @@ export default class File extends Component {
         }).isRequired
     };
 
+    shouldComponentUpdate(props) {
+        return props.name !== this.props.name;
+    }
+
     render() {
         const {name} = this.props;
         const ext = name.split('.').pop().toLowerCase();

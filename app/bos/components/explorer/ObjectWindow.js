@@ -13,8 +13,8 @@ import {bindActionCreators} from 'redux';
 
 import File from './File';
 import Folder from './Folder';
-import styles from './Window.css';
-import Selection from '../Common/Selection';
+import styles from './ObjectWindow.css';
+import Selection from '../common/Selection';
 import {redirect} from '../../actions/navigator';
 import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';

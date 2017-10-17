@@ -8,7 +8,7 @@
 import React, {Component} from 'react';
 import {Button, Radio} from 'antd';
 
-import styles from './explorer_tool.css';
+import styles from './ObjectMenu.css';
 
 export default class ExplorerTool extends Component {
     render() {
