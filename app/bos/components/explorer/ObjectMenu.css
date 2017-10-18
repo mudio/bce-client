@@ -1,4 +1,9 @@
 
 .container {
     display: flex;
+    flex-shrink: 0;
+    padding: 0 20px;
+    line-height: 40px;
+    align-items: center;
+    justify-content: flex-end;
 }

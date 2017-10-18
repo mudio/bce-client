@@ -11,8 +11,11 @@ import {
     LIST_OBJECT_REQUEST, LIST_OBJECT_SUCCESS, LIST_OBJECT_FAILURE,
     LIST_MORE_REQUEST, LIST_MORE_SUCCESS, LIST_MORE_FAILURE
 } from '../actions/window';
+import {EXPLORER_SYNC_LAYOUT} from '../actions/explorer';
 
 const defaultState = {
+    // 页面布局
+    layout: 'grid',
     // 数据是否正在请求
     isFetching: false,
     // 是否出错
@@ -33,13 +36,15 @@ const defaultState = {
 
 export default function explorer(state = defaultState, action) {
     switch (action.type) {
+    case EXPLORER_SYNC_LAYOUT:
+        return Object.assign({}, state, {layout: action.layout});
     // start
     case LIST_MORE_REQUEST: {
         return Object.assign({}, state, {isFetching: true});
     }
     case LIST_OBJECT_REQUEST:
     case LIST_BUCKET_REQUEST:
-        return Object.assign({}, defaultState, {isFetching: true});
+        return Object.assign({}, state, {isFetching: true});
     // failure
     case LIST_MORE_FAILURE: {
         return Object.assign({}, state, {
@@ -50,8 +55,9 @@ export default function explorer(state = defaultState, action) {
     }
     case LIST_OBJECT_FAILURE:
     case LIST_BUCKET_FAILURE:
-        return Object.assign({}, defaultState, {
+        return Object.assign({}, state, {
             hasError: true,
+            isFetching: false,
             error: action.error
         });
     // success
@@ -76,15 +82,15 @@ export default function explorer(state = defaultState, action) {
             objects = []
         } = action.response;
 
-        return Object.assign({}, defaultState, {
+        return Object.assign({}, state, {
             buckets,
             folders,
             objects,
             nextMarker,
-            isTruncated
+            isTruncated,
+            isFetching: false,
         });
     }
-
     default:
         return state;
     }

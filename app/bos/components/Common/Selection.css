@@ -1,11 +1,8 @@
 
-.selection {
+.container {
     flex: auto;
-    display: flex;
     outline: none;
-    flex-flow: row wrap;
-    align-items: flex-start;
-    align-content: flex-start;
+    display: flex;
 }
 
 .selectionBox {
@@ -17,34 +14,32 @@
     border: 1px solid rgba(68, 76, 99, 0.2);
 }
 
-.selectionItem {
+:global .selectionItem {
     display: flex;
-    cursor: pointer;
     border-radius: 5px;
     margin: 5px 0 0 5px;
 }
 
-.selectionItem:hover {
+:global .selectionItem:hover {
     background-color: #f3f5f9;
 }
 
-.selected.selectionItem {
+:global .selectionItem.selected {
     background-color: #f3f5f9;
 }
 
-.checkbox {
+:global .checkbox {
     opacity: .4;
+    cursor: pointer;
     color: #3b8cff;
     visibility: hidden;
-    margin: 5px 0 0 5px;
-    position: absolute;
 }
 
-.selectionItem:hover .checkbox {
+:global .selectionItem:hover .checkbox {
     visibility: visible;
 }
 
-.selected.selectionItem .checkbox {
+:global .selectionItem.selected .checkbox {
     opacity: 1;
     visibility: visible;
 }

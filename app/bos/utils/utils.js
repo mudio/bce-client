@@ -5,10 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint-disable prefer-destructuring */
-
-import _ from 'lodash';
-
 /**
  * 格式化速率
  *
@@ -44,11 +40,9 @@ export const humanSize = (bytesSize = 0) => {
 };
 
 /**
- * alias Lodash.isString
+ * UTC 时间转换成本地时间
+ *
+ * @param {String} utcTime
+ * @return {String} localTime
  */
-export const isString = _.isString;
-
-/**
- * alias Lodash.debounce
- */
-export const debounce = _.debounce;
+export const utcToLocalTime = (utcTime) => (new Date(utcTime)).toLocaleString();

@@ -8,6 +8,7 @@
 import u from 'lodash';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import classnames from 'classnames';
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 
@@ -28,6 +29,8 @@ import {
 
 class Window extends Component {
     static propTypes = {
+        layout: PropTypes.string.isRequired,
+
         region: PropTypes.string.isRequired,
 
         bucket: PropTypes.string.isRequired,
@@ -76,7 +79,7 @@ class Window extends Component {
         }
     }
 
-    _onDrop(evt) {
+    _onDrop = (evt) => {
         evt.preventDefault();
         evt.stopPropagation();
         const {region, bucket, prefix = '', uploadFile} = this.props;
@@ -91,7 +94,7 @@ class Window extends Component {
         return false;
     }
 
-    _onScroll() {
+    _onScroll = () => {
         const {scrollTop, scrollHeight, clientHeight} = this.refs.main;
         const {bucket, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
         const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
@@ -101,13 +104,13 @@ class Window extends Component {
         }
     }
 
-    _onCommand(cmd, config) {
+    _onCommand = (cmd, config) => {
         const {region, bucket, prefix} = this.props;
 
         return this.props.onCommand(cmd, Object.assign({region, bucket, prefix}, config));
     }
 
-    _onSelectionChange(keys) {
+    _onSelectionChange = (keys) => {
         this.setState({
             commands: [
                 {type: MENU_COPY_COMMAND, disable: keys.length !== 1},
@@ -169,34 +172,6 @@ class Window extends Component {
         }
     }
 
-    renderContents() {
-        return (
-            <Selection commands={this.state.commands}
-                onSelectionChange={(...args) => this._onSelectionChange(...args)}
-                onCommand={(...args) => this._onCommand(...args)}
-            >
-                {this.renderFolders()}
-                {this.renderObejcts()}
-            </Selection>
-        );
-    }
-
-    renderFolders() {
-        const {folders} = this.props;
-
-        return folders.map((folder) => (
-            <Folder name={folder.key} {...folder} onDoubleClick={this.redirect} />
-        ));
-    }
-
-    renderObejcts() {
-        const {objects} = this.props;
-
-        return objects.map((object) => (
-            <File name={object.key} {...object} />
-        ));
-    }
-
     renderMore() {
         const {isFetching, isTruncated} = this.props;
 
@@ -225,17 +200,56 @@ class Window extends Component {
         }
     }
 
+    renderListHead() {
+        const {layout} = this.props;
+
+        if (layout === 'list') {
+            return (
+                <div className={styles.head}>
+                    <span className={styles.textCol}>名称</span>
+                    <span className={styles.extraCol}>存储类型</span>
+                    <span className={styles.extraCol}>大小</span>
+                    <span className={styles.extraCol}>修改时间</span>
+                </div>
+            );
+        }
+
+        return null;
+    }
+
     render() {
+        const {folders, objects, layout} = this.props;
+        const styleName = classnames({
+            [styles.gridLayout]: layout === 'grid',
+            [styles.listLayout]: layout === 'list'
+        });
+
         return (
             <div ref="main"
                 className={styles.container}
-                onDrop={evt => this._onDrop(evt)}
-                onScroll={evt => this._onScroll(evt)}
+                onDrop={this._onDrop}
+                onScroll={this._onScroll}
             >
                 {this.renderLoading()}
                 {this.renderError()}
                 {this.renderEmpty()}
-                {this.renderContents()}
+                {this.renderListHead()}
+                <Selection className={styleName}
+                    commands={this.state.commands}
+                    onCommand={this._onCommand}
+                    onSelectionChange={this._onSelectionChange}
+                >
+                    {
+                        folders.map((folder) => (
+                            <Folder name={folder.key} layout={layout} {...folder} onDoubleClick={this.redirect} />
+                        ))
+                    }
+                    {
+                        objects.map((object) => (
+                            <File name={object.key} layout={layout} {...object} />
+                        ))
+                    }
+                </Selection>
                 {this.renderMore()}
             </div>
         );

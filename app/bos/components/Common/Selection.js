@@ -5,8 +5,6 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-/* eslint react/no-string-refs: 0, no-underscore-dangle: [2, { "allowAfterThis": true }] */
-
 import _ from 'lodash';
 import ReactDom from 'react-dom';
 import PropTypes from 'prop-types';
@@ -18,6 +16,7 @@ import ContextMenu from './ContextMenu';
 
 export default class Selection extends Component {
     static propTypes = {
+        className: PropTypes.string,
         enabled: PropTypes.bool,
         commands: PropTypes.array,
         children: PropTypes.node.isRequired,
@@ -53,6 +52,13 @@ export default class Selection extends Component {
         }
     }
 
+    /**
+     * fix Forced reflow
+     *
+     * @memberOf Selection
+     */
+    __cache = {}
+
     clearSelection() {
         const keys = Object.keys(this.selectedChildren);
         if (keys.length > 0) {
@@ -78,7 +84,7 @@ export default class Selection extends Component {
         };
         this.setState(nextState);
 
-        this._mousemove = evt => this._onMouseMove(evt);
+        this._mousemove = _.throttle(evt => this._onMouseMove(evt), 20);
         this._mouseup = evt => this._onMouseUp(evt);
 
         document.addEventListener('mousemove', this._mousemove);
@@ -97,6 +103,8 @@ export default class Selection extends Component {
             appendMode: false
         });
         this.props.onSelectionChange.call(null, _.keys(this.selectedChildren));
+        // 清理以下缓存
+        this.__cache = {};
     }
 
     _onMouseMove(e) {
@@ -148,21 +156,24 @@ export default class Selection extends Component {
     _updateCollidingChildren(selectionBox) {
         _.each(this.refs, (ref, key) => {
             if (key !== 'selection') {
-                const {
-                    offsetTop,
-                    offsetLeft,
-                    clientWidth,
-                    clientHeight
-                } = ReactDom.findDOMNode(ref); // eslint-disable-line react/no-find-dom-node
+                // FIXME Forced reflow 导致性能太差，缓存一下
+                if (!this.__cache[key]) {
+                    const {
+                        offsetTop,
+                        offsetLeft,
+                        clientWidth,
+                        clientHeight
+                    } = ReactDom.findDOMNode(ref); // eslint-disable-line react/no-find-dom-node
 
-                const box = {
-                    top: offsetTop,
-                    left: offsetLeft,
-                    width: clientWidth,
-                    height: clientHeight
-                };
+                    this.__cache[key] = {
+                        top: offsetTop,
+                        left: offsetLeft,
+                        width: clientWidth,
+                        height: clientHeight
+                    };
+                }
 
-                if (this._boxIntersects(selectionBox, box)) {
+                if (this._boxIntersects(selectionBox, this.__cache[key])) {
                     this.selectedChildren[key] = true;
                 } else if (!this.state.appendMode) {
                     delete this.selectedChildren[key];
@@ -190,7 +201,7 @@ export default class Selection extends Component {
         const {enabled} = this.props;
         const {ctrlKey, shiftKey} = evt;
 
-        if (enabled && (ctrlKey || shiftKey || evt.target.classList.contains(styles.checkbox))) {
+        if (enabled && (ctrlKey || shiftKey || evt.target.classList.contains('checkbox'))) {
             evt.preventDefault();
             evt.stopPropagation();
             this.selectItem(key, !_.has(this.selectedChildren, key));
@@ -236,6 +247,7 @@ export default class Selection extends Component {
 
         return nodes.map(child => {
             const isSelected = _.has(this.selectedChildren, child.key);
+            const styleName = classnames('selectionItem', {selected: isSelected});
             const tmpChild = React.cloneElement(
                 child,
                 {ref: child.key, isSelected, selectionParent: this}
@@ -243,11 +255,11 @@ export default class Selection extends Component {
 
             return (
                 <div key={child.key}
-                    onContextMenu={evt => this._onContextMenu(evt, child.key)}
+                    className={styleName}
                     onClick={evt => this._onSelectItem(evt, child.key)}
-                    className={classnames(styles.selectionItem, {[styles.selected]: isSelected})}
+                    onContextMenu={evt => this._onContextMenu(evt, child.key)}
                 >
-                    <i className={classnames('fa', 'fa-check-circle', styles.checkbox)} />
+                    <i className="fa fa-check-circle checkbox" />
                     {tmpChild}
                 </div>
             );
@@ -281,12 +293,14 @@ export default class Selection extends Component {
     }
 
     render() {
+        const styleName = classnames(this.props.className, styles.container);
+
         return (
             <div ref="selection"
                 tabIndex="0"        // eslint-disable-line
-                className={styles.selection}
-                onClick={evt => this._onSelectItem(evt)}
+                className={styleName}
                 onKeyDown={evt => this._onKeyDown(evt)}
+                onClick={evt => this._onSelectItem(evt)}
                 onMouseDown={evt => this._onMouseDown(evt)}
             >
                 {this.renderChildren()}

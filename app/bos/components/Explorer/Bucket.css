@@ -11,7 +11,7 @@
     align-self: flex-start;
     align-items: center;
     justify-content: center;
-    -webkit-user-select: none;
+    user-select: none;
 }
 
 .container:hover {

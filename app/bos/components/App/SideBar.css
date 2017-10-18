@@ -6,7 +6,7 @@
     background: #444c63;
     flex-flow: column nowrap;
     -webkit-app-region: drag;
-    -webkit-user-select: none;
+    user-select: none;
 }
 
 .header {

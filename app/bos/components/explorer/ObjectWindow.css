@@ -4,7 +4,7 @@
     display: flex;
     overflow-y: auto;
     position: relative;
-    flex-flow: row wrap;
+    flex-flow: column nowrap;
     align-content: flex-start;
 }
 
@@ -79,4 +79,50 @@
 
 .loadMore button:hover {
     color: #108cee;
+}
+
+.gridLayout {
+    flex-flow: row wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+.gridLayout :global .checkbox {
+    margin: 5px 0 0 5px;
+    position: absolute;
+}
+
+.listLayout {
+    flex-flow: column;
+}
+
+.listLayout :global .selectionItem {
+    margin: 0;
+    flex-shrink: 0;
+    border-radius: 0;
+    align-items: center;
+}
+
+.listLayout :global .selectionItem + .selectionItem {
+    border-top: 1px solid #fff;
+}
+
+.listLayout :global .checkbox {
+    margin: 0 5px;
+}
+
+.head {
+    display: flex;
+    padding: 0 10px;
+    color: #8692b2;
+    flex-shrink: 0;
+    background: #eee;
+}
+
+.textCol {
+    flex: auto;
+}
+
+.extraCol {
+    min-width: 120px;
 }

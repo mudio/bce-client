@@ -14,6 +14,7 @@ import {Modal, notification} from 'antd';
 import Navigator from './Navigator';
 import styles from './Explorer.css';
 import SideBar from '../app/SideBar';
+import ObjectMenu from './ObjectMenu';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
 import Migration from './migration/Migration';
@@ -160,6 +161,7 @@ export default class Explorer extends Component {
         return (
             <div className={styles.body}>
                 <Navigator redirect={(...args) => dispatch(redirect(...args))} />
+                <ObjectMenu />
                 <ObjectWindow
                     region={region}
                     bucket={bucket}

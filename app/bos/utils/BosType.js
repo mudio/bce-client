@@ -14,3 +14,9 @@ export const TransCategory = {
     Download: 'Download',
     Complete: 'Complete'
 };
+
+export const BosCategory = {
+    COLD: '冷存储',
+    STANDARD: '标准',
+    STANDARD_IA: '低频'
+};
