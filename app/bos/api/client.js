@@ -6,6 +6,9 @@
  */
 
 import Q from 'q';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import {BosClient} from 'bce-sdk-js';
 
 import {REGION_BJ} from '../../utils/region';
@@ -137,6 +140,42 @@ export class Client extends BosClient {
         process.noAsar = false;
 
         return deferred;
+    }
+
+    /**
+     * 获取图片缩略图
+     *
+     * @param {any} bucket
+     * @param {any} object
+     * @param {any} eTag `getObject` 没有返回Etag
+     *
+     * @memberOf Client
+     */
+    getThumbnail(bucket, object, eTag) {
+        const tmpDir = fs.realpathSync(os.tmpdir());
+        const clientTmpDir = path.join(tmpDir, 'com.baidu.bce.client');
+        const filePath = path.join(clientTmpDir, eTag);
+
+        // 目录不存在，新建目录
+        if (!fs.existsSync(clientTmpDir)) {
+            fs.mkdirSync(clientTmpDir);
+        }
+
+        // 文件存在，优先读缓存
+        if (fs.existsSync(filePath)) {
+            return new Promise((resolve, reject) => {
+                fs.readFile(filePath, (err, data) => (err ? reject(err) : resolve(data)));
+            });
+        }
+
+        // 文件不存在则缓存
+        return this.getObject(bucket, object).then(res => {
+            const _filePath = path.join(clientTmpDir, eTag);
+            const _buffer = `data:image/png;base64,${res.body.toString('base64')}`;
+            fs.writeFileSync(_filePath, _buffer);
+
+            return _buffer;
+        });
     }
 }
 

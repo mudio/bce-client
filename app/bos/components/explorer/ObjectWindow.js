@@ -218,7 +218,7 @@ class Window extends Component {
     }
 
     render() {
-        const {folders, objects, layout} = this.props;
+        const {folders, objects, bucket, layout} = this.props;
         const styleName = classnames({
             [styles.gridLayout]: layout === 'grid',
             [styles.listLayout]: layout === 'list'
@@ -246,7 +246,7 @@ class Window extends Component {
                     }
                     {
                         objects.map((object) => (
-                            <File name={object.key} layout={layout} {...object} />
+                            <File name={object.key} layout={layout} bucket={bucket} {...object} />
                         ))
                     }
                 </Selection>

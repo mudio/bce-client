@@ -44,6 +44,7 @@ export default class Selection extends Component {
 
     componentWillMount() {
         this.selectedChildren = {};
+        this.__cache = {};
     }
 
     componentDidUpdate() {
@@ -51,13 +52,6 @@ export default class Selection extends Component {
             this._updateCollidingChildren(this.state.selectionBox);
         }
     }
-
-    /**
-     * fix Forced reflow
-     *
-     * @memberOf Selection
-     */
-    __cache = {}
 
     clearSelection() {
         const keys = Object.keys(this.selectedChildren);
