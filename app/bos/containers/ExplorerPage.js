@@ -6,7 +6,7 @@
  */
 
 import {connect} from 'react-redux';
-import Explorer from '../components/Explorer/Explorer';
+import Explorer from '../components/explorer/Explorer';
 
 function mapStateToProps(state) {
     return state.navigator;

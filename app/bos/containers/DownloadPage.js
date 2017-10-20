@@ -6,7 +6,7 @@
  */
 
 import {connect} from 'react-redux';
-import Transfer from '../components/Transfer/Transfer';
+import Transfer from '../components/transfer/Transfer';
 
 import {TransCategory} from '../utils/BosType';
 import {DownloadStatus} from '../utils/TransferStatus';
