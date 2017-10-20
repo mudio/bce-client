@@ -157,7 +157,7 @@ export default class Selection extends Component {
                         offsetLeft,
                         clientWidth,
                         clientHeight
-                    } = ReactDom.findDOMNode(ref); // eslint-disable-line react/no-find-dom-node
+                    } = ReactDom.findDOMNode(ref).offsetParent; // eslint-disable-line react/no-find-dom-node
 
                     this.__cache[key] = {
                         top: offsetTop,
@@ -180,13 +180,14 @@ export default class Selection extends Component {
         if (!this.state.mouseDown || _.isNull(endPoint) || _.isNull(startPoint)) {
             return null;
         }
+
+        const {scrollTop} = this.refs.selection;
         const rect = this.refs.selection.getBoundingClientRect();
         const left = Math.min(startPoint.x, endPoint.x) - rect.left;
-        const top = Math.min(startPoint.y, endPoint.y) - rect.top;
+        const top = Math.min(startPoint.y, endPoint.y) + scrollTop - rect.top; // eslint-disable-line no-mixed-operators
         // +1 保证`MouseUp`事件在`SelectionBox`上
         const width = Math.abs(startPoint.x - endPoint.x) + 1;
         const height = Math.abs(startPoint.y - endPoint.y) + 1;
-
         return {left, top, width, height};
     }
 

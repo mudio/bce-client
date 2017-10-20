@@ -56,8 +56,7 @@
     width: 120px;
 }
 
-.listLayout:hover .commands,
-.gridLayout:hover .commands {
+.listLayout:hover .commands {
     display: flex;
 }
 
