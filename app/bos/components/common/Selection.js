@@ -119,7 +119,9 @@ export default class Selection extends Component {
 
     _onContextMenu(evt, key) {
         const {pageX, pageY} = evt;
-        const rect = this.refs.selection.getBoundingClientRect();
+        const {selection} = this.refs;
+        const {scrollTop} = selection;
+        const rect = selection.getBoundingClientRect();
 
         if (!_.has(this.selectedChildren, key)) {
             this.selectedChildren = {};
@@ -131,7 +133,7 @@ export default class Selection extends Component {
                 pageX,
                 pageY,
                 offsetX: pageX - rect.left,
-                offsetY: pageY - rect.top
+                offsetY: pageY - rect.top + scrollTop // eslint-disable-line
             }
         });
     }

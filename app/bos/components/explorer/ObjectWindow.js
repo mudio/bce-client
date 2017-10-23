@@ -94,8 +94,8 @@ class Window extends Component {
         return false;
     }
 
-    _onScroll = () => {
-        const {scrollTop, scrollHeight, clientHeight} = this.refs.main;
+    _onScroll = (evt) => {
+        const {scrollTop, scrollHeight, clientHeight} = evt.target;
         const {bucket, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
         const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
 
@@ -173,14 +173,19 @@ class Window extends Component {
     }
 
     renderMore() {
-        const {isFetching, isTruncated} = this.props;
+        const {isFetching, isTruncated, folders, objects} = this.props;
+        const totalCount = folders.length + objects.length;
+        const styleName = classnames(styles.loadMore, 'animated', 'slideInUp');
 
         // 数据正在加载，并且没有加载完
         if (isFetching && isTruncated) {
             return (
-                <div className={styles.loadMore}>
-                    <i className="fa fa-spinner fa-pulse fa-lg" aria-hidden="true" />
-                    正在加载中...
+                <div className={styleName}>
+                    <div className={styles.loadInfo} >
+                        <i className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                        正在加载中...
+                    </div>
+                    <span>已加载：{totalCount}</span>
                 </div>
             );
         }
@@ -188,15 +193,20 @@ class Window extends Component {
         // 数据加载完毕，然而数据没有加载完
         if (!isFetching && isTruncated) {
             return (
-                <div className={styles.loadMore}>
-                    <button onClick={this._listMore} >加载更多&gt;&gt;</button>
+                <div className={styleName}>
+                    <div className={styles.loadInfo} >
+                        <i className="fa fa-info-circle" aria-hidden="true" />
+                        当前展示部分文件，滑动滚动条以加载更多！
+                        <button onClick={this._listMore} >加载更多&gt;&gt;</button>
+                    </div>
+                    <span>已加载：{totalCount}</span>
                 </div>
             );
         }
 
         // 数据加载完毕，并且没有更多了
         if (!isFetching && !isTruncated) {
-            return '';
+            return null;
         }
     }
 
