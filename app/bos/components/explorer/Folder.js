@@ -11,6 +11,14 @@ import {Tooltip} from 'antd';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
+import {
+    commandMap,
+    MENU_COPY_COMMAND,
+    MENU_MOVE_COMMAND,
+    MENU_TRASH_COMMAND,
+    MENU_RENAME_COMMAND,
+    MENU_DOWNLOAD_COMMAND
+} from '../../actions/context';
 import styles from './File.css';
 
 function normalize(key = '') {
@@ -21,8 +29,17 @@ export default class Folder extends Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         layout: PropTypes.string.isRequired,
+        onCommand: PropTypes.func.isRequired,
         onDoubleClick: PropTypes.func.isRequired
     };
+
+    static supportCommands = [
+        MENU_RENAME_COMMAND,
+        MENU_COPY_COMMAND,
+        // MENU_MOVE_COMMAND,
+        MENU_DOWNLOAD_COMMAND,
+        MENU_TRASH_COMMAND
+    ]
 
     shouldComponentUpdate(props) {
         return props.name !== this.props.name
@@ -32,6 +49,21 @@ export default class Folder extends Component {
     _triggerDoubleClick = () => {
         const {name, onDoubleClick} = this.props;
         onDoubleClick(name);
+    }
+
+    renderCommands() {
+        const {name, onCommand} = this.props;
+
+        return Folder.supportCommands.map(command => {
+            const {icon} = commandMap[command];
+
+            return (
+                <span key={command.toString()}
+                    className={`fa fa-${icon}`}
+                    onClick={() => onCommand(command, {keys: [name]})}
+                />
+            );
+        });
     }
 
     render() {
@@ -57,13 +89,11 @@ export default class Folder extends Component {
                     <i className={`${styles.icon} asset-folder`} />
                     <span className={styles.text}>{folderName}</span>
                     <span className={styles.commands}>
-                        <span className="fa fa-chain" />
-                        <span className="fa fa-copy" />
-                        <span className="fa fa-trash" />
+                        {this.renderCommands()}
                     </span>
                     <span className={styles.extra}>-</span>
                     <span className={styles.extra}>-</span>
-                    <span className={styles.extra}>-</span>
+                    <span className={styles.time}>-</span>
                 </div>
             );
         }

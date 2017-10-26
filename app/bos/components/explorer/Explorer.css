@@ -2,6 +2,7 @@
 .container {
     flex: auto;
     display: flex;
+    overflow: hidden;
 }
 
 .body {

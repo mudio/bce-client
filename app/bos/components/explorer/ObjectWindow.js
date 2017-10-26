@@ -14,13 +14,17 @@ import {bindActionCreators} from 'redux';
 
 import File from './File';
 import Folder from './Folder';
+import ObjectMenu from './ObjectMenu';
 import styles from './ObjectWindow.css';
 import Selection from '../common/Selection';
+import ContextMenu from '../common/ContextMenu';
 import {redirect} from '../../actions/navigator';
 import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';
 
 import {
+    MENU_UPLOAD_COMMAND,
+    MENU_REFRESH_COMMAND,
     MENU_COPY_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
@@ -65,7 +69,8 @@ class Window extends Component {
     };
 
     state = {
-        commands: []
+        selectedItems: [],
+        contextMenuPosition: null
     }
 
     componentWillReceiveProps(nextProps) {
@@ -105,26 +110,43 @@ class Window extends Component {
     }
 
     _onCommand = (cmd, config) => {
+        const {selectedItems} = this.state;
         const {region, bucket, prefix} = this.props;
 
-        return this.props.onCommand(cmd, Object.assign({region, bucket, prefix}, config));
+        if (config) {
+            return this.props.onCommand(cmd, Object.assign({region, bucket, prefix}, config));
+        }
+
+        return this.props.onCommand(cmd, {region, bucket, prefix, keys: selectedItems});
     }
 
     _onSelectionChange = (keys) => {
-        this.setState({
-            commands: [
-                {type: MENU_COPY_COMMAND, disable: keys.length !== 1},
-                {type: MENU_RENAME_COMMAND, disable: keys.length !== 1},
-                {type: MENU_DOWNLOAD_COMMAND},
-                {type: MENU_TRASH_COMMAND}
-            ]
-        });
+        this.setState({selectedItems: keys});
     }
 
     _listMore = () => {
         const {bucket, prefix, nextMarker, listMore} = this.props;
 
         listMore(bucket, prefix, nextMarker);
+    }
+
+    _onContextMenu = (evt) => {
+        const {pageX, pageY} = evt;
+        const {scrollTop} = evt.target;
+        const rect = this.refs.main.getBoundingClientRect();
+
+        this.setState({
+            contextMenuPosition: {
+                pageX,
+                pageY,
+                offsetX: pageX - rect.left,
+                offsetY: pageY - rect.top + scrollTop // eslint-disable-line
+            }
+        });
+    }
+
+    _onClick = () => {
+        this.setState({contextMenuPosition: null});
     }
 
     redirect = (prefix = '') => {
@@ -227,6 +249,34 @@ class Window extends Component {
         return null;
     }
 
+    renderContextMenu() {
+        const {selectedItems, contextMenuPosition} = this.state;
+
+        if (contextMenuPosition) {
+            let commands = [];
+
+            if (selectedItems.length > 0) {
+                commands = [
+                    {type: MENU_COPY_COMMAND, disable: selectedItems.length !== 1},
+                    {type: MENU_RENAME_COMMAND, disable: selectedItems.length !== 1},
+                    {type: MENU_DOWNLOAD_COMMAND},
+                    {type: MENU_TRASH_COMMAND}
+                ];
+            } else {
+                commands = [
+                    {type: MENU_UPLOAD_COMMAND},
+                    {type: MENU_REFRESH_COMMAND}
+                ];
+            }
+
+            return (
+                <ContextMenu {...contextMenuPosition} commands={commands} onCommand={this._onCommand} />
+            );
+        }
+
+        return null;
+    }
+
     render() {
         const {folders, objects, bucket, layout} = this.props;
         const styleName = classnames({
@@ -235,32 +285,44 @@ class Window extends Component {
         });
 
         return (
-            <div ref="main"
-                className={styles.container}
-                onDrop={this._onDrop}
-                onScroll={this._onScroll}
-            >
-                {this.renderLoading()}
-                {this.renderError()}
-                {this.renderEmpty()}
-                {this.renderListHead()}
-                <Selection className={styleName}
-                    commands={this.state.commands}
-                    onCommand={this._onCommand}
-                    onSelectionChange={this._onSelectionChange}
+            <div className={styles.container} >
+                <ObjectMenu />
+                <div ref="main"
+                    onDrop={this._onDrop}
+                    onClick={this._onClick}
+                    onScroll={this._onScroll}
+                    className={styles.container}
+                    onContextMenu={this._onContextMenu}
                 >
-                    {
-                        folders.map((folder) => (
-                            <Folder name={folder.key} layout={layout} {...folder} onDoubleClick={this.redirect} />
-                        ))
-                    }
-                    {
-                        objects.map((object) => (
-                            <File name={object.key} layout={layout} bucket={bucket} {...object} />
-                        ))
-                    }
-                </Selection>
-                {this.renderMore()}
+                    {this.renderListHead()}
+                    <Selection className={styleName} onSelectionChange={this._onSelectionChange} >
+                        {
+                            folders.map((folder) => (
+                                <Folder {...folder}
+                                    name={folder.key}
+                                    layout={layout}
+                                    onCommand={this._onCommand}
+                                    onDoubleClick={this.redirect}
+                                />
+                            ))
+                        }
+                        {
+                            objects.map((object) => (
+                                <File {...object}
+                                    name={object.key}
+                                    layout={layout}
+                                    bucket={bucket}
+                                    onCommand={this._onCommand}
+                                />
+                            ))
+                        }
+                    </Selection>
+                    {this.renderMore()}
+                    {this.renderLoading()}
+                    {this.renderError()}
+                    {this.renderEmpty()}
+                    {this.renderContextMenu()}
+                </div>
             </div>
         );
     }

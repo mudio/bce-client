@@ -11,6 +11,13 @@ import {Tooltip} from 'antd';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
+import {
+    commandMap,
+    MENU_COPY_COMMAND,
+    MENU_TRASH_COMMAND,
+    MENU_RENAME_COMMAND,
+    MENU_DOWNLOAD_COMMAND
+} from '../../actions/context';
 import styles from './File.css';
 import {ClientFactory} from '../../api/client';
 import {BosCategory} from '../../utils/BosType';
@@ -25,11 +32,22 @@ export default class File extends Component {
         size: PropTypes.number.isRequired,
         lastModified: PropTypes.string.isRequired,
         storageClass: PropTypes.string.isRequired,
+        onCommand: PropTypes.func.isRequired,
         owner: PropTypes.shape({
             id: PropTypes.string.isRequired,
             displayName: PropTypes.string.isRequired
         }).isRequired
     };
+
+    static supportCommands = [
+        // MENU_VIEW_COMMAND,
+        MENU_RENAME_COMMAND,
+        MENU_COPY_COMMAND,
+        // MENU_MOVE_COMMAND,
+        // MENU_SHARE_COMMAND,
+        MENU_DOWNLOAD_COMMAND,
+        MENU_TRASH_COMMAND
+    ]
 
     state = {
         imgThumbnail: ''
@@ -62,6 +80,21 @@ export default class File extends Component {
         } catch (ex) {} // eslint-disable-line no-empty
     }
 
+    renderCommands() {
+        const {name, onCommand} = this.props;
+
+        return File.supportCommands.map(command => {
+            const {icon} = commandMap[command];
+
+            return (
+                <span key={command.toString()}
+                    className={`fa fa-${icon}`}
+                    onClick={() => onCommand(command, {keys: [name]})}
+                />
+            );
+        });
+    }
+
     render() {
         const {imgThumbnail} = this.state;
         const style = imgThumbnail ? {backgroundImage: `url("${imgThumbnail}")`} : {};
@@ -88,13 +121,11 @@ export default class File extends Component {
                     <i style={style} className={`${styles.icon} asset-normal asset-${ext}`} />
                     <span className={styles.text}>{fileName}</span>
                     <span className={styles.commands}>
-                        <span className="fa fa-chain" />
-                        <span className="fa fa-copy" />
-                        <span className="fa fa-trash" />
+                        {this.renderCommands()}
                     </span>
                     <span className={styles.extra}>{BosCategory[storageClass]}</span>
                     <span className={styles.extra}>{humanSize(size)}</span>
-                    <span className={styles.extra}>{utcToLocalTime(lastModified)}</span>
+                    <span className={styles.time}>{utcToLocalTime(lastModified)}</span>
                 </div>
             );
         }

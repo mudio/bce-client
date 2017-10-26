@@ -14,7 +14,6 @@ import {Modal, notification} from 'antd';
 import Navigator from './Navigator';
 import styles from './Explorer.css';
 import SideBar from '../app/SideBar';
-import ObjectMenu from './ObjectMenu';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
 import Migration from './migration/Migration';
@@ -91,15 +90,18 @@ export default class Explorer extends Component {
     }
 
     _trash(region, bucketName, prefix, keys) {
-        Modal.confirm({
-            title: '删除提示',
-            content: `您确定删除${keys.length}个文件吗?`,
-            onOk: () => this.props.dispatch(
-                trash(region, bucketName, prefix, keys)
-            ).then(
-                () => notification.success({message: '删除成功', description: `成功删除${keys.length}个文件`})
-            )
-        });
+        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
+
+        const onOk = async () => {
+            try {
+                await this.props.dispatch(trash(region, bucketName, prefix, keys));
+                notification.success({message: '删除成功', description: `成功删除${toast}`});
+            } catch (ex) {
+                notification.error({message: '删除失败', description: ex.message});
+            }
+        };
+
+        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
     }
 
     _onCancel = () => {
@@ -161,7 +163,6 @@ export default class Explorer extends Component {
         return (
             <div className={styles.body}>
                 <Navigator redirect={(...args) => dispatch(redirect(...args))} />
-                <ObjectMenu />
                 <ObjectWindow
                     region={region}
                     bucket={bucket}

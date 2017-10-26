@@ -49,31 +49,39 @@
 }
 
 .listLayout .text {
+    width: 0;
     flex: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .listLayout .extra {
+    width: 80px;
+}
+
+.listLayout .time {
     width: 120px;
 }
 
-.listLayout:hover .commands {
-    display: flex;
+.listLayout:hover .commands span {
+    visibility: initial;
 }
 
 .commands {
-    display: none;
+    display: flex;
 }
 
 .commands span {
+    display: flex;
     width: 24px;
     flex: auto;
     height: 30px;
     cursor: pointer;
-    display: flex;
     color: #8692b2;
+    visibility: hidden;
     align-items: center;
     justify-content: center;
-    transition: background .3s;
+    transition: background .3s ease-in-out;
 }
 
 .commands span:hover {

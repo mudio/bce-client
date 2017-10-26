@@ -12,39 +12,35 @@ import classnames from 'classnames';
 import React, {Component} from 'react';
 
 import styles from './Selection.css';
-import ContextMenu from './ContextMenu';
 
 export default class Selection extends Component {
     static propTypes = {
         className: PropTypes.string,
         enabled: PropTypes.bool,
-        commands: PropTypes.array,
         children: PropTypes.node.isRequired,
-        onSelectionChange: PropTypes.func,
-        onCommand: PropTypes.func.isRequired
+        onSelectionChange: PropTypes.func
     };
 
     static defaultProps = {
-        commands: [],
         enabled: true,
         onSelectionChange: _.noop
     };
 
     constructor(props) {
         super(props);
+
         this.state = {
             mouseDown: false,
             startPoint: null,
             endPoint: null,
             selectionBox: null,
             appendMode: false,
-            contextMenu: null
         };
     }
 
     componentWillMount() {
-        this.selectedChildren = {};
-        this.__cache = {};
+        this.__selectedCache = {};
+        this.__refPositionCache = {};
     }
 
     componentDidUpdate() {
@@ -54,9 +50,9 @@ export default class Selection extends Component {
     }
 
     clearSelection() {
-        const keys = Object.keys(this.selectedChildren);
+        const keys = Object.keys(this.__selectedCache);
         if (keys.length > 0) {
-            this.selectedChildren = {};
+            this.__selectedCache = {};
             this.props.onSelectionChange.call(null, []);
             this.forceUpdate();
         }
@@ -96,9 +92,9 @@ export default class Selection extends Component {
             selectionBox: null,
             appendMode: false
         });
-        this.props.onSelectionChange.call(null, _.keys(this.selectedChildren));
+        this.props.onSelectionChange.call(null, _.keys(this.__selectedCache));
         // 清理以下缓存
-        this.__cache = {};
+        this.__refPositionCache = {};
     }
 
     _onMouseMove(e) {
@@ -118,24 +114,10 @@ export default class Selection extends Component {
     }
 
     _onContextMenu(evt, key) {
-        const {pageX, pageY} = evt;
-        const {selection} = this.refs;
-        const {scrollTop} = selection;
-        const rect = selection.getBoundingClientRect();
-
-        if (!_.has(this.selectedChildren, key)) {
-            this.selectedChildren = {};
+        if (!_.has(this.__selectedCache, key)) {
+            this.__selectedCache = {};
             this.selectItem(key, true);
         }
-
-        this.setState({
-            contextMenu: {
-                pageX,
-                pageY,
-                offsetX: pageX - rect.left,
-                offsetY: pageY - rect.top + scrollTop // eslint-disable-line
-            }
-        });
     }
 
     _boxIntersects(boxA, boxB) {
@@ -150,10 +132,12 @@ export default class Selection extends Component {
     }
 
     _updateCollidingChildren(selectionBox) {
+        this.__selectedCache = {};
+
         _.each(this.refs, (ref, key) => {
             if (key !== 'selection') {
                 // FIXME Forced reflow 导致性能太差，缓存一下
-                if (!this.__cache[key]) {
+                if (!this.__refPositionCache[key]) {
                     const {
                         offsetTop,
                         offsetLeft,
@@ -161,7 +145,7 @@ export default class Selection extends Component {
                         clientHeight
                     } = ReactDom.findDOMNode(ref).offsetParent; // eslint-disable-line react/no-find-dom-node
 
-                    this.__cache[key] = {
+                    this.__refPositionCache[key] = {
                         top: offsetTop,
                         left: offsetLeft,
                         width: clientWidth,
@@ -169,10 +153,10 @@ export default class Selection extends Component {
                     };
                 }
 
-                if (this._boxIntersects(selectionBox, this.__cache[key])) {
-                    this.selectedChildren[key] = true;
+                if (this._boxIntersects(selectionBox, this.__refPositionCache[key])) {
+                    this.__selectedCache[key] = true;
                 } else if (!this.state.appendMode) {
-                    delete this.selectedChildren[key];
+                    delete this.__selectedCache[key];
                 }
             }
         });
@@ -194,19 +178,16 @@ export default class Selection extends Component {
     }
 
     _onSelectItem(evt, key) {
-        evt.stopPropagation();
+        evt.preventDefault();
+
         const {enabled} = this.props;
         const {ctrlKey, shiftKey} = evt;
 
         if (enabled && (ctrlKey || shiftKey || evt.target.classList.contains('checkbox'))) {
-            evt.preventDefault();
-            evt.stopPropagation();
-            this.selectItem(key, !_.has(this.selectedChildren, key));
+            this.selectItem(key, !_.has(this.__selectedCache, key));
         } else {
             this.clearSelection();
         }
-
-        this.setState({contextMenu: null});
     }
 
     _onKeyDown(evt) {
@@ -220,22 +201,22 @@ export default class Selection extends Component {
 
     selectItem(key, isSelected) {
         if (isSelected) {
-            this.selectedChildren[key] = isSelected;
+            this.__selectedCache[key] = isSelected;
         } else {
-            delete this.selectedChildren[key];
+            delete this.__selectedCache[key];
         }
 
-        this.props.onSelectionChange.call(null, _.keys(this.selectedChildren));
+        this.props.onSelectionChange.call(null, _.keys(this.__selectedCache));
     }
 
     selectAll() {
         _.each(this.refs, (ref, key) => {
             if (key !== 'selection') {
-                this.selectedChildren[key] = true;
+                this.__selectedCache[key] = true;
             }
         });
 
-        this.props.onSelectionChange.call(null, this.selectedChildren);
+        this.props.onSelectionChange.call(null, _.keys(this.__selectedCache));
         this.forceUpdate();
     }
 
@@ -243,7 +224,7 @@ export default class Selection extends Component {
         const nodes = _.flatten(this.props.children);
 
         return nodes.map(child => {
-            const isSelected = _.has(this.selectedChildren, child.key);
+            const isSelected = _.has(this.__selectedCache, child.key);
             const styleName = classnames('selectionItem', {selected: isSelected});
             const tmpChild = React.cloneElement(
                 child,
@@ -272,23 +253,6 @@ export default class Selection extends Component {
         );
     }
 
-    renderContextMenu() {
-        const {enabled, commands, onCommand} = this.props;
-        const {contextMenu} = this.state;
-
-        if (!enabled || _.isNull(contextMenu)) {
-            return null;
-        }
-
-        return (
-            <ContextMenu ref="_contextMenu"
-                {...contextMenu}
-                commands={commands}
-                onCommand={cmd => onCommand(cmd, {keys: Object.keys(this.selectedChildren)})}
-            />
-        );
-    }
-
     render() {
         const styleName = classnames(this.props.className, styles.container);
 
@@ -302,7 +266,6 @@ export default class Selection extends Component {
             >
                 {this.renderChildren()}
                 {this.renderSelectionBox()}
-                {this.renderContextMenu()}
             </div>
         );
     }

@@ -12,15 +12,7 @@ import classnames from 'classnames';
 import React, {Component} from 'react';
 
 import styles from './ContextMenu.css';
-import {
-    MENU_COPY_COMMAND,
-    MENU_MOVE_COMMAND,
-    MENU_VIEW_COMMAND,
-    MENU_TRASH_COMMAND,
-    MENU_SHARE_COMMAND,
-    MENU_RENAME_COMMAND,
-    MENU_DOWNLOAD_COMMAND
-} from '../../actions/context';
+import {commandMap} from '../../actions/context';
 
 export default class ContextMenu extends Component {
     static propTypes = {
@@ -32,21 +24,10 @@ export default class ContextMenu extends Component {
         onCommand: PropTypes.func.isRequired
     };
 
-    static menuCommands = {
-        [MENU_COPY_COMMAND]: {name: '复制到', icon: 'copy', command: MENU_COPY_COMMAND},
-        [MENU_TRASH_COMMAND]: {name: '删除', icon: 'trash', command: MENU_TRASH_COMMAND},
-        [MENU_SHARE_COMMAND]: {name: '分享', icon: 'chain', command: MENU_SHARE_COMMAND},
-        [MENU_MOVE_COMMAND]: {name: '移动到', icon: 'arrows', command: MENU_MOVE_COMMAND},
-        [MENU_VIEW_COMMAND]: {name: '查看', icon: 'low-vision', command: MENU_VIEW_COMMAND},
-        [MENU_RENAME_COMMAND]: {name: '重命名', icon: 'pencil', command: MENU_RENAME_COMMAND},
-        [MENU_DOWNLOAD_COMMAND]: {name: '下载', icon: 'cloud-download', command: MENU_DOWNLOAD_COMMAND}
-    };
-
     render() {
         const {offsetX, offsetY, pageX, pageY, commands, onCommand} = this.props;
-        const datasource = commands.map(item => Object.assign(
-            {disable: !!item.disable},
-            ContextMenu.menuCommands[item.type])
+        const datasource = commands.map(
+            item => Object.assign({disable: !!item.disable}, commandMap[item.type])
         );
 
         let left = offsetX;
