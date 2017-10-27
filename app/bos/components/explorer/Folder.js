@@ -14,7 +14,7 @@ import React, {Component} from 'react';
 import {
     commandMap,
     MENU_COPY_COMMAND,
-    MENU_MOVE_COMMAND,
+    // MENU_MOVE_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND
