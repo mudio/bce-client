@@ -105,30 +105,50 @@ export default class Login extends Component {
      *
      * @memberof Login
      */
-    validateAkSK = evt => {
+    validateAkSK = async evt => {
         evt.preventDefault();
 
         const {ak, sk} = this.state;
-
-        if (ak && sk) {
-            this.setState({errMsg: ''});
-
-            return this.props.login(ak, sk).then(
-                () => this.setState({
-                    hasLogin: true,
-                    errMsg: {info: '您可以设置安全码以便于以后快速登录'}
-                }),
-                err => {
-                    if (err.code === 'ETIMEDOUT') {
-                        this.setState({errMsg: '网络连接超时'});
-                    } else {
-                        this.setState({errMsg: 'AK/SK效验错误'});
-                    }
-                }
-            );
+        if (!ak || !sk) {
+            this.setState({errMsg: 'AK/SK 格式错误'});
+            return;
         }
 
-        this.setState({errMsg: 'AK/SK 格式错误'});
+        try {
+            this.setState({errMsg: ''});
+            await this.props.login(ak, sk);
+            this.setState({
+                hasLogin: true,
+                errMsg: {info: '您可以设置安全码以便于以后快速登录'}
+            });
+        } catch ({code}) {
+            let errMsg = '';
+
+            switch (code) {
+            case 'ENOTFOUND':
+            case 'ETIMEDOUT': {
+                errMsg = '网络连接超时';
+                break;
+            }
+            case 'OptInRequired': {
+                errMsg = '请先开通BOS服务';
+                break;
+            }
+            case 'AccessDenied': {
+                errMsg = '系统拒绝访问';
+                break;
+            }
+            case 'AccountOverdue': {
+                errMsg = '用户已欠费';
+                break;
+            }
+            default: {
+                errMsg = 'AK、SK效验错误';
+            }
+            }
+
+            this.setState({errMsg});
+        }
     }
 
     /**

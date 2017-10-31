@@ -58,7 +58,7 @@ export default class Selection extends Component {
         }
     }
 
-    _onMouseDown(e) {
+    _onMouseDown = (e) => {
         if (!this.props.enabled || e.button === 2 || e.nativeEvent.which === 2) {
             return;
         }
@@ -113,7 +113,7 @@ export default class Selection extends Component {
         }
     }
 
-    _onContextMenu(evt, key) {
+    _onContextMenu = (evt, key) => {
         if (!_.has(this.__selectedCache, key)) {
             this.__selectedCache = {};
             this.selectItem(key, true);
@@ -177,7 +177,7 @@ export default class Selection extends Component {
         return {left, top, width, height};
     }
 
-    _onSelectItem(evt, key) {
+    _onSelectItem = (evt, key) => {
         evt.preventDefault();
 
         const {enabled} = this.props;
@@ -190,7 +190,7 @@ export default class Selection extends Component {
         }
     }
 
-    _onKeyDown(evt) {
+    _onKeyDown = (evt) => {
         const {keyCode, ctrlKey, metaKey} = evt;
 
         if (keyCode === 65 && (ctrlKey || metaKey)) {
@@ -258,11 +258,11 @@ export default class Selection extends Component {
 
         return (
             <div ref="selection"
-                tabIndex="0"        // eslint-disable-line
                 className={styleName}
-                onKeyDown={evt => this._onKeyDown(evt)}
-                onClick={evt => this._onSelectItem(evt)}
-                onMouseDown={evt => this._onMouseDown(evt)}
+                onKeyDown={this._onKeyDown}
+                onClick={this._onSelectItem}
+                onMouseDown={this._onMouseDown}
+                onContextMenu={this._onContextMenu}
             >
                 {this.renderChildren()}
                 {this.renderSelectionBox()}
