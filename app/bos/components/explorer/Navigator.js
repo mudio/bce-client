@@ -35,32 +35,17 @@ class Navigator extends Component {
     constructor(props, ...args) {
         super(props, ...args);
 
-        let value = '';
-        const {bucket, prefix} = props;
-
-        if (bucket && !prefix) {
-            value = `${bucket}/`;
-        } else if (prefix) {
-            value = `${bucket}/${prefix}`;
-        }
-
         this.state = {
-            value, history: [], records: [], index: -1
+            focus: false, value: '', history: [], records: [], index: -1
         };
 
-        this.invokeQuery = _.debounce(this._query, 200);
+        this.invokeQuery = _.debounce(this._query, 300);
     }
 
     componentWillReceiveProps(nextProps) {
         const {bucket, prefix} = nextProps;
         if (bucket !== this.props.bucket || prefix !== this.props.prefix) {
-            if (bucket && !prefix) {
-                this.setState({value: `${bucket}/`});
-            } else if (prefix) {
-                this.setState({value: `${bucket}/${prefix}`});
-            } else {
-                this.setState({value: ''});
-            }
+            this.setState({value: '', focus: false});
         }
     }
 
@@ -80,32 +65,26 @@ class Navigator extends Component {
      * @memberOf Navigator
      */
     async _query() {
-        let records = [];
         const {value} = this.state;
-        const {bucket, prefix} = this._resolveSelectItem(value);
-        const client = await ClientFactory.fromBucket(bucket);
+        const {region, bucket, prefix = '', redirect} = this.props;
 
+        if (bucket) {
+            redirect({region, bucket, prefix, search: value});
+            return;
+        }
+
+        const _client = ClientFactory.fromRegion(region);
         try {
-            if (_.isString(prefix)) {
-                const {folders} = await client.listObjects(bucket, {prefix, delimiter: '/'});
-
-                records = folders.map(folder => Object({
-                    region: client.region,
-                    bucket,
-                    prefix: folder.key
-                }));
-            } else {
-                const {buckets} = await client.listBuckets();
-                records = buckets.reduce((context = [], item) => {
-                    if (item.name.indexOf(bucket) > -1) {
-                        context.push({
-                            region: item.location,
-                            bucket: item.name
-                        });
-                    }
-                    return context;
-                }, []);
-            }
+            const {buckets} = await _client.listBuckets();
+            const records = buckets.reduce((context = [], item) => {
+                if (item.name.indexOf(value) > -1) {
+                    context.push({
+                        region: item.location,
+                        bucket: item.name
+                    });
+                }
+                return context;
+            }, []);
 
             this.setState({records, index: -1});
         } catch (ex) {
@@ -113,25 +92,13 @@ class Navigator extends Component {
         }
     }
 
-    _onChange(event) {
-        this.setState({value: event.target.value});
+    _onChange = evt => {
+        this.setState({value: evt.target.value});
         this.invokeQuery();
     }
 
     _onKeyDown(event) {
-        if (event.key === 'Enter') {
-            const {value} = this.state;
-            const {region, redirect} = this.props;
-            const {bucket, prefix} = this._resolveSelectItem(value);
-
-            this.setState({records: [], index: -1});
-
-            if (bucket !== this.props.bucket || prefix !== this.props.prefix) {
-                redirect({region, bucket, prefix});
-            }
-
-            this.invokeQuery();
-        } else if (event.key === 'ArrowUp') {
+        if (event.key === 'ArrowUp') {
             let {index} = this.state;
             const {records} = this.state;
 
@@ -163,15 +130,30 @@ class Navigator extends Component {
     }
 
     _onBlur = () => {
-        const {bucket, prefix = ''} = this.props;
+        const {value} = this.state;
 
-        if (bucket) {
-            const value = path.posix.join(bucket, prefix, '/');
-            this.setState({records: [], index: -1, value});
+        if (!value.trim()) {
+            this.setState({records: [], index: -1, focus: false});
             return;
         }
 
-        this.setState({records: [], index: -1, value: ''});
+        this.setState({records: [], index: -1});
+    }
+
+    _onFocus = () => {
+        this.setState({focus: true});
+    }
+
+    _onSearch = () => {
+        const {focus} = this.state;
+        const {region, bucket, prefix, redirect} = this.props;
+
+        if (focus) {
+            this.setState({value: '', focus: false});
+            redirect({region, bucket, prefix});
+        } else {
+            this.setState({focus: true});
+        }
     }
 
     _selectRegion(selectRegion) {
@@ -215,13 +197,81 @@ class Navigator extends Component {
             }
 
             prefixs.push('');
-            return redirect({region, bucket, prefixs: prefixs.join('/')});
+            return redirect({region, bucket, prefix: prefixs.join('/')});
         }
 
         redirect({region});
     }
 
-    _renderMatchRecords() {
+    _redirect = (regionName, bucketName, prefixs = []) => {
+        const {region, bucket, redirect} = this.props;
+
+        redirect({
+            region: regionName || region,
+            bucket: bucketName || bucket,
+            prefix: prefixs.join('/')
+        });
+    }
+
+    renderSearch() {
+        const {focus, value} = this.state;
+        const {region, bucket, prefix = ''} = this.props;
+
+        const searchStyle = classnames('fa', {
+            'fa-search': !focus,
+            'fa-times': focus
+        }, styles.search);
+
+        const dynamic = () => {
+            if (focus) {
+                const [sep, name] = prefix.split('/').reverse(); // eslint-disable-line
+                return (
+                    <div className={styles.searchLabel}>
+                        在{name || bucket || ` ${getLocalText(region)}区域 `}中搜索
+                    </div>
+                );
+            }
+
+            const prefixs = prefix.split('/');
+
+            const folderDoms = prefixs.map((item, index) => {
+                if (item) {
+                    const targetObject = prefixs.slice(0, index + 1);
+
+                    return (
+                        <span onClick={() => this._redirect(region, bucket, targetObject)}>
+                            {item}
+                        </span>
+                    );
+                }
+                return null;
+            });
+
+            const bucketDoms = bucket ? (<span onClick={() => this._redirect(region, bucket)}>{bucket}</span>) : null;
+
+            return (
+                <div className={styles.searchNavigator}>
+                    {bucketDoms}
+                    {folderDoms}
+                </div>
+            );
+        };
+
+        return (
+            <div className={styles.inputWarp}>
+                {dynamic()}
+                <input value={value}
+                    onBlur={this._onBlur}
+                    onFocus={this._onFocus}
+                    onChange={this._onChange}
+                    onKeyDown={evt => this._onKeyDown(evt)}
+                />
+                <i onClick={this._onSearch} className={searchStyle} />
+            </div>
+        );
+    }
+
+    renderMatchRecords() {
         const {index, records} = this.state;
 
         if (records.length > 0) {
@@ -248,7 +298,7 @@ class Navigator extends Component {
 
     render() {
         const {region, bucket} = this.props;
-        const {history, value} = this.state;
+        const {history} = this.state;
 
         const leftClassName = classnames('fa', 'fa-angle-left', 'fa-lg', {
             [styles.disable]: !bucket}
@@ -278,13 +328,8 @@ class Navigator extends Component {
                             }
                         </ul>
                     </span>
-                    <input className={styles.input}
-                        value={value}
-                        onBlur={this._onBlur}
-                        onChange={evt => this._onChange(evt)}
-                        onKeyDown={evt => this._onKeyDown(evt)}
-                    />
-                    {this._renderMatchRecords()}
+                    {this.renderSearch()}
+                    {this.renderMatchRecords()}
                 </div>
                 <SystemBar resize />
             </div>

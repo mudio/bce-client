@@ -262,7 +262,6 @@ export default class Selection extends Component {
                 onKeyDown={this._onKeyDown}
                 onClick={this._onSelectItem}
                 onMouseDown={this._onMouseDown}
-                onContextMenu={this._onContextMenu}
             >
                 {this.renderChildren()}
                 {this.renderSelectionBox()}
