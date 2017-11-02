@@ -7,7 +7,7 @@
 
 import path from 'path';
 import ConfigStore from 'configstore';
-import {REGION_BJ, REGION_GZ, REGION_SU} from '../utils/region';
+import {REGION_BJ, REGION_GZ, REGION_SU, REGION_HK, REGION_HK02} from '../utils/region';
 
 const bcedir = path.join('..', '.bce');
 const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
@@ -17,7 +17,9 @@ config.all = {
         {
             [REGION_BJ]: 'https://bj.bcebos.com',
             [REGION_GZ]: 'https://gz.bcebos.com',
-            [REGION_SU]: 'https://su.bcebos.com'
+            [REGION_SU]: 'https://su.bcebos.com',
+            [REGION_HK]: 'https://hk.bcebos.com',
+            [REGION_HK02]: 'https://hk-2.bcebos.com/'
         },
         config.all.endpoint
     ),
