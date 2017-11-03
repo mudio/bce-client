@@ -179,15 +179,30 @@ export default class Selection extends Component {
 
     _onSelectItem = (evt, key) => {
         evt.preventDefault();
+        evt.stopPropagation();
 
         const {enabled} = this.props;
         const {ctrlKey, shiftKey} = evt;
+        const keys = Object.keys(this.__selectedCache);
 
-        if (enabled && (ctrlKey || shiftKey || evt.target.classList.contains('checkbox'))) {
-            this.selectItem(key, !_.has(this.__selectedCache, key));
-        } else {
-            this.clearSelection();
+        if (!enabled) {
+            this.__selectedCache = {};
+            return;
         }
+
+        // 若果存在选中文件，则判断是否使用了追加模式
+        if (keys.length > 0) {
+            if (ctrlKey || shiftKey || evt.target.classList.contains('checkbox')) {
+                this.selectItem(key, !_.has(this.__selectedCache, key));
+                this.forceUpdate();
+                return;
+            }
+        }
+
+        this.__selectedCache = {};
+        this.selectItem(key, true);
+
+        this.forceUpdate();
     }
 
     _onKeyDown = (evt) => {
@@ -197,6 +212,10 @@ export default class Selection extends Component {
             evt.preventDefault();
             this.selectAll();
         }
+    }
+
+    _onClearSelection = () => {
+        this.clearSelection();
     }
 
     selectItem(key, isSelected) {
@@ -262,7 +281,7 @@ export default class Selection extends Component {
                 tabIndex="0" // eslint-disable-line
                 className={styleName}
                 onKeyDown={this._onKeyDown}
-                onClick={this._onSelectItem}
+                onClick={this._onClearSelection}
                 onMouseDown={this._onMouseDown}
             >
                 {this.renderChildren()}
