@@ -1,0 +1,39 @@
+/* *
+ * style - fake
+ *
+ * @file fake.css
+ * @author mudio(job.mudio@gmail.com)
+ */
+
+input[type=checkbox] {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    transition: all .3s;
+    display: inline-flex;
+    justify-content: center;
+    outline: none !important;
+    -webkit-appearance: none;
+    border: 1px solid #8692B2;
+    margin-right: 3px;
+}
+
+input[type=checkbox]:checked {
+    border-color: #444C63;
+    background-color: #444C63;
+}
+
+input[type=checkbox]:checked:before {
+    top: 2px;
+    width: 10px;
+    height: 5px;
+    content: '';
+    color: #fff;
+    position: absolute;
+    transform: rotate(-45deg);
+    border-left: solid 2px currentColor;
+    border-bottom: solid 2px currentColor;
+}

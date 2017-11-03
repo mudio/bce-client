@@ -5,7 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import u from 'lodash';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classnames from 'classnames';
@@ -56,7 +56,8 @@ class Window extends Component {
         // 文件集合，这里存放多次请求的response
         objects: PropTypes.array.isRequired,
         // func
-        uploadFile: PropTypes.func.isRequired,
+        uploadByDrop: PropTypes.func.isRequired,
+        uploadBySelect: PropTypes.func.isRequired,
         listMore: PropTypes.func.isRequired,
         listObjects: PropTypes.func.isRequired,
         onCommand: PropTypes.func.isRequired,
@@ -75,8 +76,8 @@ class Window extends Component {
 
     componentWillReceiveProps(nextProps) {
         const {listObjects, uploadTask, bucket, prefix} = this.props;
-        const objectIntersectionLen = u.intersection(uploadTask.objects, nextProps.uploadTask.objects).length;
-        const folderIntersectionLen = u.intersection(uploadTask.folders, nextProps.uploadTask.folders).length;
+        const objectIntersectionLen = _.intersection(uploadTask.objects, nextProps.uploadTask.objects).length;
+        const folderIntersectionLen = _.intersection(uploadTask.folders, nextProps.uploadTask.folders).length;
 
         if (objectIntersectionLen !== uploadTask.objects.length
             || folderIntersectionLen !== uploadTask.folders.length) {
@@ -87,13 +88,13 @@ class Window extends Component {
     _onDrop = (evt) => {
         evt.preventDefault();
         evt.stopPropagation();
-        const {region, bucket, prefix = '', uploadFile} = this.props;
+        const {region, bucket, prefix = '', uploadByDrop} = this.props;
 
         if (bucket) {
             const prefixes = prefix.split('/');
             prefixes.splice(-1, 1, '');
 
-            uploadFile(evt.dataTransfer.items, region, bucket, prefixes.join('/'));
+            uploadByDrop(evt.dataTransfer.items, region, bucket, prefixes.join('/'));
         }
 
         return false;
@@ -145,8 +146,21 @@ class Window extends Component {
         });
     }
 
+    _onUploadFile = selectedPaths => {
+        const {uploadBySelect, region, bucket, prefix} = this.props;
+        uploadBySelect(selectedPaths, region, bucket, prefix);
+    }
+
     _onClick = () => {
         this.setState({contextMenuPosition: null});
+    }
+
+    _onSelectAll = evt => {
+        if (evt.target.checked) {
+            this._selection.selectAll();
+        } else {
+            this._selection.clearSelection();
+        }
     }
 
     redirect = (prefix = '') => {
@@ -233,12 +247,17 @@ class Window extends Component {
     }
 
     renderListHead() {
-        const {layout} = this.props;
+        const {layout, folders, objects} = this.props;
+        const {selectedItems} = this.state;
+        const isSelectedAll = selectedItems.length === folders.length + objects.length;
 
         if (layout === 'list') {
             return (
                 <div className={styles.head}>
-                    <span className={styles.textCol}>名称</span>
+                    <span className={styles.textCol}>
+                        <input type="checkbox" checked={isSelectedAll} onChange={this._onSelectAll} />
+                        名称 (已选{selectedItems.length}项)
+                    </span>
                     <span className={styles.extraCol}>存储类型</span>
                     <span className={styles.extraCol}>大小</span>
                     <span className={styles.extraCol}>修改时间</span>
@@ -246,7 +265,15 @@ class Window extends Component {
             );
         }
 
-        return null;
+        return (
+            <div className={styles.head}>
+                <span className={styles.textCol}>
+                    <input type="checkbox" checked={isSelectedAll} onChange={this._onSelectAll} />
+                    全选
+                </span>
+                <span>已选{selectedItems.length}项</span>
+            </div>
+        );
     }
 
     renderContextMenu() {
@@ -286,7 +313,7 @@ class Window extends Component {
 
         return (
             <div className={styles.container} >
-                <ObjectMenu />
+                <ObjectMenu onUpload={this._onUploadFile} />
                 <div ref="main"
                     onDrop={this._onDrop}
                     onClick={this._onClick}
@@ -295,7 +322,10 @@ class Window extends Component {
                     onContextMenu={this._onContextMenu}
                 >
                     {this.renderListHead()}
-                    <Selection className={styleName} onSelectionChange={this._onSelectionChange} >
+                    <Selection ref={_selection => this._selection = _selection} // eslint-disable-line
+                        className={styleName}
+                        onSelectionChange={this._onSelectionChange}
+                    >
                         {
                             folders.map((folder) => (
                                 <Folder {...folder}

@@ -1,9 +1,44 @@
 
 .container {
+    height: 40px;
     display: flex;
     flex-shrink: 0;
     padding: 0 20px;
-    line-height: 40px;
     align-items: center;
-    justify-content: flex-end;
+}
+
+.layoutLeft {
+    flex: auto;
+}
+
+.btnGroup {
+    display: inline-flex;
+}
+
+.btn {
+    height: 28px;
+    padding: 0 12px;
+    cursor: pointer;
+    color: #8692B2;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #8692B2;
+}
+
+.btn.checked {
+    color: #fff;
+    border: none;
+    background: #444C63;
+}
+
+.btnGroup .btn:first-child {
+    border-right: none;
+    border-radius: 3px 0 0 3px;
+}
+
+.btnGroup .btn:last-child {
+    border-left: none;
+    border-radius: 0 3px 3px 0;
 }

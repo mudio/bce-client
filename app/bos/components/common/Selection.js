@@ -256,8 +256,10 @@ export default class Selection extends Component {
     render() {
         const styleName = classnames(this.props.className, styles.container);
 
+        // 没有tabIndex,不能触发keydown事件
         return (
             <div ref="selection"
+                tabIndex="0" // eslint-disable-line
                 className={styleName}
                 onKeyDown={this._onKeyDown}
                 onClick={this._onSelectItem}

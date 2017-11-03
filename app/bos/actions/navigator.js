@@ -13,12 +13,12 @@ export const UPDATE_NAV = 'UPDATE_NAV';
 
 export function redirect(config = {}) {
     return dispatch => {
-        const {region, bucket, prefix = '', search = ''} = config;
+        const {bucket, prefix = '', search = ''} = config;
 
-        dispatch({type: UPDATE_NAV, region, bucket, prefix});
+        dispatch({type: UPDATE_NAV, bucket, prefix});
 
         if (!bucket) {
-            dispatch(listBuckets(region));
+            dispatch(listBuckets());
         } else {
             let searchPrefix = '';
             if (prefix || search) {

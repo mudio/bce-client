@@ -122,12 +122,15 @@
     display: flex;
     padding: 0 20px;
     flex-shrink: 0;
-    color: #8692b2;
-    background: #eee;
+    color: #8692B2;
+    line-height: 30px;
+    background: #F6F7FB;
 }
 
 .textCol {
     flex: auto;
+    align-items: center;
+    display: inline-flex;
 }
 
 .extraCol {

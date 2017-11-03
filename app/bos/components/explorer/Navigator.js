@@ -19,10 +19,6 @@ import logger from '../../../utils/logger';
 import SystemBar from '../common/SystemBar';
 import {ClientFactory} from '../../api/client';
 import {getLocalText} from '../../../utils/region';
-import GlobalConfig from '../../../main/ConfigManager';
-
-const endpoint = GlobalConfig.get('endpoint');
-const supportRegions = Object.keys(endpoint);
 
 class Navigator extends Component {
     static propTypes = {
@@ -49,16 +45,6 @@ class Navigator extends Component {
         }
     }
 
-    _resolveSelectItem(value = '') {
-        const [bucket, ...prefixs] = value.trim().split('/');
-
-        if (prefixs.length === 0) {
-            return {bucket};
-        }
-
-        return {bucket, prefix: prefixs.join('/')};
-    }
-
     /**
      * 查询匹配
      *
@@ -66,10 +52,10 @@ class Navigator extends Component {
      */
     async _query() {
         const {value} = this.state;
-        const {region, bucket, prefix = '', redirect} = this.props;
+        const {region, bucket, prefix = ''} = this.props;
 
         if (bucket) {
-            redirect({region, bucket, prefix, search: value});
+            this._redirect(region, bucket, prefix, value);
             return;
         }
 
@@ -146,71 +132,75 @@ class Navigator extends Component {
 
     _onSearch = () => {
         const {focus} = this.state;
-        const {region, bucket, prefix, redirect} = this.props;
+        const {region, bucket, prefix} = this.props;
 
         if (focus) {
             this.setState({value: '', focus: false});
-            redirect({region, bucket, prefix});
+            this._redirect(region, bucket, prefix);
         } else {
             this.setState({focus: true});
         }
     }
 
     _selectRegion(selectRegion) {
-        const {region, redirect} = this.props;
+        const {region} = this.props;
 
         if (region !== selectRegion) {
-            redirect({region: selectRegion});
+            this._redirect(selectRegion);
         }
     }
 
     _selectMatched(selectIndex) {
         const {records} = this.state;
-        const {redirect} = this.props;
         const {region, bucket, prefix} = records[selectIndex];
 
         if (this.props.bucket !== bucket || this.props.prefix !== prefix) {
-            redirect({region, bucket, prefix});
+            this._redirect(region, bucket, prefix);
         }
     }
 
     forward = () => {
-        const {redirect} = this.props;
-        const {region, bucket, prefix} = this.state.history.pop();
+        const {history} = this.state;
 
-        redirect({region, bucket, prefix});
+        if (history.length > 0) {
+            const {region, bucket, prefix} = history.shift();
+
+            this._redirect(region, bucket, prefix);
+        }
     }
 
     backward = () => {
-        const {redirect, region} = this.props;
-        const {value, history} = this.state;
-        const {bucket, prefix = ''} = this._resolveSelectItem(value);
-        let prefixs = prefix.split('/');
+        const {region, bucket, prefix} = this.props;
+        const {history} = this.state;
 
         this.setState({history: [{region, bucket, prefix}, ...history]});
 
+        let prefixs = prefix.split('/');
         if (prefixs.length >= 2) {
             prefixs = prefixs.slice(0, prefixs.length - 2);
 
             if (prefixs.length === 0) {
-                return redirect({region, bucket});
+                return this._redirect(region, bucket);
             }
 
-            prefixs.push('');
-            return redirect({region, bucket, prefix: prefixs.join('/')});
+            return this._redirect(region, bucket, prefixs);
         }
 
-        redirect({region});
+        this._redirect(region);
     }
 
-    _redirect = (regionName, bucketName, prefixs = []) => {
-        const {region, bucket, redirect} = this.props;
+    _redirect = (regionName, bucketName, prefix = '', search) => {
+        const {region, redirect} = this.props;
 
-        redirect({
-            region: regionName || region,
-            bucket: bucketName || bucket,
-            prefix: prefixs.join('/')
-        });
+        if (Array.isArray(prefix)) {
+            prefix = prefix.join('/');
+        }
+
+        if (prefix && !prefix.endsWith('/')) {
+            prefix += '/';
+        }
+
+        redirect({region, bucket: bucketName, prefix, search});
     }
 
     renderSearch() {
@@ -237,20 +227,26 @@ class Navigator extends Component {
             const folderDoms = prefixs.map((item, index) => {
                 if (item) {
                     const targetObject = prefixs.slice(0, index + 1);
-
+                    const prefixText = item.length > 8 ? item.slice(0, -4) : '';
+                    const suffixText = item.length > 8 ? `${item.slice(-4)}/` : `${item}/`;
                     return (
-                        <span onClick={() => this._redirect(region, bucket, targetObject)}>
-                            {item}
-                        </span>
+                        <span key={index}
+                            data-prefix={prefixText}
+                            data-suffix={suffixText}
+                            onClick={() => this._redirect(region, bucket, targetObject)}
+                        />
                     );
                 }
                 return null;
             });
 
-            const bucketDoms = bucket ? (<span onClick={() => this._redirect(region, bucket)}>{bucket}</span>) : null;
+            const bucketDoms = bucket
+                ? (<span data-prefix="" data-suffix={`${bucket}/`} onClick={() => this._redirect(region, bucket)} />)
+                : null;
 
             return (
-                <div className={styles.searchNavigator}>
+                <div ref="navigator" className={styles.searchNavigator}>
+                    <span data-prefix="" data-suffix="全部文件/" onClick={this._redirect} />
                     {bucketDoms}
                     {folderDoms}
                 </div>
@@ -297,37 +293,27 @@ class Navigator extends Component {
     }
 
     render() {
-        const {region, bucket} = this.props;
+        const {bucket} = this.props;
         const {history} = this.state;
 
-        const leftClassName = classnames('fa', 'fa-angle-left', 'fa-lg', {
+        const leftClassName = classnames(styles.navBtn, {
             [styles.disable]: !bucket}
         );
-        const rightClassName = classnames('fa', 'fa-angle-right', 'fa-lg', {
+        const rightClassName = classnames(styles.navBtn, {
             [styles.disable]: history.length === 0
         });
 
         return (
             <div className={styles.container}>
-                <div className={styles.nav}>
-                    <span className={leftClassName} onClick={this.backward} />
-                    <span className={rightClassName} onClick={this.forward} />
+                <div className={styles.navGroup}>
+                    <span className={leftClassName} onClick={this.backward}>
+                        <i className="fa fa-chevron-left fa-lg" />
+                    </span>
+                    <span className={rightClassName} onClick={this.forward}>
+                        <i className="fa fa-chevron-right fa-lg" />
+                    </span>
                 </div>
                 <div className={styles.url}>
-                    <span className={styles.region}>
-                        <i className="fa fa-map-marker fa-fw" />
-                        {getLocalText(region)}
-                        <i className="fa fa-caret-down fa-fw" />
-                        <ul className={styles.range} >
-                            {
-                                supportRegions.map((r, i) => (
-                                    <li key={i} onClick={() => this._selectRegion(r)} >
-                                        {getLocalText(r)}
-                                    </li>
-                                ))
-                            }
-                        </ul>
-                    </span>
                     {this.renderSearch()}
                     {this.renderMatchRecords()}
                 </div>

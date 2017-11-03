@@ -10,7 +10,7 @@ import Q from 'q';
 import {info} from '../../utils/logger';
 import {API_TYPE} from '../middleware/api';
 import {ClientFactory, Client} from '../api/client';
-import {createUploadTask} from './uploader';
+import {uploadByDropFile, uploadBySelectPaths} from './uploader';
 
 export const LIST_BUCKET_REQUEST = 'LIST_BUCKET_REQUEST';
 export const LIST_BUCKET_SUCCESS = 'LIST_BUCKET_SUCCESS';
@@ -95,8 +95,12 @@ export function deleteObject(region, bucketName, prefix, objects = []) {
     };
 }
 
-export function uploadFile(...args) {
-    return createUploadTask(...args);
+export function uploadByDrop(...args) {
+    return uploadByDropFile(...args);
+}
+
+export function uploadBySelect(...args) {
+    return uploadBySelectPaths(...args);
 }
 
 export function listMore(...args) {

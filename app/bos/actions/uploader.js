@@ -7,6 +7,7 @@
 
 /* eslint object-property-newline: 0 */
 
+import fs from 'fs';
 import path from 'path';
 import walk from 'fs-walk';
 import {notification} from 'antd';
@@ -53,8 +54,8 @@ export function uploadSuspend(taskIds = []) {
 
 function _invokeFile(file, options = {}, dispatch) {
     const uuid = getUuid();
-    const {region, bucketName, prefix} = options;
     const baseDir = path.dirname(file.path);
+    const {region, bucketName, prefix = ''} = options;
 
     dispatch({
         uuid,
@@ -64,7 +65,7 @@ function _invokeFile(file, options = {}, dispatch) {
         bucketName,
         name: file.name,
         totalSize: file.size,
-        prefix: prefix.endsWith('/') ? prefix : path.posix.dirname(prefix),
+        prefix,
         keymap: {
             [file.path]: {size: file.size, finish: false}
         }
@@ -81,7 +82,7 @@ function _invokeFile(file, options = {}, dispatch) {
 
 function _invokeFolder(relativePath, options = {}, dispatch) {
     const uuid = getUuid();
-    const {region, bucketName, prefix, totalSize, keymap} = options;
+    const {region, bucketName, prefix = '', totalSize, keymap} = options;
 
     // 建立一个新任务
     const folderName = path.basename(relativePath);
@@ -95,7 +96,7 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
         baseDir,
         bucketName,
         totalSize,
-        prefix: prefix.endsWith('/') ? prefix : path.posix.dirname(prefix),
+        prefix,
         keymap
     });
 
@@ -109,7 +110,7 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
     dispatch(uploadStart([uuid]));
 }
 
-export function createUploadTask(dataTransferItem = [], region, bucket, prefix) {
+export function uploadByDropFile(dataTransferItem = [], region, bucket, prefix) {
     return dispatch => {
         // 支持拖拽多个文件，包括文件、文件夹
         for (let index = 0; index < dataTransferItem.length; index += 1) {
@@ -153,5 +154,53 @@ export function createUploadTask(dataTransferItem = [], region, bucket, prefix) 
                 // end walk
             }
         }
+    };
+}
+
+export function uploadBySelectPaths(selectedPaths = [], region, bucketName, prefix) {
+    return dispatch => {
+        selectedPaths.forEach(targetPath => {
+            const name = path.basename(targetPath);
+            const stat = fs.statSync(targetPath);
+            const isDirectory = stat.isDirectory();
+
+            if (isDirectory) {
+                let totalSize = 0;
+                const keymap = {};
+
+                walk.files(
+                    targetPath,
+                    (basedir, filename, {size}, next) => { // eslint-disable-line no-loop-func
+                        const _localPath = path.join(basedir, filename);
+
+                        keymap[_localPath] = {size, finish: false};
+                        totalSize += size;
+
+                        next();
+                    },
+                    err => { // eslint-disable-line no-loop-func
+                        if (err) {
+                            return notification.error({
+                                message: `上传 ${name} 错误`,
+                                description: err.message
+                            });
+                        }
+
+                        _invokeFolder(
+                            targetPath,
+                            {region, bucketName, prefix, totalSize, keymap},
+                            dispatch
+                        );
+                    }
+                );
+                return;
+            }
+
+            _invokeFile(
+                {name, path: targetPath, size: stat.size},
+                {region, bucketName, prefix},
+                dispatch
+            );
+        });
     };
 }
