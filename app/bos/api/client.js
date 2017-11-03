@@ -6,9 +6,6 @@
  */
 
 import Q from 'q';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
 import {BosClient} from 'bce-sdk-js';
 
 import {REGION_BJ} from '../../utils/region';
@@ -152,27 +149,34 @@ export class Client extends BosClient {
      * @memberOf Client
      */
     getThumbnail(bucket, object, eTag) {
-        const tmpDir = fs.realpathSync(os.tmpdir());
-        const clientTmpDir = path.join(tmpDir, 'com.baidu.bce.client');
-        const filePath = path.join(clientTmpDir, eTag);
+        // const tmpDir = fs.realpathSync(os.tmpdir());
+        // const clientTmpDir = path.join(tmpDir, 'com.baidu.bce.client');
+        // const filePath = path.join(clientTmpDir, eTag);
 
-        // 目录不存在，新建目录
-        if (!fs.existsSync(clientTmpDir)) {
-            fs.mkdirSync(clientTmpDir);
+        const data = sessionStorage.getItem(eTag);
+        if (data) {
+            return Promise.resolve(data);
         }
 
-        // 文件存在，优先读缓存
-        if (fs.existsSync(filePath)) {
-            return new Promise((resolve, reject) => {
-                fs.readFile(filePath, (err, data) => (err ? reject(err) : resolve(data)));
-            });
-        }
+        // // 文件存在，优先读缓存
+        // if (fs.existsSync(filePath)) {
+        //     return new Promise((resolve, reject) => {
+        //         fs.readFile(filePath, (err, data) => (err ? reject(err) : resolve(data)));
+        //     });
+        // }
 
         // 文件不存在则缓存
         return this.getObject(bucket, object).then(res => {
-            const _filePath = path.join(clientTmpDir, eTag);
+            // // 目录不存在，新建目录
+            // if (!fs.existsSync(clientTmpDir)) {
+            //     fs.mkdirSync(clientTmpDir);
+            // }
+
+            // const _filePath = path.join(clientTmpDir, eTag);
             const _buffer = `data:image/png;base64,${res.body.toString('base64')}`;
-            fs.writeFileSync(_filePath, _buffer);
+
+            sessionStorage.setItem(eTag, _buffer);
+            // fs.writeFileSync(_filePath, _buffer);
 
             return _buffer;
         });
