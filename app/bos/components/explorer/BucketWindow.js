@@ -36,6 +36,7 @@ class BucketWindow extends Component {
 
     redirect = (bucket) => {
         const {dispatch} = this.props;
+
         dispatch(redirect({bucket}));
     }
 

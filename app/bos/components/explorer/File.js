@@ -54,6 +54,7 @@ export default class File extends Component {
     }
 
     componentDidMount() {
+        this._mounted = true;
         _.delay(() => this.loadThumbnail(), 300);
     }
 
@@ -61,6 +62,10 @@ export default class File extends Component {
         return props.name !== this.props.name
             || props.layout !== this.props.layout
             || nextState.imgThumbnail !== this.state.imgThumbnail;
+    }
+
+    componentWillUnmount() {
+        this._mounted = false;
     }
 
     async loadThumbnail() {
@@ -76,7 +81,9 @@ export default class File extends Component {
             const _client = await ClientFactory.fromBucket(bucket);
             const base64Data = await _client.getThumbnail(bucket, `${name}${params}`, eTag);
 
-            this.setState({imgThumbnail: base64Data});
+            if (this._mounted) {
+                this.setState({imgThumbnail: base64Data});
+            }
         } catch (ex) {} // eslint-disable-line no-empty
     }
 

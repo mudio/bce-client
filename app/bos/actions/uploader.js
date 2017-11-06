@@ -55,12 +55,11 @@ export function uploadSuspend(taskIds = []) {
 function _invokeFile(file, options = {}, dispatch) {
     const uuid = getUuid();
     const baseDir = path.dirname(file.path);
-    const {region, bucketName, prefix = ''} = options;
+    const {bucketName, prefix = ''} = options;
 
     dispatch({
         uuid,
         type: UploadNotify.New,
-        region,
         baseDir,
         bucketName,
         name: file.name,
@@ -82,7 +81,7 @@ function _invokeFile(file, options = {}, dispatch) {
 
 function _invokeFolder(relativePath, options = {}, dispatch) {
     const uuid = getUuid();
-    const {region, bucketName, prefix = '', totalSize, keymap} = options;
+    const {bucketName, prefix = '', totalSize, keymap} = options;
 
     // 建立一个新任务
     const folderName = path.basename(relativePath);
@@ -91,7 +90,6 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
     dispatch({
         uuid,
         type: UploadNotify.New,
-        region,
         name: folderName,
         baseDir,
         bucketName,
@@ -110,7 +108,7 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
     dispatch(uploadStart([uuid]));
 }
 
-export function uploadByDropFile(dataTransferItem = [], region, bucket, prefix) {
+export function uploadByDropFile(dataTransferItem = [], {bucket, prefix}) {
     return dispatch => {
         // 支持拖拽多个文件，包括文件、文件夹
         for (let index = 0; index < dataTransferItem.length; index += 1) {
@@ -119,7 +117,7 @@ export function uploadByDropFile(dataTransferItem = [], region, bucket, prefix) 
 
             if (entry.isFile) {
                 entry.file(file => _invokeFile(
-                    file, {region, bucketName: bucket, prefix}, dispatch // eslint-disable-line no-loop-func
+                    file, {bucketName: bucket, prefix}, dispatch // eslint-disable-line no-loop-func
                 ));
             } else {
                 const keymap = {};
@@ -146,7 +144,7 @@ export function uploadByDropFile(dataTransferItem = [], region, bucket, prefix) 
 
                         _invokeFolder(
                             _fileRelativePath,
-                            {region, bucketName: bucket, prefix, totalSize, keymap},
+                            {bucketName: bucket, prefix, totalSize, keymap},
                             dispatch
                         );
                     }
@@ -157,7 +155,7 @@ export function uploadByDropFile(dataTransferItem = [], region, bucket, prefix) 
     };
 }
 
-export function uploadBySelectPaths(selectedPaths = [], region, bucketName, prefix) {
+export function uploadBySelectPaths(selectedPaths = [], {bucket, prefix}) {
     return dispatch => {
         selectedPaths.forEach(targetPath => {
             const name = path.basename(targetPath);
@@ -188,7 +186,7 @@ export function uploadBySelectPaths(selectedPaths = [], region, bucketName, pref
 
                         _invokeFolder(
                             targetPath,
-                            {region, bucketName, prefix, totalSize, keymap},
+                            {bucketName: bucket, prefix, totalSize, keymap},
                             dispatch
                         );
                     }
@@ -198,7 +196,7 @@ export function uploadBySelectPaths(selectedPaths = [], region, bucketName, pref
 
             _invokeFile(
                 {name, path: targetPath, size: stat.size},
-                {region, bucketName, prefix},
+                {bucketName: bucket, prefix},
                 dispatch
             );
         });

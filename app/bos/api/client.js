@@ -5,17 +5,16 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import Q from 'q';
 import {BosClient} from 'bce-sdk-js';
 
 import {REGION_BJ} from '../../utils/region';
 import GlobalConfig from '../../main/ConfigManager';
 
-const endpoint = GlobalConfig.get('endpoint');
+const kEndpointMap = GlobalConfig.get('endpoint');
 
 export class Client extends BosClient {
     constructor(region, credentials) {
-        super({credentials, endpoint: endpoint[region]});
+        super({credentials, endpoint: kEndpointMap[region]});
         this.region = region;
         this.credentials = credentials;
     }
@@ -56,22 +55,6 @@ export class Client extends BosClient {
         });
     }
 
-    static fromBucket(bucketName) {
-        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
-        const client = new Client(REGION_BJ, credentials);
-
-        return client.listBuckets().then(res => {
-            const bucket = res.buckets.find(item => item.name === bucketName);
-
-            if (bucket) {
-                return new Client(bucket.location, credentials);
-            }
-
-            // 默认返回北京
-            return client;
-        });
-    }
-
     listObjects(...args) {
         return super.listObjects(...args).then(res => {
             const folders = res.body.commonPrefixes.map(item => Object.assign({}, {key: item.prefix}));
@@ -94,28 +77,25 @@ export class Client extends BosClient {
 
     listAllObjects(bucketName, prefix) {
         let objects = [];
-        const deferred = Q.defer();
 
-        const fetchObjects = marker => {
-            this.listRawObjects(bucketName, {prefix, marker}).then(
+        const fetchObjects = marker => this.listRawObjects(bucketName, {prefix, marker})
+            .then(
                 res => {
                     const {isTruncated, contents, nextMarker} = res.body;
                     // const keys = contents.filter(item => !item.key.endsWith('/'));
                     objects = [...objects, ...contents];
 
                     if (isTruncated) {
-                        fetchObjects(nextMarker);
-                    } else {
-                        deferred.resolve(objects);
+                        return fetchObjects(nextMarker);
                     }
+
+                    return Promise.resolve(objects);
                 },
-                err => deferred.reject(err)
+                err => Promise.reject(err)
             );
-        };
 
-        fetchObjects();
 
-        return deferred.promise;
+        return fetchObjects();
     }
 
 
@@ -127,7 +107,7 @@ export class Client extends BosClient {
             taskQueues.push(deferred);
         }
 
-        return Q.allSettled(taskQueues);
+        return Promise.all(taskQueues);
     }
 
     uploadPartFromFile(...args) {
@@ -185,7 +165,7 @@ export class Client extends BosClient {
 
 export class ClientFactory {
     static fromBucket(bucketName) {
-        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        const credentials = ClientFactory.getCredentials();
         const client = new Client(REGION_BJ, credentials);
 
         return client.listBuckets().then(res => {
@@ -201,17 +181,38 @@ export class ClientFactory {
     }
 
     static fromRegion(region = REGION_BJ) {
-        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        const credentials = ClientFactory.getCredentials();
         return new Client(region, credentials);
     }
 
     static getDefault() {
-        const credentials = JSON.parse(localStorage.getItem('framework')).auth;
+        const credentials = ClientFactory.getCredentials();
         return new Client(REGION_BJ, credentials);
     }
-}
 
-export function getEndpointCredentials(region = REGION_BJ) {
-    const credentials = JSON.parse(localStorage.getItem('framework')).auth;
-    return {credentials, endpoint: endpoint[region]};
+    static getCredentials() {
+        return JSON.parse(localStorage.getItem('framework')).auth;
+    }
+
+    static produceCredentialsByBucket(bucketName) {
+        const credentials = ClientFactory.getCredentials();
+        const client = new Client(REGION_BJ, credentials);
+
+        return client.listBuckets().then(res => {
+            const {location} = res.buckets.find(item => item.name === bucketName);
+            const endpoint = kEndpointMap[location];
+
+            return {endpoint, credentials};
+        });
+    }
+
+    static produceRegionByBucket(bucketName) {
+        const credentials = ClientFactory.getCredentials();
+        const client = new Client(REGION_BJ, credentials);
+
+        return client.listBuckets().then(res => {
+            const {location} = res.buckets.find(item => item.name === bucketName);
+            return location;
+        });
+    }
 }

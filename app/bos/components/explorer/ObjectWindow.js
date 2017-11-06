@@ -55,9 +55,6 @@ class Window extends Component {
         folders: PropTypes.array.isRequired,
         // 文件集合，这里存放多次请求的response
         objects: PropTypes.array.isRequired,
-        // func
-        uploadByDrop: PropTypes.func.isRequired,
-        uploadBySelect: PropTypes.func.isRequired,
         listMore: PropTypes.func.isRequired,
         listObjects: PropTypes.func.isRequired,
         onCommand: PropTypes.func.isRequired,
@@ -85,16 +82,21 @@ class Window extends Component {
         }
     }
 
+    /**
+     * 拖放文件上传
+     *
+     * @memberOf Window
+     */
     _onDrop = (evt) => {
         evt.preventDefault();
         evt.stopPropagation();
-        const {region, bucket, prefix = '', uploadByDrop} = this.props;
+        const {bucket, prefix = ''} = this.props;
 
         if (bucket) {
             const prefixes = prefix.split('/');
             prefixes.splice(-1, 1, '');
 
-            uploadByDrop(evt.dataTransfer.items, region, bucket, prefixes.join('/'));
+            this._onCommand(MENU_UPLOAD_COMMAND, {transferItems: evt.dataTransfer.items});
         }
 
         return false;
@@ -144,11 +146,6 @@ class Window extends Component {
                 offsetY: pageY - rect.top + scrollTop // eslint-disable-line
             }
         });
-    }
-
-    _onUploadFile = selectedPaths => {
-        const {uploadBySelect, region, bucket, prefix} = this.props;
-        uploadBySelect(selectedPaths, region, bucket, prefix);
     }
 
     _onClick = () => {
@@ -313,7 +310,7 @@ class Window extends Component {
 
         return (
             <div className={styles.container} >
-                <ObjectMenu onUpload={this._onUploadFile} />
+                <ObjectMenu onCommand={this._onCommand} />
                 <div ref="main"
                     onDrop={this._onDrop}
                     onClick={this._onClick}

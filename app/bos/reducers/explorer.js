@@ -15,7 +15,7 @@ import {EXPLORER_SYNC_LAYOUT} from '../actions/explorer';
 
 const defaultState = {
     // 页面布局
-    layout: 'grid',
+    layout: 'list',
     // 数据是否正在请求
     isFetching: false,
     // 是否出错

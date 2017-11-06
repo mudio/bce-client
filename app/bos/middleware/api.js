@@ -16,8 +16,7 @@ export default () => next => async action => {
         return next(action);
     }
 
-    const {types, method, args} = callAPI;
-    const [bucket] = args;
+    const {region, types, method, args} = callAPI;
     if (!Array.isArray(types) || types.length !== 3) {
         throw new Error('Expected an array of three action types.');
     }
@@ -26,7 +25,9 @@ export default () => next => async action => {
     }
 
     const [requestType, successType, failureType] = types;
-    const _client = await ClientFactory.fromBucket(bucket);
+    const _client = region
+        ? await ClientFactory.fromRegion(region)
+        : await ClientFactory.fromBucket(args[0]);
 
     function actionWith(data) {
         const finalAction = Object.assign({}, action, data);

@@ -31,7 +31,7 @@ function bootTask(taskIds = []) {
             window.globalStore.dispatch({type: UploadNotify.Waiting, uuid: item.uuid});
         }
 
-        const {uuid, region, bucketName, baseDir, prefix, keymap} = item;
+        const {uuid, bucketName, baseDir, prefix, keymap} = item;
         const task = Object.entries(keymap).find(entry => !entry[1].finish);
 
         if (task) {
@@ -40,7 +40,7 @@ function bootTask(taskIds = []) {
             const objectKey = path.posix.join(prefix, ...relativePath.split(path.sep));
 
             uploadProcesser.add({
-                uuid, region, bucketName, objectKey, localPath, uploadId: option.uploadId
+                uuid, bucketName, objectKey, localPath, uploadId: option.uploadId
             });
         }
     });

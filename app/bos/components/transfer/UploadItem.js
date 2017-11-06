@@ -23,7 +23,6 @@ export default class UploadItem extends Component {
         offsetSize: PropTypes.number,
         uuid: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        region: PropTypes.string.isRequired,
         bucketName: PropTypes.string.isRequired,
         prefix: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
@@ -166,7 +165,7 @@ export default class UploadItem extends Component {
     }
 
     render() {
-        const {region, bucketName, prefix, name, keymap, totalSize, offsetSize = 0} = this.props;
+        const {bucketName, prefix, name, keymap, totalSize, offsetSize = 0} = this.props;
 
         const extname = path.extname(name);
         const keys = Object.keys(keymap);
@@ -180,7 +179,7 @@ export default class UploadItem extends Component {
             <div className={styles.container}>
                 <i className={style} />
                 <div className={styles.summary}>
-                    <Tooltip title={`${region}://${bucketName}/${path.posix.join(prefix, name)}`}>
+                    <Tooltip title={`${bucketName}/${path.posix.join(prefix, name)}`}>
                         {name}
                     </Tooltip>
                     <div>{humanSize(offsetSize)} / {humanSize(totalSize)}</div>

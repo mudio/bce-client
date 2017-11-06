@@ -9,6 +9,17 @@
 
 .layoutLeft {
     flex: auto;
+    margin-right: 10px;
+}
+
+.layoutRight {
+    margin-left: 10px;
+}
+
+.layoutRight .btn:hover {
+    color: #fff;
+    background: #444C63;
+    border-color: #444c63;
 }
 
 .btnGroup {
@@ -25,6 +36,7 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #8692B2;
+    transition: all .3s;
 }
 
 .btn.checked {

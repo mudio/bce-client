@@ -12,7 +12,7 @@ import childProcess from 'child_process';
 import {UploadCommand, DownloadCommand} from 'bce-service-bos-transport';
 
 import logger from '../../utils/logger';
-import {getEndpointCredentials} from '../api/client';
+import {ClientFactory} from '../api/client';
 import {
     DownloadNotify, DownloadCommandType,
     UploadNotify, UploadCommandType,
@@ -27,9 +27,10 @@ class Bootstrap extends EventEmitter {
 
     add(config) {
         const _instance = this._getInstance();
-        const {endpoint} = getEndpointCredentials(config.region);
 
-        _instance.send({category: 'addItem', config, endpoint});
+        ClientFactory.produceCredentialsByBucket(config.bucketName).then(
+            ({endpoint}) => _instance.send({category: 'addItem', config, endpoint})
+        );
     }
 
     remove(uuid) {
@@ -151,11 +152,11 @@ class Bootstrap extends EventEmitter {
 
     _fork() {
         const cwd = path.join(__dirname, '..');
-        const {credentials} = getEndpointCredentials();
+        const {ak, sk} = ClientFactory.getCredentials();
 
         const env = {
-            BCE_AK: credentials.ak,
-            BCE_SK: credentials.sk
+            BCE_AK: ak,
+            BCE_SK: sk
         };
 
         if (fs.existsSync(path.join(cwd, 'app.asar'))) {

@@ -120,7 +120,7 @@
 
 .head {
     display: flex;
-    padding: 0 20px;
+    padding-right: 10px;
     flex-shrink: 0;
     color: #8692B2;
     line-height: 30px;
@@ -131,6 +131,10 @@
     flex: auto;
     align-items: center;
     display: inline-flex;
+}
+
+.textCol input {
+    margin: 0 5px;
 }
 
 .extraCol {
