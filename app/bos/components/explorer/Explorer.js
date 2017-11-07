@@ -59,7 +59,7 @@ export default class Explorer extends Component {
     }
 
     _onCommand = (cmd, config) => {
-        const {region, bucket, prefix, keys} = config;
+        const {bucket, prefix, keys} = config;
 
         switch (cmd) {
         case MENU_UPLOAD_COMMAND:
@@ -71,13 +71,13 @@ export default class Explorer extends Component {
         case MENU_RENAME_COMMAND: {
             return this.setState({
                 visible: true,
-                option: {region, bucket, object: keys[0], command: cmd}
+                option: {bucket, object: keys[0], command: cmd}
             });
         }
         case MENU_TRASH_COMMAND:
             return this._trash(bucket, prefix, keys);
         case MENU_DOWNLOAD_COMMAND:
-            return this._download(region, bucket, prefix, keys);
+            return this._download(bucket, prefix, keys);
         default:
             logger.warn(`invalid context command ${cmd.toString()}`);
         }
@@ -133,7 +133,7 @@ export default class Explorer extends Component {
      *
      * @memberOf Explorer
      */
-    _download(region, bucketName, prefix, keys) {
+    _download(bucketName, prefix, keys) {
         // 选择文件夹
         const selectPaths = remote.dialog.showOpenDialog({properties: ['openDirectory']});
         // 用户取消了
@@ -144,14 +144,13 @@ export default class Explorer extends Component {
         // 不支持选择多个文件夹，所以只取第一个
         const dirname = prefix.endsWith('/') ? prefix : path.posix.dirname(prefix);
         this.props.dispatch(
-            createDownloadTask(region, bucketName, dirname, keys, selectPaths[0])
+            createDownloadTask(bucketName, dirname, keys, selectPaths[0])
         );
     }
 
     /**
      * 统一处理删除行为
      *
-     * @param {any} region
      * @param {any} bucketName
      * @param {any} prefix
      * @param {any} keys

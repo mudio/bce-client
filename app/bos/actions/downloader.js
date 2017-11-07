@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+/* eslint-disable object-property-newline */
+
 import path from 'path';
 import {notification} from 'antd';
 
@@ -47,64 +49,58 @@ export function downloadSuspend(taskIds = []) {
     };
 }
 
-export function createDownloadTask(region, bucketName, prefix, objectKeys, baseDir) {
-    return dispatch => {
-        const client = ClientFactory.fromRegion(region);
+export function createDownloadTask(bucketName, prefix, objectKeys, baseDir) {
+    return async dispatch => {
+        const client = await ClientFactory.fromBucket(bucketName);
 
-        objectKeys.forEach(objectKey => {
+        objectKeys.forEach(async objectKey => {
+            let totalSize = 0;
             const uuid = getUuid();
             const isFolder = objectKey.endsWith('/');
 
-            client.listAllObjects(bucketName, objectKey).then(
-                contents => {
-                    let totalSize = 0;
+            try {
+                const contents = await client.listAllObjects(bucketName, objectKey);
+                const keymap = contents.reduce((context, item) => {
+                    /**
+                     * 如果不是目录，前缀匹配可能不准确
+                     */
+                    if (!isFolder && item.key === objectKey) {
+                        context[item.key] = {finish: false, size: item.size}; // eslint-disable-line
+                        totalSize += item.size;
+                    }
 
-                    const keymap = contents.reduce((context, item) => {
-                        /**
-                         * 如果不是目录，前缀匹配可能不准确
-                         */
-                        if (!isFolder && item.key === objectKey) {
-                            context[item.key] = {finish: false, size: item.size}; // eslint-disable-line
-                            totalSize += item.size;
-                        }
+                    /**
+                     * 忽略目录形式的object
+                     */
+                    if (isFolder && !item.key.endsWith('/')) {
+                        context[item.key] = {finish: false, size: item.size}; // eslint-disable-line
+                        totalSize += item.size;
+                    }
 
-                        /**
-                         * 忽略目录形式的object
-                         */
-                        if (isFolder && !item.key.endsWith('/')) {
-                            context[item.key] = {finish: false, size: item.size}; // eslint-disable-line
-                            totalSize += item.size;
-                        }
+                    return context;
+                }, {});
 
-                        return context;
-                    }, {});
+                // 建立新任务
+                dispatch({
+                    type: DownloadNotify.New,
+                    uuid, bucketName, prefix,
+                    baseDir, objectKey,
+                    totalSize, keymap
+                });
 
-                    // 建立新任务
-                    dispatch({
-                        type: DownloadNotify.New,
-                        uuid,
-                        region,
-                        bucketName,
-                        prefix,
-                        baseDir,
-                        objectKey,
-                        totalSize,
-                        keymap
-                    });
+                const [name] = path.posix.relative(prefix, objectKey).split('/');
+                notification.success({
+                    message: '开始下载',
+                    description: `准备下载 ${name}，共计 ${Object.keys(keymap).length} 个文件`
+                });
 
-                    const name = path.posix.relative(prefix, objectKey).split('/')[0];
-                    notification.success({
-                        message: '开始下载',
-                        description: `准备下载 ${name}，共计 ${Object.keys(keymap).length} 个文件`
-                    });
-
-                    dispatch(downloadStart([uuid]));
-                },
-                response => notification.error({
+                dispatch(downloadStart([uuid]));
+            } catch (ex) {
+                notification.error({
                     message: '下载失败',
-                    description: `下载错误：${response.body}`
-                })
-            );
+                    description: `下载错误：${ex.message}`
+                });
+            }
         });
     };
 }

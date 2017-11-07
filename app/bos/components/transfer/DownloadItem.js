@@ -27,7 +27,6 @@ export default class DownloadItem extends Component {
         offsetSize: PropTypes.number,
         totalSize: PropTypes.number,
         uuid: PropTypes.string.isRequired,
-        region: PropTypes.string.isRequired,
         bucketName: PropTypes.string.isRequired,
         prefix: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
@@ -179,7 +178,7 @@ export default class DownloadItem extends Component {
     }
 
     render() {
-        const {region, bucketName, prefix, objectKey} = this.props;
+        const {bucketName, prefix, objectKey} = this.props;
         // remove `.`
         const extname = path.extname(objectKey).slice(1);
         const name = path.posix.relative(prefix, objectKey).split('/')[0];
@@ -196,7 +195,7 @@ export default class DownloadItem extends Component {
             <div className={styles.container}>
                 <i className={style} />
                 <div className={styles.summary}>
-                    <Tooltip title={`${region}://${bucketName}/${prefix}${name}`}>
+                    <Tooltip title={`${bucketName}/${prefix}${name}`}>
                         {name}
                     </Tooltip>
                     <div>{humanSize(offsetSize)} / {humanSize(totalSize)}</div>

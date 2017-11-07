@@ -24,7 +24,6 @@ export default class Migration extends Component {
         onCancel: PropTypes.func.isRequired,
         onMigration: PropTypes.func.isRequired,
 
-        region: PropTypes.string,
         bucket: PropTypes.string,
         object: PropTypes.string
     };
