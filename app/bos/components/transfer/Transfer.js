@@ -13,6 +13,7 @@ import styles from './Transfer.css';
 import SideBar from '../app/SideBar';
 import UploadItem from './UploadItem';
 import DownloadItem from './DownloadItem';
+import SystemBar from '../common/SystemBar';
 import {TransCategory} from '../../utils/BosType';
 
 export default class Transfer extends Component {
@@ -102,6 +103,7 @@ export default class Transfer extends Component {
             <div className={styles.container}>
                 <SideBar />
                 <div className={styles.body}>
+                    <SystemBar resize />
                     <Header dispatch={dispatch} category={category} />
                     {this.renderCategoryContent()}
                 </div>

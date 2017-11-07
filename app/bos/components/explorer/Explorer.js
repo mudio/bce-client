@@ -14,6 +14,7 @@ import {Modal, notification} from 'antd';
 import Navigator from './Navigator';
 import styles from './Explorer.css';
 import SideBar from '../app/SideBar';
+import SystemBar from '../common/SystemBar';
 import logger from '../../../utils/logger';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
@@ -222,6 +223,7 @@ export default class Explorer extends Component {
         if (!bucket) {
             return (
                 <div className={styles.body}>
+                    <SystemBar resize />
                     <Navigator redirect={(...args) => dispatch(redirect(...args))} />
                     <BucketWindow region={region} dispatch={dispatch} />
                 </div>
@@ -230,6 +232,7 @@ export default class Explorer extends Component {
 
         return (
             <div className={styles.body}>
+                <SystemBar resize />
                 <Navigator redirect={(...args) => dispatch(redirect(...args))} />
                 <ObjectWindow
                     region={region}

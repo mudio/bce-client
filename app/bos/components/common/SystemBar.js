@@ -43,6 +43,9 @@ export default class SystemBar extends Component {
 
         return (
             <div className={styles.container}>
+                <div className={styles.title} >
+                    {electron.remote.app.getName()}
+                </div>
                 {resize && <div className={`fa fa-minus ${styles.min}`} onClick={this.minimize} />}
                 {resize && <div className={`fa fa-expand ${styles.max}`} onClick={this.toggleMaximize} />}
                 <div className={`fa fa-times ${styles.exit}`} onClick={this.close} />

@@ -10,7 +10,6 @@ import classnames from 'classnames';
 import React, {Component} from 'react';
 
 import styles from './Header.css';
-import SystemBar from '../common/SystemBar';
 import {TransCategory} from '../../utils/BosType';
 import {clearFinish} from '../../actions/transfer';
 import {uploadStart, uploadSuspend} from '../../actions/uploader';
@@ -83,7 +82,6 @@ export default class Header extends Component {
         return (
             <div className={styles.container}>
                 {this.renderCategory()}
-                <SystemBar resize />
             </div>
         );
     }

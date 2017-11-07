@@ -16,6 +16,10 @@
     transition: 0.3s ease-in,color 0.3s ease-in;
 }
 
+.title {
+    flex: auto;
+}
+
 .container .exit,
 .container .min,
 .container .max {

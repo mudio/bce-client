@@ -16,7 +16,6 @@ import React, {Component} from 'react';
 
 import styles from './Navigator.css';
 import logger from '../../../utils/logger';
-import SystemBar from '../common/SystemBar';
 import {ClientFactory} from '../../api/client';
 import {getLocalText} from '../../../utils/region';
 
@@ -317,7 +316,6 @@ class Navigator extends Component {
                     {this.renderSearch()}
                     {this.renderMatchRecords()}
                 </div>
-                <SystemBar resize />
             </div>
         );
     }
