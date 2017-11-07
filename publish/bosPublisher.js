@@ -100,6 +100,7 @@ function publish(distDir) {
             try {
                 const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
                 config.path = `${name}-${version}-nsis.exe`;
+                config.files[0].url = `${name}-${version}-nsis.exe`;
 
                 upload(basedir, filename, `${prefix}/${filename}`, yaml.dump(config));
             } catch (ex) {

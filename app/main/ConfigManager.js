@@ -12,7 +12,10 @@ import {REGION_BJ, REGION_GZ, REGION_SU, REGION_HK, REGION_HK02} from '../utils/
 const bcedir = path.join('..', '.bce');
 const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
 
+const {server, credentials, endpoint} = config.all;
+
 config.all = {
+    credentials,
     endpoint: Object.assign(
         {
             [REGION_BJ]: 'https://bj.bcebos.com',
@@ -21,9 +24,12 @@ config.all = {
             [REGION_HK]: 'https://hk.bcebos.com',
             [REGION_HK02]: 'https://hk-2.bcebos.com/'
         },
-        config.all.endpoint
+        endpoint
     ),
-    credentials: config.all.credentials
+    server: Object.assign(
+        {feedURL: 'https://bce-bos-client.bj.bcebos.com/releases'},
+        server
+    )
 };
 
 export default config;

@@ -6,11 +6,13 @@
  */
 
 import http from 'http';
+import https from 'https';
 import semver from 'semver';
 import {app, ipcMain} from 'electron';
 import {autoUpdater} from 'electron-updater';
 
 import log from '../utils/logger';
+import GlobalConfig from './ConfigManager';
 
 import {
     UPDATE_ERROR,
@@ -22,8 +24,7 @@ import {
     UPDATE_COMMAND_INSTALL
 } from '../bos/actions/updater';
 
-// const feedURL = 'http://bce-bos-client.bos.qasandbox.bcetest.baidu.com/releases';
-const feedURL = 'http://bce-bos-client.bj.bcebos.com/releases';
+const feedURL = GlobalConfig.get('server.feedURL');
 
 export default class AutoUpdater {
     constructor(window) {
@@ -47,7 +48,9 @@ export default class AutoUpdater {
     }
 
     checkForUpdates() {
-        http.get(`${feedURL}/lastest.json`, res => {
+        const api = feedURL.startsWith('https') ? https : http;
+
+        api.get(`${feedURL}/lastest.json`, res => {
             const {statusCode} = res;
             let rawData = '';
 
