@@ -39,7 +39,7 @@ function upload(dir, fileName, uploadUrl) {
             headers: {
                 'User-Agent': 'bce-client-publisher',
                 Accept: 'application/vnd.github.v3+json',
-                'Content-Type': mime.lookup(fileName),
+                'Content-Type': mime.getType(fileName),
                 authorization: `token ${GH_TOKEN}`
             }
         },
