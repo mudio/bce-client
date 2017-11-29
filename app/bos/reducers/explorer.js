@@ -88,6 +88,7 @@ export default function explorer(state = defaultState, action) {
             objects,
             nextMarker,
             isTruncated,
+            hasError: false,
             isFetching: false,
         });
     }
