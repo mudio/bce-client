@@ -14,6 +14,13 @@ const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
 
 const {server, credentials, endpoint} = config.all;
 
+// 去除endpoint后面的反斜线
+Object.keys(endpoint).forEach(key => {
+    if (endpoint[key].endsWith('/')) {
+        endpoint[key] = endpoint[key].slice(0, -1);
+    }
+});
+
 config.all = {
     credentials,
     endpoint: Object.assign(
@@ -22,7 +29,7 @@ config.all = {
             [REGION_GZ]: 'https://gz.bcebos.com',
             [REGION_SU]: 'https://su.bcebos.com',
             [REGION_HK]: 'https://hk.bcebos.com',
-            [REGION_HK02]: 'https://hk-2.bcebos.com/'
+            [REGION_HK02]: 'https://hk-2.bcebos.com'
         },
         endpoint
     ),

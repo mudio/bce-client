@@ -7,7 +7,7 @@
 
 import {BosClient} from 'bce-sdk-js';
 
-import {REGION_BJ} from '../../utils/region';
+import {REGION_BJ, kRegions} from '../../utils/region';
 import GlobalConfig from '../../main/ConfigManager';
 
 const kEndpointMap = GlobalConfig.get('endpoint');
@@ -20,16 +20,16 @@ export class Client extends BosClient {
     }
 
     listBuckets(config = {}) {
-        const {forceUpdate, region} = config;
+        const {forceUpdate, search} = config;
 
         if (!forceUpdate) {
             try {
                 const {buckets, owner} = JSON.parse(sessionStorage.getItem('buckets'));
 
-                if (region) {
+                if (search) {
                     return Promise.resolve({
                         owner,
-                        buckets: buckets.filter(item => item.location === region)
+                        buckets: buckets.filter(item => item.name.indexOf(search) > -1)
                     });
                 }
 
@@ -44,14 +44,55 @@ export class Client extends BosClient {
                 sessionStorage.setItem('buckets', JSON.stringify(res.body));
             } catch (ex) {} // eslint-disable-line
 
-            if (region) {
+            if (search) {
                 return {
                     owner,
-                    buckets: buckets.filter(item => item.location === region)
+                    buckets: buckets.filter(item => item.name.indexOf(search) > -1)
                 };
             }
 
             return {owner, buckets};
+        });
+    }
+
+    getBucketLocation(bucketName) {
+        const {buckets, owner} = JSON.parse(sessionStorage.getItem('buckets'));
+        const bucket = buckets.find(item => item.name === bucketName);
+
+        if (bucket) {
+            return Promise.resolve(bucket.location);
+        }
+
+        // 从每个区域中都查一遍,如果查到了说明这个bucket授权给用户了
+        return new Promise((resolve, reject) => {
+            let completedCount = 0;
+
+            kRegions.forEach(region => {
+                const _client = new Client(region, this.credentials);
+
+                _client.sendRequest('GET', {bucketName, params: {location: ''}}).then(
+                    ({body}) => {
+                        try {
+                            buckets.push({
+                                name: bucketName,
+                                location: body.locationConstraint,
+                                creationDate: new Date()
+                            });
+
+                            sessionStorage.setItem('buckets', JSON.stringify({buckets, owner}));
+                        } catch (ex) {} // eslint-disable-line
+
+                        resolve(body.location);
+                    },
+                    () => {
+                        completedCount += 1;
+
+                        if (completedCount >= kRegions.length) {
+                            reject();
+                        }
+                    }
+                );
+            });
         });
     }
 
@@ -168,11 +209,9 @@ export class ClientFactory {
         const credentials = ClientFactory.getCredentials();
         const client = new Client(REGION_BJ, credentials);
 
-        return client.listBuckets().then(res => {
-            const bucket = res.buckets.find(item => item.name === bucketName);
-
-            if (bucket) {
-                return new Client(bucket.location, credentials);
+        return client.getBucketLocation(bucketName).then(location => {
+            if (location) {
+                return new Client(location, credentials);
             }
 
             // 默认返回北京
@@ -196,23 +235,16 @@ export class ClientFactory {
 
     static produceCredentialsByBucket(bucketName) {
         const credentials = ClientFactory.getCredentials();
-        const client = new Client(REGION_BJ, credentials);
 
-        return client.listBuckets().then(res => {
-            const {location} = res.buckets.find(item => item.name === bucketName);
-            const endpoint = kEndpointMap[location];
-
-            return {endpoint, credentials};
-        });
+        return ClientFactory.produceRegionByBucket(bucketName).then(
+            location => Object({endpoint: kEndpointMap[location], credentials})
+        );
     }
 
     static produceRegionByBucket(bucketName) {
         const credentials = ClientFactory.getCredentials();
         const client = new Client(REGION_BJ, credentials);
 
-        return client.listBuckets().then(res => {
-            const {location} = res.buckets.find(item => item.name === bucketName);
-            return location;
-        });
+        return client.getBucketLocation(bucketName);
     }
 }

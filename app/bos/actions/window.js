@@ -8,17 +8,19 @@
 import {info} from '../../utils/logger';
 import {API_TYPE} from '../middleware/api';
 import {ClientFactory} from '../api/client';
+import {REGION_BJ} from '../../utils/region';
 
 export const LIST_BUCKET_REQUEST = 'LIST_BUCKET_REQUEST';
 export const LIST_BUCKET_SUCCESS = 'LIST_BUCKET_SUCCESS';
 export const LIST_BUCKET_FAILURE = 'LIST_BUCKET_FAILURE';
 
-export function listBuckets(region) {
+export function listBuckets(search) {
     return {
         [API_TYPE]: {
+            region: REGION_BJ,
             types: [LIST_BUCKET_REQUEST, LIST_BUCKET_SUCCESS, LIST_BUCKET_FAILURE],
             method: 'listBuckets',
-            args: [{region}]
+            args: [search]
         }
     };
 }

@@ -18,9 +18,9 @@ import ObjectMenu from './ObjectMenu';
 import styles from './ObjectWindow.css';
 import Selection from '../common/Selection';
 import ContextMenu from '../common/ContextMenu';
-import {redirect} from '../../actions/navigator';
-import {UploadStatus} from '../../utils/TransferStatus';
 import * as WindowActions from '../../actions/window';
+import {UploadStatus} from '../../utils/TransferStatus';
+import {redirect} from '../../actions/navigator';
 
 import {
     MENU_UPLOAD_COMMAND,

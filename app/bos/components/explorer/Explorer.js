@@ -30,7 +30,6 @@ import {
     MENU_DOWNLOAD_COMMAND
 } from '../../actions/context';
 
-import {redirect} from '../../actions/navigator';
 import {createDownloadTask} from '../../actions/downloader';
 import {uploadByDropFile, uploadBySelectPaths} from '../../actions/uploader';
 import {listObjects, deleteObject, migrationObject} from '../../actions/window';
@@ -46,17 +45,6 @@ export default class Explorer extends Component {
     state = {
         visible: false,
         option: {}
-    }
-
-    componentDidMount() {
-        const {dispatch, region, bucket, prefix} = this.props;
-        dispatch(redirect({region, bucket, prefix}));
-    }
-
-    componentWillReceiveProps({region}) {
-        if (region !== this.props.region) {
-            redirect({region});
-        }
     }
 
     _onCommand = (cmd, config) => {
@@ -224,7 +212,7 @@ export default class Explorer extends Component {
             return (
                 <div className={styles.body}>
                     <SystemBar resize />
-                    <Navigator redirect={(...args) => dispatch(redirect(...args))} />
+                    <Navigator />
                     <BucketWindow region={region} dispatch={dispatch} />
                 </div>
             );
@@ -233,7 +221,7 @@ export default class Explorer extends Component {
         return (
             <div className={styles.body}>
                 <SystemBar resize />
-                <Navigator redirect={(...args) => dispatch(redirect(...args))} />
+                <Navigator />
                 <ObjectWindow
                     region={region}
                     bucket={bucket}
