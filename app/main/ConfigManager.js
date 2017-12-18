@@ -14,11 +14,9 @@ const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
 
 const {server, credentials, endpoint} = config.all;
 
-// 去除endpoint后面的反斜线
+// 升级到https
 Object.keys(endpoint).forEach(key => {
-    if (endpoint[key].endsWith('/')) {
-        endpoint[key] = endpoint[key].slice(0, -1);
-    }
+    endpoint[key] = endpoint[key].replace(/http:\/\/(bj|gz|su|hk|hk-2)\.bcebos\.com/, 'https://$1.bcebos.com');
 });
 
 config.all = {
