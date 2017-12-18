@@ -125,7 +125,7 @@ class Window extends Component {
     }
 
     _onSelectionChange = (keys) => {
-        this.setState({selectedItems: keys});
+        this.setState({selectedItems: keys, contextMenuPosition: null});
     }
 
     _listMore = () => {
@@ -149,7 +149,7 @@ class Window extends Component {
         });
     }
 
-    _onClick = () => {
+    _onDisposeContextMenu = () => {
         this.setState({contextMenuPosition: null});
     }
 
@@ -318,7 +318,7 @@ class Window extends Component {
                 <ObjectMenu onCommand={this._onCommand} />
                 <div ref="main"
                     onDrop={this._onDrop}
-                    onClick={this._onClick}
+                    onClick={this._onDisposeContextMenu}
                     onScroll={this._onScroll}
                     className={styles.container}
                     onContextMenu={this._onContextMenu}
