@@ -44,8 +44,8 @@ if (Array.isArray(cache.downloads)) {
 window.globalStore = configureStore(cache);
 
 window.globalStore.subscribe(() => {
-    const {navigator, uploads, downloads} = window.globalStore.getState();
-    localStorage.setItem('bos', JSON.stringify({uploads, downloads, navigator}));
+    const {uploads, downloads} = window.globalStore.getState();
+    localStorage.setItem('bos', JSON.stringify({uploads, downloads}));
 });
 
 ipcRenderer.on('notify', (event, type, message) => {

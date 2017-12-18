@@ -158,7 +158,7 @@ export default class Explorer extends Component {
 
             message.info('已复制到剪切板');
         } catch (ex) {
-            message.info('分享链接出错');
+            message.error('分享链接错误');
         }
     }
 
