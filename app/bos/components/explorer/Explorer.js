@@ -6,19 +6,23 @@
  */
 
 import path from 'path';
-import {remote} from 'electron';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Modal, notification} from 'antd';
+import {remote, clipboard} from 'electron';
+import {Modal, notification, message} from 'antd';
 
 import Navigator from './Navigator';
 import styles from './Explorer.css';
 import SideBar from '../app/SideBar';
-import SystemBar from '../common/SystemBar';
-import logger from '../../../utils/logger';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
+import logger from '../../../utils/logger';
+import SystemBar from '../common/SystemBar';
 import Migration from './migration/Migration';
+import {ClientFactory} from '../../api/client';
+import {createDownloadTask} from '../../actions/downloader';
+import {uploadByDropFile, uploadBySelectPaths} from '../../actions/uploader';
+import {listObjects, deleteObject, migrationObject} from '../../actions/window';
 
 import {
     MENU_UPLOAD_COMMAND,
@@ -27,12 +31,9 @@ import {
     MENU_MOVE_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
-    MENU_DOWNLOAD_COMMAND
+    MENU_DOWNLOAD_COMMAND,
+    MENU_SHARE_COMMAND
 } from '../../actions/context';
-
-import {createDownloadTask} from '../../actions/downloader';
-import {uploadByDropFile, uploadBySelectPaths} from '../../actions/uploader';
-import {listObjects, deleteObject, migrationObject} from '../../actions/window';
 
 export default class Explorer extends Component {
     static propTypes = {
@@ -67,6 +68,8 @@ export default class Explorer extends Component {
             return this._trash(bucket, prefix, keys);
         case MENU_DOWNLOAD_COMMAND:
             return this._download(bucket, prefix, keys);
+        case MENU_SHARE_COMMAND:
+            return this._share(bucket, keys[0]);
         default:
             logger.warn(`invalid context command ${cmd.toString()}`);
         }
@@ -135,6 +138,28 @@ export default class Explorer extends Component {
         this.props.dispatch(
             createDownloadTask(bucketName, dirname, keys, selectPaths[0])
         );
+    }
+
+    /**
+     * 分享文件
+     *
+     * @param {string} bucketName
+     * @param {string} objectKey
+     * @returns
+     *
+     * @memberOf Explorer
+     */
+    async _share(bucket, objectKey) {
+        try {
+            const client = await ClientFactory.fromBucket(bucket);
+            const url = await client.generatePresignedUrl(bucket, objectKey);
+
+            clipboard.writeText(url);
+
+            message.info('已复制到剪切板');
+        } catch (ex) {
+            message.info('分享链接出错');
+        }
     }
 
     /**

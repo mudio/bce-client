@@ -28,7 +28,8 @@ import {
     MENU_COPY_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
-    MENU_DOWNLOAD_COMMAND
+    MENU_DOWNLOAD_COMMAND,
+    MENU_SHARE_COMMAND
 } from '../../actions/context';
 
 class Window extends Component {
@@ -281,8 +282,12 @@ class Window extends Component {
 
             if (selectedItems.length > 0) {
                 commands = [
+                    // 复制，只能复制一个文件
                     {type: MENU_COPY_COMMAND, disable: selectedItems.length !== 1},
+                    // 重命名，只能操作一个文件
                     {type: MENU_RENAME_COMMAND, disable: selectedItems.length !== 1},
+                    // 分享，只能分享文件
+                    {type: MENU_SHARE_COMMAND, disable: selectedItems.some(item => item.endsWith('/'))},
                     {type: MENU_DOWNLOAD_COMMAND},
                     {type: MENU_TRASH_COMMAND}
                 ];

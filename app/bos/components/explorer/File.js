@@ -16,7 +16,8 @@ import {
     MENU_COPY_COMMAND,
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
-    MENU_DOWNLOAD_COMMAND
+    MENU_DOWNLOAD_COMMAND,
+    MENU_SHARE_COMMAND
 } from '../../actions/context';
 import styles from './File.css';
 import {ClientFactory} from '../../api/client';
@@ -44,7 +45,7 @@ export default class File extends Component {
         MENU_RENAME_COMMAND,
         MENU_COPY_COMMAND,
         // MENU_MOVE_COMMAND,
-        // MENU_SHARE_COMMAND,
+        MENU_SHARE_COMMAND,
         MENU_DOWNLOAD_COMMAND,
         MENU_TRASH_COMMAND
     ]

@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import url from 'url';
 import {BosClient} from 'bce-sdk-js';
 
 import {REGION_BJ, kRegions} from '../../utils/region';
@@ -201,6 +202,24 @@ export class Client extends BosClient {
 
             return _buffer;
         });
+    }
+
+    async generatePresignedUrl(bucketName, objectKey, ...args) {
+        const {endpoint} = this.config;
+
+        const urlOpt = url.parse(endpoint);
+        urlOpt.protocol = 'https';
+        urlOpt.pathname = `/v1/${bucketName}/${objectKey}`;
+
+        // 如果是公共读的，则不算签名了
+        const objectUrl = url.format(urlOpt);
+        const {ok} = await fetch(objectUrl, {method: 'HEAD'});
+
+        if (ok) {
+            return objectUrl;
+        }
+
+        return super.generatePresignedUrl(bucketName, objectKey, ...args);
     }
 }
 
