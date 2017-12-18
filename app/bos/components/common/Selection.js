@@ -240,9 +240,7 @@ export default class Selection extends Component {
     }
 
     renderChildren() {
-        const nodes = _.flatten(this.props.children);
-
-        return nodes.map(child => {
+        return React.Children.map(this.props.children, child => {
             const isSelected = _.has(this.__selectedCache, child.key);
             const styleName = classnames('selectionItem', {selected: isSelected});
             const tmpChild = React.cloneElement(

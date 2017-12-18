@@ -6,6 +6,8 @@
  */
 
 import React, {Component} from 'react';
+import {LocaleProvider} from 'antd';
+import zhCN from 'antd/lib/locale-provider/zh_CN';
 
 export default class App extends Component {
     props: {
@@ -15,7 +17,9 @@ export default class App extends Component {
     render() {
         return (
             <div className="layout">
-                {this.props.children}
+                <LocaleProvider locale={zhCN}>
+                    {this.props.children}
+                </LocaleProvider>
             </div>
         );
     }

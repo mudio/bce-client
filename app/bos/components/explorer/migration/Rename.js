@@ -16,9 +16,9 @@ export default Form.create({
         const name = props.object.split('/').slice(-2);
 
         return {
-            name: {
+            name: Form.createFormField({
                 value: name[1] || name[0]
-            }
+            })
         };
     }
 })(
