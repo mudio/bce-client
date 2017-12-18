@@ -10,11 +10,12 @@ import {remote} from 'electron';
 import {render} from 'react-dom';
 import {Provider} from 'react-redux';
 
+import 'antd/lib/style/css';
+
+import './style/mixin.global.css';
 import startup from '../bos/index';
 import LoginPage from './containers/LoginPage';
 import configureStore from './store/configureStore';
-
-import './style/mixin.global.css';
 
 function renderLoginPage() {
     const cache = JSON.parse(localStorage.getItem('framework')) || {};
