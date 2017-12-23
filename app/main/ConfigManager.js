@@ -12,7 +12,7 @@ import {REGION_BJ, REGION_GZ, REGION_SU, REGION_HK, REGION_HK02} from '../utils/
 const bcedir = path.join('..', '.bce');
 const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
 
-const {server, credentials, endpoint} = config.all;
+const {server, credentials, endpoint = {}} = config.all;
 
 // 升级到https
 Object.keys(endpoint).forEach(key => {
