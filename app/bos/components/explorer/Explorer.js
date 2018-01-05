@@ -49,7 +49,7 @@ export default class Explorer extends Component {
     }
 
     _onCommand = (cmd, config) => {
-        const {bucket, prefix, keys} = config;
+        const {bucket, prefix = '', keys} = config;
 
         switch (cmd) {
         case MENU_UPLOAD_COMMAND:
