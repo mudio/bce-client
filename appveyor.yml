@@ -10,7 +10,7 @@ cache:
 
 environment:
   matrix:
-    - nodejs_version: '7'
+    - nodejs_version: '8'
 
 matrix:
   fast_finish: true
