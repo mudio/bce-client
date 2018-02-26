@@ -11,10 +11,7 @@ import {ipcRenderer} from 'electron';
 import {Provider} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 
-import './style/mixin.global.css';
-
 import Routes from './routes';
-import {error} from '../utils/logger';
 import {configureStore, history} from './store/configureStore';
 import {DownloadStatus, UploadStatus} from './utils/TransferStatus';
 
@@ -55,7 +52,7 @@ ipcRenderer.on('notify', (event, type, message) => {
     }
 });
 
-export default function startup(container) {
+export default function renderBosPage(container) {
     render(
         <Provider store={window.globalStore}>
             <ConnectedRouter history={history}>
@@ -66,4 +63,3 @@ export default function startup(container) {
     );
 }
 
-process.on('uncaughtException', ex => error(ex.message));

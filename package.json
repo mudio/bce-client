@@ -123,6 +123,8 @@
     "js-yaml": "^3.10.0",
     "jsdom": "^11.6.2",
     "json-loader": "^0.5.7",
+    "less": "2.7.2",
+    "less-loader": "^4.0.5",
     "mime": "^2.2.0",
     "postcss": "^6.0.19",
     "prop-types": "^15.6.0",

@@ -18,7 +18,7 @@ export default merge.smart(baseConfig, {
 
     devtool: 'source-map',
 
-    entry: './app/bce/index',
+    entry: './app/renderer',
 
     output: {
         publicPath: './',
@@ -28,13 +28,21 @@ export default merge.smart(baseConfig, {
 
     module: {
         rules: [
-            // Extract all antd style to style.css as is
             {
-                test: /antd[\w./\\]+css$/,
-                use: ExtractTextPlugin.extract({
-                    use: 'css-loader',
-                    fallback: 'style-loader',
-                })
+                test: /\.less$/,
+                use: [
+                    {loader: 'style-loader'},
+                    {loader: 'css-loader'},
+                    {
+                        loader: 'less-loader',
+                        options: {
+                            modifyVars: {
+                                'font-size-base': '12px',
+                                'btn-height-base': '30px'
+                            }
+                        }
+                    }
+                ]
             },
             // Extract all .global.css to style.css as is
             {
@@ -46,7 +54,7 @@ export default merge.smart(baseConfig, {
             },
             // Pipe other styles through css modules and append to style.css
             {
-                test: /^((?!\.global|antd).)*\.css$/,
+                test: /^((?!\.global).)*\.css$/,
                 use: ExtractTextPlugin.extract({
                     use: {
                         loader: 'css-loader',

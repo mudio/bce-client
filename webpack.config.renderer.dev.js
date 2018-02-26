@@ -26,7 +26,7 @@ export default merge(baseConfig, {
         'react-hot-loader/patch',
         `webpack-dev-server/client?http://localhost:${port}/`,
         'webpack/hot/only-dev-server',
-        path.join(__dirname, './app/bce/index'),
+        path.join(__dirname, './app/renderer'),
     ],
 
     output: {
@@ -55,12 +55,22 @@ export default merge(baseConfig, {
                 }
             },
             {
-                test: /antd[\w./\\]+css$/, // 处理antd样式
+                test: /\.less$/,
                 use: [
-                    {loader: 'style-loader'},
                     {
-                        loader: 'css-loader',
-                        options: {sourceMap: true},
+                        loader: 'style-loader' // creates style nodes from JS strings
+                    },
+                    {
+                        loader: 'css-loader' // translates CSS into CommonJS
+                    },
+                    {
+                        loader: 'less-loader',
+                        options: {
+                            modifyVars: {
+                                'font-size-base': '12px',
+                                'btn-height-base': '30px'
+                            }
+                        }
                     }
                 ]
             },
@@ -75,7 +85,7 @@ export default merge(baseConfig, {
                 ]
             },
             {
-                test: /^((?!\.global|antd).)*\.css$/, // 不要处理global/antd样式
+                test: /^((?!\.global).)*\.css$/,
                 use: [
                     {loader: 'style-loader'},
                     {
