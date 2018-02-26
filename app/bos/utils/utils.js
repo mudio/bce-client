@@ -5,6 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import moment from 'moment';
+
 /**
  * 格式化速率
  *
@@ -45,4 +47,4 @@ export const humanSize = (bytesSize = 0) => {
  * @param {String} utcTime
  * @return {String} localTime
  */
-export const utcToLocalTime = (utcTime) => (new Date(utcTime)).toLocaleString();
+export const utcToLocalTime = (utcTime) => moment(utcTime).format('YYYY-MM-DD HH:mm:ss');

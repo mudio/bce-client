@@ -14,6 +14,7 @@ import {ConnectedRouter} from 'react-router-redux';
 import './style/mixin.global.css';
 
 import Routes from './routes';
+import {error} from '../utils/logger';
 import {configureStore, history} from './store/configureStore';
 import {DownloadStatus, UploadStatus} from './utils/TransferStatus';
 
@@ -64,3 +65,5 @@ export default function startup(container) {
         container
     );
 }
+
+process.on('uncaughtException', ex => error(ex.message));

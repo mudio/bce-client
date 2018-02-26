@@ -75,7 +75,7 @@ export default class AutoUpdater {
     }
 
     notify(title, message = '') {
-        log.debug(title, message);
+        log.info(title, message);
         this._window.webContents.send('notify', title, message);
     }
 
