@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 
 import styles from './SystemBar.css';
+import {isOSX} from '../../../utils';
 
 const browserWindow = electron.remote.getCurrentWindow();
 
@@ -35,7 +36,7 @@ export default class SystemBar extends Component {
     }
 
     render() {
-        if (process.platform === 'darwin') {
+        if (isOSX) {
             return null;
         }
 

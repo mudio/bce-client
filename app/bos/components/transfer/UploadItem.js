@@ -12,7 +12,7 @@ import {Modal, Tooltip} from 'antd';
 import React, {Component} from 'react';
 
 import styles from './DownloadItem.css';
-import {humanSize, humenRate} from '../../utils/utils';
+import {humanSize, humenRate} from '../../../utils';
 import {getText, UploadStatus} from '../../utils/TransferStatus';
 import {uploadRemove, uploadStart, uploadSuspend} from '../../actions/uploader';
 

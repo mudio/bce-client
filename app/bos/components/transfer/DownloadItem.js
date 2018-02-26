@@ -13,7 +13,7 @@ import React, {Component} from 'react';
 import {Modal, Tooltip} from 'antd';
 
 import styles from './DownloadItem.css';
-import {humanSize, humenRate} from '../../utils/utils';
+import {humanSize, humenRate} from '../../../utils';
 import {getText, DownloadStatus} from '../../utils/TransferStatus';
 import {downloadStart, downloadRemove, downloadSuspend} from '../../actions/downloader';
 

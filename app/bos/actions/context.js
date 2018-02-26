@@ -14,9 +14,11 @@ export const MENU_DOWNLOAD_COMMAND = Symbol('Download');
 export const MENU_TRASH_COMMAND = Symbol('Trash');
 export const MENU_UPLOAD_COMMAND = Symbol('Upload');
 export const MENU_REFRESH_COMMAND = Symbol('Refresh');
+export const MENU_UPLOAD_DIRECTORY_COMMAND = Symbol('Directory');
 
 export const commandMap = {
     [MENU_UPLOAD_COMMAND]: {name: '上传', icon: 'cloud-upload', command: MENU_UPLOAD_COMMAND},
+    [MENU_UPLOAD_DIRECTORY_COMMAND]: {name: '上传目录', icon: 'cloud-upload', command: MENU_UPLOAD_DIRECTORY_COMMAND},
     [MENU_REFRESH_COMMAND]: {name: '刷新', icon: 'refresh', command: MENU_REFRESH_COMMAND},
     [MENU_COPY_COMMAND]: {name: '复制到', icon: 'copy', command: MENU_COPY_COMMAND},
     [MENU_TRASH_COMMAND]: {name: '删除', icon: 'trash', command: MENU_TRASH_COMMAND},

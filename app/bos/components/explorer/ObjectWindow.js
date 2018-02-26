@@ -14,6 +14,7 @@ import {bindActionCreators} from 'redux';
 
 import File from './File';
 import Folder from './Folder';
+import {isOSX} from '../../../utils';
 import ObjectMenu from './ObjectMenu';
 import styles from './ObjectWindow.css';
 import Selection from '../common/Selection';
@@ -24,6 +25,7 @@ import {redirect} from '../../actions/navigator';
 
 import {
     MENU_UPLOAD_COMMAND,
+    MENU_UPLOAD_DIRECTORY_COMMAND,
     MENU_REFRESH_COMMAND,
     MENU_COPY_COMMAND,
     MENU_TRASH_COMMAND,
@@ -291,9 +293,15 @@ class Window extends Component {
                     {type: MENU_DOWNLOAD_COMMAND},
                     {type: MENU_TRASH_COMMAND}
                 ];
+            } else if (isOSX) {
+                commands = [
+                    {type: MENU_UPLOAD_COMMAND},
+                    {type: MENU_REFRESH_COMMAND}
+                ];
             } else {
                 commands = [
                     {type: MENU_UPLOAD_COMMAND},
+                    {type: MENU_UPLOAD_DIRECTORY_COMMAND},
                     {type: MENU_REFRESH_COMMAND}
                 ];
             }

@@ -14,6 +14,7 @@ import {Modal, notification, message} from 'antd';
 import Navigator from './Navigator';
 import styles from './Explorer.css';
 import SideBar from '../app/SideBar';
+import {isOSX} from '../../../utils';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
 import logger from '../../../utils/logger';
@@ -26,6 +27,7 @@ import {listObjects, deleteObject, migrationObject} from '../../actions/window';
 
 import {
     MENU_UPLOAD_COMMAND,
+    MENU_UPLOAD_DIRECTORY_COMMAND,
     MENU_REFRESH_COMMAND,
     MENU_COPY_COMMAND,
     MENU_MOVE_COMMAND,
@@ -54,6 +56,8 @@ export default class Explorer extends Component {
         switch (cmd) {
         case MENU_UPLOAD_COMMAND:
             return this._onUploadFile(config);
+        case MENU_UPLOAD_DIRECTORY_COMMAND:
+            return this._onUploadFile(config, 'openDirectory');
         case MENU_REFRESH_COMMAND:
             return this._onReresh();
         case MENU_MOVE_COMMAND:
@@ -78,12 +82,15 @@ export default class Explorer extends Component {
     /**
      * 上传文件，鼠标右键、菜单按钮、拖放都在这里统一处理
      *
+     * Note: On Windows and Linux an open dialog can not be both a file selector and a directory selector,
+     * so if you set properties to ['openFile', 'openDirectory'] on these platforms, a directory selector will be shown.
+     *
      * @param {Object} config
      * @returns
      *
      * @memberOf Explorer
      */
-    _onUploadFile(config) {
+    _onUploadFile(config, selectAction = 'openFile') {
         const {bucket, prefix, dispatch} = this.props;
         const {transferItems} = config;
 
@@ -91,10 +98,12 @@ export default class Explorer extends Component {
             return dispatch(uploadByDropFile(transferItems, {bucket, prefix}));
         }
 
+        const properties = isOSX
+            ? ['openFile', 'openDirectory', 'multiSelections']
+            : [selectAction, 'multiSelections'];
+
         // 选择文件夹
-        const selectPaths = remote.dialog.showOpenDialog({
-            properties: ['openFile', 'openDirectory', 'multiSelections']
-        });
+        const selectPaths = remote.dialog.showOpenDialog({properties});
         // 用户取消了
         if (selectPaths === undefined) {
             return;

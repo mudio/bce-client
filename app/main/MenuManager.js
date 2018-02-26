@@ -7,11 +7,13 @@
 
 import {app, Menu, shell} from 'electron';
 
+import {isOSX} from '../utils';
+
 export default class MenuManager {
     static initMenu() {
         const name = app.getName();
 
-        if (process.platform === 'darwin') {
+        if (isOSX) {
             const template = [
                 {
                     label: name,
@@ -53,7 +55,7 @@ export default class MenuManager {
                         },
                         {
                             label: '全屏',
-                            accelerator: process.platform === 'darwin' ? 'Ctrl+Command+F' : 'F11',
+                            accelerator: isOSX ? 'Ctrl+Command+F' : 'F11',
                             click: (item, focusedWindow) => {
                                 if (focusedWindow) {
                                     focusedWindow.setFullScreen(!focusedWindow.isFullScreen());

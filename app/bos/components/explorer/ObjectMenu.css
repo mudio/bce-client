@@ -12,6 +12,10 @@
     margin-right: 10px;
 }
 
+.layoutLeft :global(.ant-btn) + :global(.ant-btn) {
+    margin-left: 10px;
+}
+
 .layoutRight {
     margin-left: 10px;
 }

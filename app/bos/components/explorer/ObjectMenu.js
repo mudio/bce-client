@@ -13,8 +13,9 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 
 import styles from './ObjectMenu.css';
+import {isWin} from '../../../utils';
 import {syncLayout} from '../../actions/explorer';
-import {MENU_UPLOAD_COMMAND, MENU_REFRESH_COMMAND} from '../../actions/context';
+import {MENU_UPLOAD_COMMAND, MENU_REFRESH_COMMAND, MENU_UPLOAD_DIRECTORY_COMMAND} from '../../actions/context';
 
 class ObjectMenu extends Component {
     static propTypes = {
@@ -41,6 +42,10 @@ class ObjectMenu extends Component {
         this.props.onCommand(MENU_UPLOAD_COMMAND);
     }
 
+    _onUploadDirectory= () => {
+        this.props.onCommand(MENU_UPLOAD_DIRECTORY_COMMAND);
+    }
+
     /**
      * 派发一个刷新消息
      *
@@ -63,6 +68,7 @@ class ObjectMenu extends Component {
             <div className={styles.container}>
                 <div className={styles.layoutLeft}>
                     <Button type="primary" icon="upload" onClick={this._onUpload}>上传</Button>
+                    {isWin && <Button type="primary" icon="upload" onClick={this._onUploadDirectory}>上传目录</Button>}
                 </div>
                 <div className={styles.btnGroup}>
                     <span className={gridStyle} onClick={() => this._handleModelChange('grid')} >

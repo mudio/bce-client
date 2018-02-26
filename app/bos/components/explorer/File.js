@@ -22,7 +22,7 @@ import {
 import styles from './File.css';
 import {ClientFactory} from '../../api/client';
 import {BosCategory} from '../../utils/BosType';
-import {humanSize, utcToLocalTime} from '../../utils/utils';
+import {humanSize, utcToLocalTime} from '../../../utils';
 
 export default class File extends Component {
     static propTypes = {

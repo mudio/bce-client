@@ -12,7 +12,7 @@ import path from 'path';
 import walk from 'fs-walk';
 import {notification} from 'antd';
 
-import {humanSize} from '../utils/utils';
+import {humanSize} from '../../utils';
 import {getUuid} from '../../utils/helper';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 

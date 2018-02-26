@@ -48,3 +48,13 @@ export const humanSize = (bytesSize = 0) => {
  * @return {String} localTime
  */
 export const utcToLocalTime = (utcTime) => moment(utcTime).format('YYYY-MM-DD HH:mm:ss');
+
+/**
+ * 判断是否是`OSX`
+ */
+export const isOSX = process.platform === 'darwin';
+
+/**
+ * 判断是否是`Window`
+ */
+export const isWin = process.platform === 'win32';
