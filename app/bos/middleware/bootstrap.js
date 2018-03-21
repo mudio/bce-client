@@ -35,7 +35,7 @@ class Bootstrap extends EventEmitter {
 
     remove(uuid) {
         if (this._process && this._process.connected) {
-            this._process.send({category: 'pauseItem', config: {uuid}});
+            this._process.send({category: 'removeItem', config: {uuid}});
         }
     }
 
@@ -137,7 +137,7 @@ class Bootstrap extends EventEmitter {
             const {category, message} = body;
 
             if (category === 'log') {
-                logger[message.type](message.message);
+                logger[message.type](`[pid=${message.pid}] ${message.message}`);
             }
 
             if (category === 'cmd') {
