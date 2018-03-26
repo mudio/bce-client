@@ -64,12 +64,34 @@ class ObjectMenu extends Component {
             [styles.checked]: layout === 'list'
         });
 
+        /**
+         * Note:
+         * On Windows and Linux an open dialog can not be both a file selector and a directory selector,
+         * so if you set properties to ['openFile', 'openDirectory'] on these platforms,
+         * a directory selector will be shown.
+         */
+        const fakeMenuBar = () => {
+            if (isWin) {
+                return (
+                    <div className={styles.layoutLeft}>
+                        <Button type="primary" size="small" icon="upload" onClick={this._onUpload}>上传</Button>
+                        <Button type="primary" size="small" icon="upload" onClick={this._onUploadDirectory}>
+                            上传目录
+                        </Button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className={styles.layoutLeft}>
+                    <Button type="primary" size="small" icon="upload" onClick={this._onUpload}>上传</Button>
+                </div>
+            );
+        };
+
         return (
             <div className={styles.container}>
-                <div className={styles.layoutLeft}>
-                    <Button type="primary" icon="upload" onClick={this._onUpload}>上传</Button>
-                    {isWin && <Button type="primary" icon="upload" onClick={this._onUploadDirectory}>上传目录</Button>}
-                </div>
+                {fakeMenuBar()}
                 <div className={styles.btnGroup}>
                     <span className={gridStyle} onClick={() => this._handleModelChange('grid')} >
                         <i className="fa fa-lg fa-th" />

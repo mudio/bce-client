@@ -9,7 +9,7 @@ import log from 'electron-log';
 
 if (process.type !== 'renderer') {
     // Same as for console transport
-    log.transports.file.level = 'warn';
+    log.transports.file.level = 'info';
     log.transports.console.level = 'debug';
     // log.transports.file.format = '{h}:{i}:{s}:{ms} {text}';
 
