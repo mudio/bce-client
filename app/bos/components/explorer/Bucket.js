@@ -12,7 +12,7 @@ import styles from './Bucket.css';
 
 export default class Bucket extends Component {
     static propTypes = {
-        onDoubleClick: PropTypes.func.isRequired,
+        onClick: PropTypes.func.isRequired,
         item: PropTypes.shape({
             name: PropTypes.string.isRequired,
             location: PropTypes.string.isRequired,
@@ -20,16 +20,16 @@ export default class Bucket extends Component {
         })
     };
 
-    _triggerDoubleClick = () => {
-        const {item, onDoubleClick} = this.props;
-        onDoubleClick(item.name);
+    _triggerClick = () => {
+        const {item, onClick} = this.props;
+        onClick(item.name);
     }
 
     render() {
         const {item} = this.props;
 
         return (
-            <div className={styles.container} onDoubleClick={this._triggerDoubleClick}>
+            <div className={styles.container} onClick={this._triggerClick}>
                 <i className={`${styles.bucketicon} asset-bucket`} />
                 <span className={styles.text} alt={item.creationDate}>{item.name}</span>
             </div>
