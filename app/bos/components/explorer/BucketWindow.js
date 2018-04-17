@@ -70,7 +70,7 @@ class BucketWindow extends Component {
         }
 
         return buckets.map((item, index) => (
-            <Bucket key={index} item={item} onDoubleClick={this.redirect} />
+            <Bucket key={index} item={item} onClick={this.redirect} />
         ));
     }
 

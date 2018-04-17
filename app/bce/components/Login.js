@@ -18,7 +18,7 @@ import SystemBar from './common/SystemBar';
 import BrowserLink from './common/BrowserLink';
 import GlobalConfig from '../../main/ConfigManager';
 
-const credentials = GlobalConfig.get('credentials') || {};
+const credentials = GlobalConfig.get('credentials') || {ak: '', sk: ''};
 const akskHelpLink = 'https://cloud.baidu.com/doc/Reference/GetAKSK.html#.E5.A6.82.E4.BD.95.E8.8E.B7.E5.8F.96AK.20.2F.20SK';
 
 export default class Login extends Component {
