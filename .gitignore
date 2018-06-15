@@ -30,7 +30,8 @@ node_modules
 .DS_Store
 
 # App packaged
-dist
+__dist
+__dll
 script
 static
 !static/package.json
