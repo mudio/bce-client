@@ -6,40 +6,21 @@
  */
 
 import moment from 'moment';
+import humanize from 'humanize';
 
 /**
  * 格式化速率
  *
  * @param {number} bytesSize 每秒吞吐量
  */
-export const humenRate = (kbs = 0) => {
-    if (kbs < 1000) {
-        return `${kbs.toFixed(2)} KB/s`;
-    }
-
-    return `${(kbs / 1024).toFixed(2)} MB/s`;
-};
+export const humenRate = (kbs = 0) => `${humanize.filesize(kbs)}/s`;
 
 /**
  * 显示文件大小
  *
  * @param {number} bytesSize
  */
-export const humanSize = (bytesSize = 0) => {
-    const unitKB = 1024;
-    const unitMB = 1024 * 1024;
-    const unitGB = 1024 * 1024 * 1024;
-
-    if (bytesSize >= unitGB) {
-        return `${(bytesSize / unitGB).toFixed(0)}GB`;
-    } else if (bytesSize >= unitMB && bytesSize < unitGB) {
-        return `${(bytesSize / unitMB).toFixed(0)}MB`;
-    } else if (bytesSize >= unitKB && bytesSize < unitMB) {
-        return `${(bytesSize / unitKB).toFixed(0)}KB`;
-    }
-
-    return `${(bytesSize / 1024).toFixed(2)}KB`;
-};
+export const humanSize = (bytesSize = 0) => humanize.filesize(bytesSize);
 
 /**
  * UTC 时间转换成本地时间

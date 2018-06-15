@@ -31,7 +31,7 @@ if (shouldQuit) {
 
 app.on('ready', () => {
     // 开启登陆
-    _window = WindowManager.fromLogin(`file://${__dirname}/login.html`);
+    _window = WindowManager.fromLogin(`file://${__dirname}/app.html?login`);
     // 监听通知
     ipcMain.on('notify', (evt, type) => {
         if (type === 'login_success') {
@@ -41,7 +41,7 @@ app.on('ready', () => {
             // 初始化自动更新
             AutoUpdater.from(win);
         } else if (type === 'logout') {
-            const win = WindowManager.fromLogin(`file://${__dirname}/login.html`);
+            const win = WindowManager.fromLogin(`file://${__dirname}/app.html?login`);
             _window.close();
             _window = win;
         }

@@ -10,15 +10,15 @@ import {error} from './utils/logger';
 import './bce/style/mixin.global.css';
 import './bos/style/mixin.global.css';
 
-import renderBosPage from './bos/index';
-import renderLoginPage from './bce/index';
+import BOSBootstrap from './bos/index';
+import BceBootstrap from './bce/index';
 
-if (/login.html$/.test(window.location.pathname)) {
-    // 登陆
-    renderLoginPage(document.getElementById('main'));
-} else if (/app.html$/.test(window.location.pathname)) {
-    // 首页
-    renderBosPage(document.getElementById('main'));
+const container = document.getElementById('main');
+
+if (location.search.startsWith('?login')) {
+    BceBootstrap.startup(container);
+} else {
+    BOSBootstrap.startup(container)
 }
 
 document.body.ondrop = evt => evt.preventDefault();

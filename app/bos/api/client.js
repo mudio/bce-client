@@ -11,11 +11,12 @@ import {BosClient} from 'bce-sdk-js';
 import {REGION_BJ, kRegions} from '../../utils/region';
 import GlobalConfig from '../../main/ConfigManager';
 
-const kEndpointMap = GlobalConfig.get('endpoint');
-
 export class Client extends BosClient {
     constructor(region, credentials) {
-        super({credentials, endpoint: kEndpointMap[region]});
+        super({
+            credentials,
+            endpoint: GlobalConfig.resolveEndpoint(region)
+        });
         this.region = region;
         this.credentials = credentials;
     }
@@ -253,7 +254,7 @@ export class ClientFactory {
         const credentials = ClientFactory.getCredentials();
 
         return ClientFactory.produceRegionByBucket(bucketName).then(
-            location => Object({endpoint: kEndpointMap[location], credentials})
+            location => Object({endpoint: GlobalConfig.resolveEndpoint(location), credentials})
         );
     }
 

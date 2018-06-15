@@ -16,17 +16,16 @@ const {server, credentials, endpoint = {}} = config.all;
 
 // 升级到https
 Object.keys(endpoint).forEach(key => {
-    endpoint[key] = endpoint[key].replace(/http:\/\/(bj|gz|su|hk|hk-2)\.bcebos\.com/, 'https://$1.bcebos.com');
+    endpoint[key] = endpoint[key].replace(
+        /http:\/\/(bj|gz|su|hk|hk-2|hkg)\.bcebos\.com/,
+        'https://$1.bcebos.com'
+    );
 });
 
 config.all = {
     credentials,
     endpoint: Object.assign(
         {
-            [REGION_BJ]: 'https://bj.bcebos.com',
-            [REGION_GZ]: 'https://gz.bcebos.com',
-            [REGION_SU]: 'https://su.bcebos.com',
-            [REGION_HK]: 'https://hk.bcebos.com',
             [REGION_HK02]: 'https://hk-2.bcebos.com'
         },
         endpoint
@@ -36,5 +35,7 @@ config.all = {
         server
     )
 };
+
+config.resolveEndpoint = (region = REGION_BJ) => (config.get('endpoint')[region] || `https://${region}.bcebos.com`);
 
 export default config;
