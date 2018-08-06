@@ -23,7 +23,7 @@ export default class WindowManager {
     }
 
     static fromLogin(url) {
-        const currentWindow = new WindowManager(280, 340, {
+        const currentWindow = new WindowManager(290, 340, {
             resizable: false, maximizable: false, minimizable: false
         });
         currentWindow.registerWebContentEvent();

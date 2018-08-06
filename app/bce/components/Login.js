@@ -218,7 +218,7 @@ export default class Login extends Component {
                     placeholder="请输入安全码"
                     onChange={this.handleInputChange}
                 />
-                <Button data-tip="验证安全码" className={styles.loginBtn} />
+                <Button type="submit" data-tip="验证安全码" className={styles.loginBtn} />
                 <span className={styles.helplink} onClick={this.clearAkSk}>
                     忘记安全码
                 </span>
@@ -247,7 +247,7 @@ export default class Login extends Component {
                     onChange={this.handleInputChange}
                     placeholder="请再次输入安全码"
                 />
-                <Button data-tip="设置安全码" className={styles.loginBtn} />
+                <Button type="submit" data-tip="设置安全码" className={styles.loginBtn} />
                 <span className={styles.helplink} onClick={this.skipPinCodeCheck}>
                     跳过设置
                 </span>
@@ -269,7 +269,7 @@ export default class Login extends Component {
                 return (<i className={`${styles.loading} fa fa-spinner fa-spin`} />);
             }
 
-            return (<Button className={styles.loginBtn} data-tip="登录" />);
+            return (<Button type="submit" className={styles.loginBtn} data-tip="登录" />);
         }
 
         return (

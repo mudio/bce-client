@@ -9,8 +9,8 @@
 }
 
 .logo {
-    width: 100px;
-    margin: 50px auto 20px auto;
+    width: 120px;
+    margin: 40px auto 10px auto;
 }
 
 .loginform {
@@ -38,7 +38,7 @@
 
 .loginBtn {
     right: 0;
-    top: 50px;
+    top: 47px;
     width: 24px;
     height: 24px;
     cursor: pointer;
@@ -61,7 +61,7 @@
 }
 
 .accesskey {
-    font-size: 12px;
+    font-size: 11px;
     color: #8692B2;
     line-height: 40px;
 }
