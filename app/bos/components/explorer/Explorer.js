@@ -80,6 +80,123 @@ export default class Explorer extends Component {
     }
 
     /**
+     * 统一处理复制、重命名、迁移到等行为
+     *
+     *
+     * @memberOf Explorer
+     */
+    _onMigration = (config = {}, removeSource = false) => {
+        const {
+            sourceBucket, sourceObject,
+            targetBucket, targetObject
+        } = config;
+
+        this.setState({visible: false});
+
+        if (sourceBucket !== targetBucket || sourceObject !== targetObject) {
+            this.props.dispatch(
+                migrationObject(config, removeSource)
+            ).then(
+                () => notification.success({
+                    message: '操作成功',
+                    description: `${sourceObject} => ${targetObject}`
+                }),
+                err => notification.error({
+                    message: '操作部分完成',
+                    description: `${sourceObject} => ${targetObject}, 原因：${err.message}`
+                })
+            );
+        }
+    }
+
+    _onCancel = () => {
+        this.setState({visible: false});
+    }
+
+    /**
+     * 统一处理删除行为
+     *
+     * @param {any} bucketName
+     * @param {any} prefix
+     * @param {any} keys
+     *
+     * @memberOf Explorer
+     */
+    _trash(bucketName, prefix, keys) {
+        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
+
+        const onOk = async () => {
+            try {
+                await this.props.dispatch(deleteObject(bucketName, prefix, keys));
+                notification.success({message: '删除成功', description: `成功删除${toast}`});
+            } catch (ex) {
+                notification.error({message: '删除失败', description: ex.message});
+            }
+        };
+
+        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
+    }
+
+    /**
+     * 分享文件
+     *
+     * @param {string} bucketName
+     * @param {string} objectKey
+     * @returns
+     *
+     * @memberOf Explorer
+     */
+    async _share(bucket, objectKey) {
+        try {
+            const client = await ClientFactory.fromBucket(bucket);
+            const url = await client.generatePresignedUrl(bucket, objectKey);
+
+            clipboard.writeText(url);
+
+            message.info('已复制到剪切板');
+        } catch (ex) {
+            message.error('分享链接错误');
+        }
+    }
+
+    /**
+     * 统一处理下载行为
+     *
+     * @param {any} region
+     * @param {any} bucketName
+     * @param {any} prefix
+     * @param {any} keys
+     * @returns
+     *
+     * @memberOf Explorer
+     */
+    _download(bucketName, prefix, keys) {
+        // 选择文件夹
+        const selectPaths = remote.dialog.showOpenDialog({properties: ['openDirectory']});
+        // 用户取消了
+        if (selectPaths === undefined) {
+            return;
+        }
+
+        // 不支持选择多个文件夹，所以只取第一个
+        const dirname = prefix.endsWith('/') ? prefix : path.posix.dirname(prefix);
+        this.props.dispatch(
+            createDownloadTask(bucketName, dirname, keys, selectPaths[0])
+        );
+    }
+
+    /**
+     * 刷新，右键菜单、菜单按钮统一在这里处理
+     *
+     * @memberOf Explorer
+     */
+    _onReresh() {
+        const {bucket, prefix, dispatch} = this.props;
+
+        dispatch(listObjects(bucket, prefix));
+    }
+
+    /**
      * 上传文件，鼠标右键、菜单按钮、拖放都在这里统一处理
      *
      * Note: On Windows and Linux an open dialog can not be both a file selector and a directory selector,
@@ -110,123 +227,6 @@ export default class Explorer extends Component {
         }
 
         dispatch(uploadBySelectPaths(selectPaths, {bucket, prefix}));
-    }
-
-    /**
-     * 刷新，右键菜单、菜单按钮统一在这里处理
-     *
-     * @memberOf Explorer
-     */
-    _onReresh() {
-        const {bucket, prefix, dispatch} = this.props;
-
-        dispatch(listObjects(bucket, prefix));
-    }
-
-    /**
-     * 统一处理下载行为
-     *
-     * @param {any} region
-     * @param {any} bucketName
-     * @param {any} prefix
-     * @param {any} keys
-     * @returns
-     *
-     * @memberOf Explorer
-     */
-    _download(bucketName, prefix, keys) {
-        // 选择文件夹
-        const selectPaths = remote.dialog.showOpenDialog({properties: ['openDirectory']});
-        // 用户取消了
-        if (selectPaths === undefined) {
-            return;
-        }
-
-        // 不支持选择多个文件夹，所以只取第一个
-        const dirname = prefix.endsWith('/') ? prefix : path.posix.dirname(prefix);
-        this.props.dispatch(
-            createDownloadTask(bucketName, dirname, keys, selectPaths[0])
-        );
-    }
-
-    /**
-     * 分享文件
-     *
-     * @param {string} bucketName
-     * @param {string} objectKey
-     * @returns
-     *
-     * @memberOf Explorer
-     */
-    async _share(bucket, objectKey) {
-        try {
-            const client = await ClientFactory.fromBucket(bucket);
-            const url = await client.generatePresignedUrl(bucket, objectKey);
-
-            clipboard.writeText(url);
-
-            message.info('已复制到剪切板');
-        } catch (ex) {
-            message.error('分享链接错误');
-        }
-    }
-
-    /**
-     * 统一处理删除行为
-     *
-     * @param {any} bucketName
-     * @param {any} prefix
-     * @param {any} keys
-     *
-     * @memberOf Explorer
-     */
-    _trash(bucketName, prefix, keys) {
-        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
-
-        const onOk = async () => {
-            try {
-                await this.props.dispatch(deleteObject(bucketName, prefix, keys));
-                notification.success({message: '删除成功', description: `成功删除${toast}`});
-            } catch (ex) {
-                notification.error({message: '删除失败', description: ex.message});
-            }
-        };
-
-        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
-    }
-
-    _onCancel = () => {
-        this.setState({visible: false});
-    }
-
-    /**
-     * 统一处理复制、重命名、迁移到等行为
-     *
-     *
-     * @memberOf Explorer
-     */
-    _onMigration = (config = {}, removeSource = false) => {
-        const {
-            sourceBucket, sourceObject,
-            targetBucket, targetObject
-        } = config;
-
-        this.setState({visible: false});
-
-        if (sourceBucket !== targetBucket || sourceObject !== targetObject) {
-            this.props.dispatch(
-                migrationObject(config, removeSource)
-            ).then(
-                () => notification.success({
-                    message: '操作成功',
-                    description: `${sourceObject} => ${targetObject}`
-                }),
-                err => notification.error({
-                    message: '操作部分完成',
-                    description: `${sourceObject} => ${targetObject}, 原因：${err.message}`
-                })
-            );
-        }
     }
 
     updateValue(evt) {

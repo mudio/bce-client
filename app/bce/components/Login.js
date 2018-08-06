@@ -51,6 +51,7 @@ export default class Login extends Component {
      * @memberof Login
      */
     setPinCode = () => {
+        const {setPinCode} = this.props;
         const {pin, pinconfirm} = this.state;
 
         this.setState({errMsg: null});
@@ -62,42 +63,12 @@ export default class Login extends Component {
             }
 
             if (pin === pinconfirm) {
-                this.props.setPinCode(pin);
+                setPinCode(pin);
                 ipcRenderer.send('notify', 'login_success');
             } else {
                 this.setState({errMsg: '安全码输入不一致'});
             }
         });
-    }
-
-    /**
-     * 展示提示信息
-     *
-     * @returns
-     * @memberof Login
-     */
-    showTipMessage() {
-        const msg = this.state.errMsg;
-
-        if (msg && msg.info) {
-            return (
-                <div className={styles.tip}>
-                    <span className={classnames(styles.text, styles.info)}>
-                        {msg.info}
-                    </span>
-                </div>
-            );
-        }
-
-        if (msg) {
-            return (
-                <div className={styles.tip}>
-                    <span className={styles.text}>{msg}</span>
-                </div>
-            );
-        }
-
-        return (<div className={styles.tip} />);
     }
 
     /**
@@ -190,6 +161,38 @@ export default class Login extends Component {
     }
 
     /**
+     * 展示提示信息
+     *
+     * @returns
+     * @memberof Login
+     */
+    showTipMessage() {
+        const msg = this.state.errMsg;
+
+        if (msg && msg.info) {
+            return (
+                <div className={styles.tip}>
+                    <span className={classnames(styles.text, styles.info)}>
+                        {msg.info}
+                    </span>
+                </div>
+            );
+        }
+
+        if (msg) {
+            return (
+                <div className={styles.tip}>
+                    <span className={styles.text}>
+                        {msg}
+                    </span>
+                </div>
+            );
+        }
+
+        return (<div className={styles.tip} />);
+    }
+
+    /**
      * 设置验证安全码表单
      *
      * @returns
@@ -201,8 +204,13 @@ export default class Login extends Component {
         return (
             <form className={styles.loginform} onSubmit={this.validatePinCode}>
                 <div className={styles.accesskey}>
-                    <span>AK: {accessKey}</span>
-                    <span className={styles.forgotBtn} onClick={this.clearAkSk}>更换</span>
+                    <span>
+                        AK:
+                        {accessKey}
+                    </span>
+                    <span className={styles.forgotBtn} onClick={this.clearAkSk}>
+                        更换
+                    </span>
                 </div>
                 <input type="password"
                     name="pin"
@@ -281,7 +289,7 @@ export default class Login extends Component {
                 {loadingOrLogin()}
                 <BrowserLink className={styles.helplink} linkTo={akskHelpLink}>
                     如何获取AK/SK?
-                </BrowserLink >
+                </BrowserLink>
             </form>
         );
     }

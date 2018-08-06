@@ -25,6 +25,16 @@ import {BosCategory} from '../../utils/BosType';
 import {humanSize, utcToLocalTime} from '../../../utils';
 
 export default class File extends Component {
+    static supportCommands = [
+        // MENU_VIEW_COMMAND,
+        MENU_RENAME_COMMAND,
+        MENU_COPY_COMMAND,
+        // MENU_MOVE_COMMAND,
+        MENU_SHARE_COMMAND,
+        MENU_DOWNLOAD_COMMAND,
+        MENU_TRASH_COMMAND
+    ];
+
     static propTypes = {
         layout: PropTypes.string.isRequired,
         bucket: PropTypes.string.isRequired,
@@ -39,16 +49,6 @@ export default class File extends Component {
             displayName: PropTypes.string.isRequired
         }).isRequired
     };
-
-    static supportCommands = [
-        // MENU_VIEW_COMMAND,
-        MENU_RENAME_COMMAND,
-        MENU_COPY_COMMAND,
-        // MENU_MOVE_COMMAND,
-        MENU_SHARE_COMMAND,
-        MENU_DOWNLOAD_COMMAND,
-        MENU_TRASH_COMMAND
-    ]
 
     state = {
         imgThumbnail: ''

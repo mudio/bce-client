@@ -168,7 +168,7 @@ export default class DownloadItem extends Component {
         };
 
         return (
-            <div className={styles.operation} >
+            <div className={styles.operation}>
                 {start()}
                 {pause()}
                 <i className="fa fa-folder-open" title="打开目录" onClick={this._showItemInFolder} />

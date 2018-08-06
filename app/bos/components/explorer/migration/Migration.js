@@ -126,9 +126,9 @@ export default class Migration extends Component {
             targetOption.isLeaf = true;
         }
 
-        this.setState({
-            buckets: [...this.state.buckets],
-        });
+        this.setState(prevState => Object({
+            buckets: [...prevState.buckets],
+        }));
     }
 
     render() {

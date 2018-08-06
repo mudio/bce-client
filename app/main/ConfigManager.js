@@ -7,20 +7,12 @@
 
 import path from 'path';
 import ConfigStore from 'configstore';
-import {REGION_BJ, REGION_GZ, REGION_SU, REGION_HK, REGION_HK02} from '../utils/region';
+import {REGION_BJ, REGION_HK02} from '../utils/region';
 
 const bcedir = path.join('..', '.bce');
 const config = new ConfigStore(bcedir, {}, {globalConfigPath: true});
 
 const {server, credentials, endpoint = {}} = config.all;
-
-// 升级到https
-Object.keys(endpoint).forEach(key => {
-    endpoint[key] = endpoint[key].replace(
-        /http:\/\/(bj|gz|su|hk|hk-2|hkg)\.bcebos\.com/,
-        'https://$1.bcebos.com'
-    );
-});
 
 config.all = {
     credentials,

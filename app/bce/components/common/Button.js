@@ -22,7 +22,7 @@ export default class BrowserLink extends Component {
         const {className, ...props} = this.props;
 
         return (
-            <button data-tip-align="left" {...props} className={classnames(className, styles.container)}>
+            <button type="button" data-tip-align="left" {...props} className={classnames(className, styles.container)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
                     <g>
                         <circle strokeWidth="2" cx="12" cy="12" r="11" />

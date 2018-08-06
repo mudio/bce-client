@@ -26,20 +26,20 @@ function normalize(key = '') {
 }
 
 export default class Folder extends Component {
-    static propTypes = {
-        name: PropTypes.string.isRequired,
-        layout: PropTypes.string.isRequired,
-        onCommand: PropTypes.func.isRequired,
-        onDoubleClick: PropTypes.func.isRequired
-    };
-
     static supportCommands = [
         MENU_RENAME_COMMAND,
         MENU_COPY_COMMAND,
         // MENU_MOVE_COMMAND,
         MENU_DOWNLOAD_COMMAND,
         MENU_TRASH_COMMAND
-    ]
+    ];
+
+    static propTypes = {
+        name: PropTypes.string.isRequired,
+        layout: PropTypes.string.isRequired,
+        onCommand: PropTypes.func.isRequired,
+        onDoubleClick: PropTypes.func.isRequired
+    };
 
     shouldComponentUpdate(props) {
         return props.name !== this.props.name

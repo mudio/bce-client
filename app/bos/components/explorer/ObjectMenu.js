@@ -93,15 +93,15 @@ class ObjectMenu extends Component {
             <div className={styles.container}>
                 {fakeMenuBar()}
                 <div className={styles.btnGroup}>
-                    <span className={gridStyle} onClick={() => this._handleModelChange('grid')} >
+                    <span className={gridStyle} onClick={() => this._handleModelChange('grid')}>
                         <i className="fa fa-lg fa-th" />
                     </span>
-                    <span className={listStyle} onClick={() => this._handleModelChange('list')} >
+                    <span className={listStyle} onClick={() => this._handleModelChange('list')}>
                         <i className="fa fa-lg fa-list-ul" />
                     </span>
                 </div>
                 <div className={styles.layoutRight}>
-                    <span className={styles.btn} onClick={this._onRefresh} >
+                    <span className={styles.btn} onClick={this._onRefresh}>
                         <i className="fa fa-lg fa-refresh" />
                     </span>
                 </div>

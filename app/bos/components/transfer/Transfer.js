@@ -28,11 +28,11 @@ export default class Transfer extends Component {
         const {category} = this.props;
 
         if (category === TransCategory.Upload) {
-            return this.renderUpload();
+            this.renderUpload();
         } else if (category === TransCategory.Download) {
-            return this.renderDownload();
+            this.renderDownload();
         } else if (category === TransCategory.Complete) {
-            return this.renderComplete();
+            this.renderComplete();
         }
     }
 

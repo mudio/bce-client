@@ -156,7 +156,7 @@ export default class UploadItem extends Component {
         };
 
         return (
-            <div className={styles.operation} >
+            <div className={styles.operation}>
                 {start()}
                 {pause()}
                 {trash()}

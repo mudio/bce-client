@@ -45,18 +45,6 @@ class Navigator extends Component {
         }
     }
 
-    /**
-     * 查询匹配
-     *
-     * @memberOf Navigator
-     */
-    async _query() {
-        const {value} = this.state;
-        const {dispatch, bucket, prefix = ''} = this.props;
-
-        dispatch(query({bucket, prefix, search: value}));
-    }
-
     _onChange = evt => {
         this.setState({value: evt.target.value});
         this.invokeQuery();
@@ -140,6 +128,18 @@ class Navigator extends Component {
         }
 
         dispatch(redirect({bucket: bucketName, prefix, search}));
+    }
+
+    /**
+     * 查询匹配
+     *
+     * @memberOf Navigator
+     */
+    async _query() {
+        const {value} = this.state;
+        const {dispatch, bucket, prefix = ''} = this.props;
+
+        dispatch(query({bucket, prefix, search: value}));
     }
 
     renderSearch() {

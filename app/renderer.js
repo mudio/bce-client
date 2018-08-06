@@ -15,10 +15,10 @@ import BceBootstrap from './bce/index';
 
 const container = document.getElementById('main');
 
-if (location.search.startsWith('?login')) {
+if (location.search.startsWith('?login')) { // eslint-disable-line no-restricted-globals
     BceBootstrap.startup(container);
 } else {
-    BOSBootstrap.startup(container)
+    BOSBootstrap.startup(container);
 }
 
 document.body.ondrop = evt => evt.preventDefault();

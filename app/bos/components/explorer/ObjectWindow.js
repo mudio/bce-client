@@ -217,7 +217,7 @@ class Window extends Component {
         if (isFetching && isTruncated) {
             return (
                 <div className={styleName}>
-                    <div className={styles.loadInfo} >
+                    <div className={styles.loadInfo}>
                         <i className="fa fa-spinner fa-pulse" aria-hidden="true" />
                         正在加载中...
                     </div>
@@ -230,10 +230,12 @@ class Window extends Component {
         if (!isFetching && isTruncated) {
             return (
                 <div className={styleName}>
-                    <div className={styles.loadInfo} >
+                    <div className={styles.loadInfo}>
                         <i className="fa fa-info-circle" aria-hidden="true" />
                         当前展示部分文件，滑动滚动条以加载更多！
-                        <button onClick={this._listMore} >加载更多&gt;&gt;</button>
+                        <button type="button" onClick={this._listMore}>
+                            加载更多&gt;&gt;
+                        </button>
                     </div>
                     <span>已加载：{totalCount}</span>
                 </div>
@@ -322,7 +324,7 @@ class Window extends Component {
         });
 
         return (
-            <div className={styles.container} >
+            <div className={styles.container}>
                 <ObjectMenu onCommand={this._onCommand} />
                 <div ref="main"
                     onDrop={this._onDrop}

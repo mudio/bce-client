@@ -49,15 +49,6 @@ export default class Selection extends Component {
         }
     }
 
-    clearSelection() {
-        const keys = Object.keys(this.__selectedCache);
-        if (keys.length > 0) {
-            this.__selectedCache = {};
-            this.props.onSelectionChange.call(null, []);
-            this.forceUpdate();
-        }
-    }
-
     _onMouseDown = (e) => {
         if (!this.props.enabled || e.button === 2 || e.nativeEvent.which === 2) {
             return;
@@ -81,38 +72,6 @@ export default class Selection extends Component {
         document.addEventListener('mouseup', this._mouseup);
     }
 
-    _onMouseUp() {
-        document.removeEventListener('mousemove', this._mousemove);
-        document.removeEventListener('mouseup', this._mouseup);
-
-        this.setState({
-            mouseDown: false,
-            startPoint: null,
-            endPoint: null,
-            selectionBox: null,
-            appendMode: false
-        });
-        this.props.onSelectionChange.call(null, _.keys(this.__selectedCache));
-        // 清理以下缓存
-        this.__refPositionCache = {};
-    }
-
-    _onMouseMove(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (this.state.mouseDown) {
-            const endPoint = {
-                x: e.pageX,
-                y: e.pageY
-            };
-            this.setState({
-                endPoint,
-                selectionBox: this._calculateSelectionBox(this.state.startPoint, endPoint)
-            });
-        }
-    }
-
     _onContextMenu = (evt, key) => {
         if (!_.has(this.__selectedCache, key)) {
             this.__selectedCache = {};
@@ -120,61 +79,8 @@ export default class Selection extends Component {
         }
     }
 
-    _boxIntersects(boxA, boxB) {
-        if (boxA.left <= boxB.left + boxB.width
-            && boxA.left + boxA.width >= boxB.left
-            && boxA.top <= boxB.top + boxB.height
-            && boxA.top + boxA.height >= boxB.top) {
-            return true;
-        }
-
-        return false;
-    }
-
-    _updateCollidingChildren(selectionBox) {
-        this.__selectedCache = {};
-
-        _.each(this.refs, (ref, key) => {
-            if (key !== 'selection') {
-                // FIXME Forced reflow 导致性能太差，缓存一下
-                if (!this.__refPositionCache[key]) {
-                    const {
-                        offsetTop,
-                        offsetLeft,
-                        clientWidth,
-                        clientHeight
-                    } = ReactDom.findDOMNode(ref).offsetParent; // eslint-disable-line react/no-find-dom-node
-
-                    this.__refPositionCache[key] = {
-                        top: offsetTop,
-                        left: offsetLeft,
-                        width: clientWidth,
-                        height: clientHeight
-                    };
-                }
-
-                if (this._boxIntersects(selectionBox, this.__refPositionCache[key])) {
-                    this.__selectedCache[key] = true;
-                } else if (!this.state.appendMode) {
-                    delete this.__selectedCache[key];
-                }
-            }
-        });
-    }
-
-    _calculateSelectionBox(startPoint, endPoint) {
-        if (!this.state.mouseDown || _.isNull(endPoint) || _.isNull(startPoint)) {
-            return null;
-        }
-
-        const {scrollTop} = this.refs.selection;
-        const rect = this.refs.selection.getBoundingClientRect();
-        const left = Math.min(startPoint.x, endPoint.x) - rect.left;
-        const top = Math.min(startPoint.y, endPoint.y) + scrollTop - rect.top; // eslint-disable-line no-mixed-operators
-        // +1 保证`MouseUp`事件在`SelectionBox`上
-        const width = Math.abs(startPoint.x - endPoint.x) + 1;
-        const height = Math.abs(startPoint.y - endPoint.y) + 1;
-        return {left, top, width, height};
+    _onClearSelection = () => {
+        this.clearSelection();
     }
 
     _onSelectItem = (evt, key) => {
@@ -214,8 +120,102 @@ export default class Selection extends Component {
         }
     }
 
-    _onClearSelection = () => {
-        this.clearSelection();
+    _calculateSelectionBox(startPoint, endPoint) {
+        if (!this.state.mouseDown || _.isNull(endPoint) || _.isNull(startPoint)) {
+            return null;
+        }
+
+        const {scrollTop} = this.refs.selection;
+        const rect = this.refs.selection.getBoundingClientRect();
+        const left = Math.min(startPoint.x, endPoint.x) - rect.left;
+        const top = Math.min(startPoint.y, endPoint.y) + scrollTop - rect.top; // eslint-disable-line no-mixed-operators
+        // +1 保证`MouseUp`事件在`SelectionBox`上
+        const width = Math.abs(startPoint.x - endPoint.x) + 1;
+        const height = Math.abs(startPoint.y - endPoint.y) + 1;
+        return {left, top, width, height};
+    }
+
+    _updateCollidingChildren(selectionBox) {
+        this.__selectedCache = {};
+
+        _.each(this.refs, (ref, key) => {
+            if (key !== 'selection') {
+                // FIXME Forced reflow 导致性能太差，缓存一下
+                if (!this.__refPositionCache[key]) {
+                    const {
+                        offsetTop,
+                        offsetLeft,
+                        clientWidth,
+                        clientHeight
+                    } = ReactDom.findDOMNode(ref).offsetParent; // eslint-disable-line react/no-find-dom-node
+
+                    this.__refPositionCache[key] = {
+                        top: offsetTop,
+                        left: offsetLeft,
+                        width: clientWidth,
+                        height: clientHeight
+                    };
+                }
+
+                if (this._boxIntersects(selectionBox, this.__refPositionCache[key])) {
+                    this.__selectedCache[key] = true;
+                } else if (!this.state.appendMode) {
+                    delete this.__selectedCache[key];
+                }
+            }
+        });
+    }
+
+    _boxIntersects(boxA, boxB) {
+        if (boxA.left <= boxB.left + boxB.width
+            && boxA.left + boxA.width >= boxB.left
+            && boxA.top <= boxB.top + boxB.height
+            && boxA.top + boxA.height >= boxB.top) {
+            return true;
+        }
+
+        return false;
+    }
+
+    _onMouseMove(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (this.state.mouseDown) {
+            const endPoint = {
+                x: e.pageX,
+                y: e.pageY
+            };
+            this.setState(preState => Object({
+                endPoint,
+                selectionBox: this._calculateSelectionBox(preState.startPoint, endPoint)
+            }));
+        }
+    }
+
+    _onMouseUp() {
+        document.removeEventListener('mousemove', this._mousemove);
+        document.removeEventListener('mouseup', this._mouseup);
+
+        this.setState({
+            mouseDown: false,
+            startPoint: null,
+            endPoint: null,
+            selectionBox: null,
+            appendMode: false
+        });
+        this.props.onSelectionChange.call(null, _.keys(this.__selectedCache));
+        // 清理以下缓存
+        this.__refPositionCache = {};
+    }
+
+    clearSelection() {
+        const keys = Object.keys(this.__selectedCache);
+        if (keys.length > 0) {
+            this.__selectedCache = {};
+            this.props.onSelectionChange.call(null, []);
+            this.forceUpdate();
+        }
     }
 
     selectItem(key, isSelected) {

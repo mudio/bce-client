@@ -177,4 +177,3 @@ class Bootstrap extends EventEmitter {
 
 export const uploadProcesser = new Bootstrap('uploader.js');
 export const downloadProcesser = new Bootstrap('downloader.js');
-

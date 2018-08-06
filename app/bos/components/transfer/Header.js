@@ -78,6 +78,7 @@ export default class Header extends Component {
             return null;
         }
     }
+
     render() {
         return (
             <div className={styles.container}>
