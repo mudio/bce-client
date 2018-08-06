@@ -5,11 +5,10 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {error} from './utils/logger';
-
 import './bce/style/mixin.global.css';
 import './bos/style/mixin.global.css';
 
+import {error} from './utils/logger';
 import BOSBootstrap from './bos/index';
 import BceBootstrap from './bce/index';
 
