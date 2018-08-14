@@ -12,7 +12,6 @@ import path from 'path';
 import walk from 'fs-walk';
 import {notification} from 'antd';
 
-import {humanSize} from '../../utils';
 import {getUuid} from '../../utils/helper';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
 
@@ -70,11 +69,6 @@ function _invokeFile(file, options = {}, dispatch) {
         }
     });
 
-    notification.success({
-        message: `上传 ${file.name}`,
-        description: `共计大小 ${humanSize(file.size)}。`
-    });
-
     // 立即开始这个任务
     dispatch(uploadStart([uuid]));
 }
@@ -96,12 +90,6 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
         totalSize,
         prefix,
         keymap
-    });
-
-    const keys = Object.keys(keymap);
-    notification.success({
-        message: `上传 ${folderName}`,
-        description: `共计 ${keys.length} 个文件, 文件大小 ${humanSize(totalSize)}`
     });
 
     // 立即开始这个任务

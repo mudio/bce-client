@@ -5,7 +5,8 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
-import {info} from '../../utils/logger';
+import _ from 'lodash';
+
 import {API_TYPE} from '../middleware/api';
 import {ClientFactory} from '../api/client';
 import {REGION_BJ} from '../../utils/region';
@@ -62,33 +63,31 @@ export function deleteObject(bucketName, prefix, objects = []) {
     return async dispatch => {
         const client = await ClientFactory.fromBucket(bucketName);
 
-        const allTasks = objects.map(async key => {
-            try {
-                const keys = await client.listAllObjects(bucketName, key);
-
-                const removeKeys = keys.map(item => item.key);
-                info(
-                    'Delete bucketName = %s, prefix = %s, keys = %s',
-                    bucketName, prefix, removeKeys
-                );
-
-                const deferred = await dispatch({
-                    [API_TYPE]: {
-                        types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
-                        method: 'deleteAllObjects',
-                        args: [bucketName, removeKeys]
-                    }
-                });
-
-                return deferred;
-            } catch (error) {
-                dispatch({type: DELETE_OBJECT_FAILURE, error});
+        const allTasks = objects.map(key => {
+            if (key.endsWith('/')) {
+                return client.listAllObjects(bucketName, key)
+                    .then(keys => keys.map(item => item.key));
             }
+
+            return Promise.resolve(key);
         });
 
-        return Promise.all(allTasks).then(
-            () => dispatch(listObjects(bucketName, prefix))
-        );
+        try {
+            const removeKeys = await Promise.all(allTasks)
+                .then(res => _.flatten(res));
+
+            const deferred = await dispatch({
+                [API_TYPE]: {
+                    types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
+                    method: 'deleteAllObjects',
+                    args: [bucketName, removeKeys]
+                }
+            });
+
+            return deferred;
+        } catch (error) {
+            dispatch({type: DELETE_OBJECT_FAILURE, error});
+        }
     };
 }
 

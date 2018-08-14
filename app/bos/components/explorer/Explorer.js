@@ -132,6 +132,8 @@ export default class Explorer extends Component {
             } catch (ex) {
                 notification.error({message: '删除失败', description: ex.message});
             }
+
+            this._onReresh();
         };
 
         Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});

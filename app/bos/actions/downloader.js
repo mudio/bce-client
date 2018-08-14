@@ -7,7 +7,6 @@
 
 /* eslint-disable object-property-newline */
 
-import path from 'path';
 import {notification} from 'antd';
 
 import {getUuid} from '../../utils/helper';
@@ -86,12 +85,6 @@ export function createDownloadTask(bucketName, prefix, objectKeys, baseDir) {
                     uuid, bucketName, prefix,
                     baseDir, objectKey,
                     totalSize, keymap
-                });
-
-                const [name] = path.posix.relative(prefix, objectKey).split('/');
-                notification.success({
-                    message: '开始下载',
-                    description: `准备下载 ${name}，共计 ${Object.keys(keymap).length} 个文件`
                 });
 
                 dispatch(downloadStart([uuid]));

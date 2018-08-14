@@ -50,7 +50,9 @@ export default class Login extends Component {
      *
      * @memberof Login
      */
-    setPinCode = () => {
+    setPinCode = (evt) => {
+        evt.preventDefault();
+
         const {setPinCode} = this.props;
         const {pin, pinconfirm} = this.state;
 
@@ -127,7 +129,9 @@ export default class Login extends Component {
      *
      * @memberof Login
      */
-    validatePinCode = () => {
+    validatePinCode = (evt) => {
+        evt.preventDefault();
+
         if (this.state.pin === this.props.pin) {
             ipcRenderer.send('notify', 'login_success');
         } else {
