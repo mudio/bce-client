@@ -58,16 +58,18 @@ export class Client extends BosClient {
     }
 
     getBucketLocation(bucketName) {
-        const {buckets, owner} = JSON.parse(sessionStorage.getItem('buckets'));
+        const {buckets = [], owner} = JSON.parse(sessionStorage.getItem('buckets') || '{}');
         const bucket = buckets.find(item => item.name === bucketName);
 
         if (bucket) {
             return Promise.resolve(bucket.location);
         }
 
+
         // 从每个区域中都查一遍,如果查到了说明这个bucket授权给用户了
         return new Promise((resolve, reject) => {
             let completedCount = 0;
+            let hasFound = false;
 
             kRegions.forEach(region => {
                 const _client = new Client(region, this.credentials);
@@ -81,7 +83,10 @@ export class Client extends BosClient {
                                 creationDate: new Date()
                             });
 
-                            sessionStorage.setItem('buckets', JSON.stringify({buckets, owner}));
+                            if (!hasFound) {
+                                hasFound = true;
+                                sessionStorage.setItem('buckets', JSON.stringify({buckets, owner}));
+                            }
                         } catch (ex) {} // eslint-disable-line
 
                         resolve(body.location);
