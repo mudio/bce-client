@@ -13,7 +13,7 @@ import humanize from 'humanize';
  *
  * @param {number} bytesSize 每秒吞吐量
  */
-export const humenRate = (kbs = 0) => `${humanize.filesize(kbs)}/s`;
+export const humenRate = (kbs = 0) => `${humanize.filesize(kbs * 1024)}/s`;
 
 /**
  * 显示文件大小

@@ -15,7 +15,7 @@
 	"plugins": [
 		"add-module-exports",
 		"dynamic-import-webpack",
-		["import", {"libraryName": "antd", "libraryDirectory": "es", "style": true}]
+		["import", {"libraryName": "antd", "style": true}]
 	],
 	"env": {
 		"production": {

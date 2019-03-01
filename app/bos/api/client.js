@@ -6,7 +6,7 @@
  */
 
 import url from 'url';
-import {BosClient} from 'bce-sdk-js';
+import {BosClient} from '@baiducloud/sdk';
 
 import {REGION_BJ, kRegions} from '../../utils/region';
 import GlobalConfig from '../../main/ConfigManager';

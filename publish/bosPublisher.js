@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import walk from 'fs-walk';
 import yaml from 'js-yaml';
-import {BosClient} from 'bce-sdk-js';
+import {BosClient} from '@baiducloud/sdk';
 
 import buildPackage from '../package.json';
 import appPackage from '../static/package.json';
