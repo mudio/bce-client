@@ -131,7 +131,7 @@ export function migrationObject(config, removeSource = false) {
             const targetKey = item.key.replace(sourceObject, targetObject);
 
             return dispatch(
-                copyObject(sourceBucket, item.key, targetBucket, targetKey)
+                copyObject(sourceBucket, item, targetBucket, targetKey)
             ).then(res => {
                 const {error, response} = res;
 

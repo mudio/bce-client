@@ -6,6 +6,8 @@
  */
 
 import url from 'url';
+import path from 'path';
+import {isString} from 'util';
 import {BosClient} from '@baiducloud/sdk';
 
 import {REGION_BJ, kRegions} from '../../utils/region';
@@ -117,6 +119,50 @@ export class Client extends BosClient {
                 objects,
             };
         });
+    }
+
+    copyObject(sourceBucket, sourceKey, targetBucket, targetKey, options) {
+
+        if (isString(sourceKey)) {
+            return super.copyObject(sourceBucket, sourceKey, targetBucket, targetKey, options);
+        }
+
+        // 文件大于5g要三步复制，这里超过1g就三步复制
+        const MAX_COPY_PART_SIZE = 1073741824; // 1G
+
+        if (sourceKey.size > MAX_COPY_PART_SIZE) {
+            return this.initiateMultipartUpload(targetBucket, targetKey).then(res => {
+                const ranges = [];
+                let length = sourceKey.size;
+                const {uploadId} = res.body;
+
+                while (length > 0) {
+                    const begin = ranges.length * MAX_COPY_PART_SIZE;
+                    const end = length > MAX_COPY_PART_SIZE
+                        ? ranges.length * MAX_COPY_PART_SIZE + MAX_COPY_PART_SIZE - 1
+                        : ranges.length * MAX_COPY_PART_SIZE + length - 1
+
+                    ranges.push(`${begin}-${end}`);
+                    length -= MAX_COPY_PART_SIZE;
+                }
+
+                return Promise.all(ranges.map((range, index) => this.uploadPartCopy(
+                    sourceBucket, sourceKey.key, targetBucket, targetKey, uploadId, index + 1, range
+                ))).then(parts => this.completeMultipartUpload(
+                    targetBucket, targetKey, uploadId,
+                    parts.map((item, index) => Object({
+                        partNumber: index + 1,
+                        eTag: item.body.eTag
+                    }))
+                ));
+            });
+        }
+
+        if (isString(sourceKey.key)) {
+            return super.copyObject(sourceBucket, sourceKey.key, targetBucket, targetKey, options);
+        }
+
+        return Promise.reject(new Error('Invalid Argument'));
     }
 
     listRawObjects(...args) {
