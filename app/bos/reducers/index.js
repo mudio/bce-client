@@ -13,6 +13,7 @@ import explorer from './explorer';
 import navigator from './navigator';
 import downloads from './downloader';
 import uploads from './uploader';
+import processing from './processing';
 
 const rootReducer = combineReducers({
     uploads,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
     explorer,
     navigator,
     downloads,
-    updater
+    updater,
+    processing
 });
 
 export default rootReducer;

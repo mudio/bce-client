@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {Input, Modal, Icon, Form} from 'antd';
+import {Input, Modal, Icon, Form, Alert} from 'antd';
 
 const FormItem = Form.Item;
 
@@ -23,7 +23,7 @@ export default Form.create({
     }
 })(
     (props) => {
-        const {visible, onCancel, onCreate, form} = props;
+        const {visible, onCancel, onCreate, form, object} = props;
         const {getFieldDecorator} = form;
 
         return (
@@ -34,6 +34,9 @@ export default Form.create({
                 onOk={onCreate}
             >
                 <Form layout="vertical">
+                    <FormItem>
+                        <Alert message="文件夹重命名操作时长与文件夹内文件数量有关，数量较多时耗时较长，重命名过程中请保持网络畅通，耐心等待" type="info" showIcon />
+                    </FormItem>
                     <FormItem label="重命名为：">
                         {
                             getFieldDecorator('name', {

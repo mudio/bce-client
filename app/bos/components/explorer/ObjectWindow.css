@@ -23,23 +23,6 @@
     text-align: center;
 }
 
-.loading {
-    color: #ccc;
-    width: 200px;
-    height: 120px;
-    top: calc(50% - 100px);
-    left: calc(50% - 100px);
-    display: flex;
-    position: absolute;
-    align-items: center;
-    flex-flow: column nowrap;
-}
-
-.loading i:before {
-    font-size: 4em;
-    text-align: center;
-}
-
 .error {
     color: #ccc;
     width: 200px;
