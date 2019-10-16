@@ -93,7 +93,7 @@ class Version extends Component {
                     {version}
                     <span className={styles.tip}>
                         发现新版本
-                        <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/BOSCLI.html#BOS.E6.A1.8C.E9.9D.A2">
+                        <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/s/Cjwvyqico">
                             {lastest}
                         </BrowserLink>
                         ，由于更新服务异常，请手动更新。

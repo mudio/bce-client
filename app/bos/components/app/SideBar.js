@@ -75,7 +75,7 @@ class SideBar extends Component {
                     </NavLink>
                 </div>
                 <div className={styles.tool}>
-                    <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/API.html">
+                    <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/s/Ok1rk605h">
                         开发者文档
                     </BrowserLink>
                     <BrowserLink linkTo="https://github.com/leeight/bce-bos-uploader/">
