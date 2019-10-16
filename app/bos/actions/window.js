@@ -175,3 +175,27 @@ export function migrationObject(config, removeSource = false) {
         }
     };
 }
+
+export const CREATE_FOLDER_REQUEST = 'CREATE_FOLDER_REQUEST';
+export const CREATE_FOLDER_SUCCESS = 'CREATE_FOLDER_SUCCESS';
+export const CREATE_FOLDER_FAILURE = 'CREATE_FOLDER_FAILURE';
+
+export function createFolder(bucketName, prefix = '', folderName) {
+    return async dispatch => {
+        const client = await ClientFactory.fromBucket(bucketName);
+
+        try {
+            const deferred = await dispatch({
+                [API_TYPE]: {
+                    types: [CREATE_FOLDER_REQUEST, CREATE_FOLDER_SUCCESS, CREATE_FOLDER_FAILURE],
+                    method: 'putObject',
+                    args: [bucketName, prefix + folderName + '/']
+                }
+            });
+
+            return deferred;
+        } catch (error) {
+            dispatch({type: CREATE_FOLDER_FAILURE, error});
+        }
+    };
+}

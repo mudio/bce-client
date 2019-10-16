@@ -32,7 +32,8 @@ import {
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND,
-    MENU_SHARE_COMMAND
+    MENU_SHARE_COMMAND,
+    MENU_NEW_DIRECTORY_COMMAND
 } from '../../actions/context';
 
 class Window extends Component {
@@ -292,13 +293,15 @@ class Window extends Component {
             } else if (isOSX) {
                 commands = [
                     {type: MENU_UPLOAD_COMMAND},
-                    {type: MENU_REFRESH_COMMAND}
+                    {type: MENU_REFRESH_COMMAND},
+                    {type: MENU_NEW_DIRECTORY_COMMAND}
                 ];
             } else {
                 commands = [
                     {type: MENU_UPLOAD_COMMAND},
                     {type: MENU_UPLOAD_DIRECTORY_COMMAND},
-                    {type: MENU_REFRESH_COMMAND}
+                    {type: MENU_REFRESH_COMMAND},
+                    {type: MENU_NEW_DIRECTORY_COMMAND}
                 ];
             }
 

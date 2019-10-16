@@ -17,13 +17,14 @@ import SideBar from '../app/SideBar';
 import {isOSX} from '../../../utils';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
+import NewFolder from './NewFolder';
 import logger from '../../../utils/logger';
 import SystemBar from '../common/SystemBar';
 import Migration from './migration/Migration';
 import {ClientFactory} from '../../api/client';
 import {createDownloadTask} from '../../actions/downloader';
 import {uploadByDropFile, uploadBySelectPaths} from '../../actions/uploader';
-import {listObjects, deleteObject, migrationObject} from '../../actions/window';
+import {listObjects, deleteObject, migrationObject, createFolder} from '../../actions/window';
 
 import {
     MENU_UPLOAD_COMMAND,
@@ -34,7 +35,8 @@ import {
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND,
-    MENU_SHARE_COMMAND
+    MENU_SHARE_COMMAND,
+    MENU_NEW_DIRECTORY_COMMAND
 } from '../../actions/context';
 
 export default class Explorer extends Component {
@@ -47,7 +49,12 @@ export default class Explorer extends Component {
 
     state = {
         visible: false,
+        newFolder: false,
         option: {}
+    }
+
+    saveFormRef = form => {
+        this.form = form;
     }
 
     _onCommand = (cmd, config) => {
@@ -58,6 +65,11 @@ export default class Explorer extends Component {
             return this._onUploadFile(config);
         case MENU_UPLOAD_DIRECTORY_COMMAND:
             return this._onUploadFile(config, 'openDirectory');
+        case MENU_NEW_DIRECTORY_COMMAND:
+            return this.setState({
+                newFolder: true,
+                option: {bucket, command: cmd}
+            });
         case MENU_REFRESH_COMMAND:
             return this._onReresh();
         case MENU_MOVE_COMMAND:
@@ -231,6 +243,33 @@ export default class Explorer extends Component {
         dispatch(uploadBySelectPaths(selectPaths, {bucket, prefix}));
     }
 
+    /**
+     * 创建文件夹
+     */
+    _onCreateFolder = () => {
+        const {form, props: {bucket, prefix, dispatch}} = this;
+
+        form.validateFields(async (err, values) => {
+            if (err) {
+                return;
+            }
+
+            try {
+                await dispatch(createFolder(bucket, prefix, values.name));
+                notification.success({message: '创建成功', description: `成功创建文件夹${values.name}`});
+
+                this.setState({newFolder: false});
+                this._onReresh();
+            } catch (ex) {
+                notification.error({message: '创建失败', description: ex.message});
+            }
+        });
+    }
+
+    _onCancelCreateFolder = () => {
+        this.setState({newFolder: false});
+    }
+
     updateValue(evt) {
         const target = evt.target.value;
         const {option} = this.state;
@@ -241,7 +280,7 @@ export default class Explorer extends Component {
     }
 
     renderWindow() {
-        const {visible, option} = this.state;
+        const {visible, option, newFolder} = this.state;
         const {region, bucket, prefix, dispatch} = this.props;
 
         if (!bucket) {
@@ -270,6 +309,11 @@ export default class Explorer extends Component {
                     onMigration={this._onMigration}
                     onCancel={this._onCancel}
                 />
+                <NewFolder
+                    ref={this.saveFormRef}
+                    visible={newFolder}
+                    onConfirm={this._onCreateFolder}
+                    onCancel={this._onCancelCreateFolder} />
             </div>
         );
     }

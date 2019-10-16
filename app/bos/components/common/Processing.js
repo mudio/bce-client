@@ -16,8 +16,6 @@ class Processing extends Component {
 
     render() {
         const {processObjects, processedObjects} = this.props;
-
-        console.log(processObjects, processedObjects);
         if (this.props.isFetching || processObjects.length) {
             return (
                 <div className="ant-modal-mask">
