@@ -34,7 +34,7 @@ export default () => next => async action => {
         delete finalAction[API_TYPE];
         return finalAction;
     }
-    next(actionWith({type: requestType}));
+    next(actionWith({type: requestType, args}));
 
     try {
         const response = await _client[method](...args);

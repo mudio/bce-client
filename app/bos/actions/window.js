@@ -6,6 +6,7 @@
  */
 
 import _ from 'lodash';
+import throttle from 'p-throttle';
 
 import {API_TYPE} from '../middleware/api';
 import {ClientFactory} from '../api/client';
@@ -79,8 +80,8 @@ export function deleteObject(bucketName, prefix, objects = []) {
             const deferred = await dispatch({
                 [API_TYPE]: {
                     types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
-                    method: 'deleteAllObjects',
-                    args: [bucketName, removeKeys]
+                    method: removeKeys.length === 1 ? 'deleteObject' : 'deleteAllObjects',
+                    args: [bucketName, removeKeys.length === 1 ? removeKeys[0] : removeKeys]
                 }
             });
 
@@ -127,9 +128,8 @@ export function migrationObject(config, removeSource = false) {
         const client = await ClientFactory.fromBucket(sourceBucket);
         // 查询所有内容，先复制
         const objects = await client.listAllObjects(sourceBucket, sourceObject);
-        const copyTasks = objects.map(item => {
-            const targetKey = item.key.replace(sourceObject, targetObject);
-
+        // 控制一下copy速率，250ms最多执行5次
+        const throttledTask = throttle((item, targetKey) => {
             return dispatch(
                 copyObject(sourceBucket, item, targetBucket, targetKey)
             ).then(res => {
@@ -143,7 +143,12 @@ export function migrationObject(config, removeSource = false) {
                 if (response.body.eTag) {
                     return item.key;
                 }
-            });
+            })
+        }, 5, 250);
+
+        const copyTasks = objects.map(item => {
+            const targetKey = item.key.replace(sourceObject, targetObject);
+            return throttledTask(item, targetKey);
         });
 
         try {
@@ -167,6 +172,30 @@ export function migrationObject(config, removeSource = false) {
             await dispatch(listObjects(sourceBucket, prefix));
         } catch (ex) {
             return Promise.reject(ex);
+        }
+    };
+}
+
+export const CREATE_FOLDER_REQUEST = 'CREATE_FOLDER_REQUEST';
+export const CREATE_FOLDER_SUCCESS = 'CREATE_FOLDER_SUCCESS';
+export const CREATE_FOLDER_FAILURE = 'CREATE_FOLDER_FAILURE';
+
+export function createFolder(bucketName, prefix = '', folderName) {
+    return async dispatch => {
+        const client = await ClientFactory.fromBucket(bucketName);
+
+        try {
+            const deferred = await dispatch({
+                [API_TYPE]: {
+                    types: [CREATE_FOLDER_REQUEST, CREATE_FOLDER_SUCCESS, CREATE_FOLDER_FAILURE],
+                    method: 'putObject',
+                    args: [bucketName, prefix + folderName + '/']
+                }
+            });
+
+            return deferred;
+        } catch (error) {
+            dispatch({type: CREATE_FOLDER_FAILURE, error});
         }
     };
 }

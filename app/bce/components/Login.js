@@ -19,7 +19,7 @@ import BrowserLink from './common/BrowserLink';
 import GlobalConfig from '../../main/ConfigManager';
 
 const credentials = GlobalConfig.get('credentials') || {ak: '', sk: ''};
-const akskHelpLink = 'https://cloud.baidu.com/doc/Reference/GetAKSK.html#.E5.A6.82.E4.BD.95.E8.8E.B7.E5.8F.96AK.20.2F.20SK';
+const akskHelpLink = 'https://cloud.baidu.com/doc/Reference/s/9jwvz2egb/';
 
 export default class Login extends Component {
     static propTypes = {

@@ -83,7 +83,7 @@ export default class MenuManager {
                             label: '开发者文档',
                             click() {
                                 shell.openExternal(
-                                    'https://cloud.baidu.com/doc/BOS/JavaScript-SDK.html#.E6.A6.82.E8.BF.B0'
+                                    'https://cloud.baidu.com/doc/BOS/s/Ok1rk605h'
                                 );
                             }
                         },
