@@ -25,6 +25,9 @@ export default Form.create({
     (props) => {
         const {visible, onCancel, onCreate, form, object} = props;
         const {getFieldDecorator} = form;
+        const message = '文件夹重命名操作时长与文件夹内文件数量有关，数量较多时耗时较长，重命名过程中请保持网络畅通，耐心等待';
+        const tip = object[object.length - 1] === '/'
+            ? <FormItem><Alert message={message} type="info" showIcon /></FormItem> : null;
 
         return (
             <Modal title="重命名"
@@ -34,9 +37,7 @@ export default Form.create({
                 onOk={onCreate}
             >
                 <Form layout="vertical">
-                    <FormItem>
-                        <Alert message="文件夹重命名操作时长与文件夹内文件数量有关，数量较多时耗时较长，重命名过程中请保持网络畅通，耐心等待" type="info" showIcon />
-                    </FormItem>
+                    {tip}
                     <FormItem label="重命名为：">
                         {
                             getFieldDecorator('name', {
