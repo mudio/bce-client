@@ -6,9 +6,7 @@
  */
 
 import React, {Component} from 'react';
-import {Store} from 'redux';
 import {connect} from 'react-redux';
-import debounceRender from 'react-debounce-render';
 
 import styles from './Processing.css';
 

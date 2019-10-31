@@ -143,6 +143,7 @@
   },
   "dependencies": {
     "@baiducloud/sdk": "^1.0.0-rc.6",
+    "@nodelib/fs.walk": "^1.2.4",
     "antd": "^3.14.1",
     "async": "^2.6.2",
     "bce-service-bos-transport": "github:mudio/bce-service-bos-transport",
@@ -150,7 +151,6 @@
     "configstore": "^4.0.0",
     "electron-log": "^2.2.17",
     "font-awesome": "^4.7.0",
-    "fs-walk": "0.0.2",
     "history": "^4.7.2",
     "humanize": "0.0.9",
     "lodash": "^4.17.11",
