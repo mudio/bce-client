@@ -5,7 +5,6 @@
  * @author helianthuswhite(hyz19960229@gmail.com)
  */
 
-import u from 'lodash';
 import {
     LIST_OBJECT_SUCCESS, LIST_OBJECT_FAILURE,
     COPY_OBJECT_REQUEST, COPY_OBJECT_SUCCESS, COPY_OBJECT_FAILURE

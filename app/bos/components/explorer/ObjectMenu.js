@@ -85,8 +85,9 @@ class ObjectMenu extends Component {
          * a directory selector will be shown.
          */
         const fakeMenuBar = () => {
-            const uploadDirectory = isWin ? <Button type="primary" size="small" icon="upload"
-                onClick={this._onUploadDirectory}>上传目录</Button> : null;
+            const uploadDirectory = isWin
+                ? <Button type="primary" size="small" icon="upload" onClick={this._onUploadDirectory}>上传目录</Button>
+                : null;
             return (
                 <div className={styles.layoutLeft}>
                     <Button type="primary" size="small" icon="upload" onClick={this._onUpload}>上传</Button>

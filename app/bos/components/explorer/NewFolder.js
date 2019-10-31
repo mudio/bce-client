@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {Input, Modal, Icon, Form, Alert} from 'antd';
+import {Input, Modal, Icon, Form} from 'antd';
 
 const FormItem = Form.Item;
 

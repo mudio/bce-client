@@ -7,10 +7,16 @@
 
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 
 import styles from './Processing.css';
 
 class Processing extends Component {
+    static propTypes = {
+        processObjects: PropTypes.array,
+        processedObjects: PropTypes.array,
+        isFetching: PropTypes.bool
+    };
 
     render() {
         const {processObjects, processedObjects} = this.props;

@@ -129,22 +129,20 @@ export function migrationObject(config, removeSource = false) {
         // 查询所有内容，先复制
         const objects = await client.listAllObjects(sourceBucket, sourceObject);
         // 控制一下copy速率，250ms最多执行5次
-        const throttledTask = throttle((item, targetKey) => {
-            return dispatch(
-                copyObject(sourceBucket, item, targetBucket, targetKey)
-            ).then(res => {
-                const {error, response} = res;
+        const throttledTask = throttle((item, targetKey) => dispatch(
+            copyObject(sourceBucket, item, targetBucket, targetKey)
+        ).then(res => {
+            const {error, response} = res;
 
-                if (error) {
-                    return Promise.reject(error);
-                }
+            if (error) {
+                return Promise.reject(error);
+            }
 
-                // 如有etag就认为成功了
-                if (response.body.eTag) {
-                    return item.key;
-                }
-            })
-        }, 5, 250);
+            // 如有etag就认为成功了
+            if (response.body.eTag) {
+                return item.key;
+            }
+        }), 5, 250);
 
         const copyTasks = objects.map(item => {
             const targetKey = item.key.replace(sourceObject, targetObject);
@@ -182,14 +180,12 @@ export const CREATE_FOLDER_FAILURE = 'CREATE_FOLDER_FAILURE';
 
 export function createFolder(bucketName, prefix = '', folderName) {
     return async dispatch => {
-        const client = await ClientFactory.fromBucket(bucketName);
-
         try {
             const deferred = await dispatch({
                 [API_TYPE]: {
                     types: [CREATE_FOLDER_REQUEST, CREATE_FOLDER_SUCCESS, CREATE_FOLDER_FAILURE],
                     method: 'putObject',
-                    args: [bucketName, prefix + folderName + '/']
+                    args: [bucketName, `${prefix}${folderName}/`]
                 }
             });
 

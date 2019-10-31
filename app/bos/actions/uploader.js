@@ -96,17 +96,17 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
     dispatch(uploadStart([uuid]));
 }
 
-function _invokeFileAfterWalk(path, bucket, prefix, dispatch) {
+function _invokeFileAfterWalk(targetPath, bucket, prefix, dispatch) {
     const keymap = {};
     let totalSize = 0;
 
     walk(
-        path,
+        targetPath,
         new Settings({stats: true}),
         (err, entries) => {
             if (err) {
                 return notification.error({
-                    message: `上传 ${name} 错误`,
+                    message: `上传 ${err.fileName} 错误`,
                     description: err.message
                 });
             }
@@ -120,7 +120,7 @@ function _invokeFileAfterWalk(path, bucket, prefix, dispatch) {
             });
 
             _invokeFolder(
-                path,
+                targetPath,
                 {bucketName: bucket, prefix, totalSize, keymap},
                 dispatch
             );
@@ -157,8 +157,7 @@ export function uploadBySelectPaths(selectedPaths = [], {bucket, prefix}) {
 
             if (isDirectory) {
                 _invokeFileAfterWalk(targetPath, bucket, prefix, dispatch);
-            }
-            else {
+            } else {
                 _invokeFile(
                     {name, path: targetPath, size: stat.size},
                     {bucketName: bucket, prefix},

@@ -126,51 +126,30 @@ export default class Explorer extends Component {
     }
 
     /**
-     * 统一处理删除行为
-     *
-     * @param {any} bucketName
-     * @param {any} prefix
-     * @param {any} keys
-     *
-     * @memberOf Explorer
+     * 创建文件夹
      */
-    _trash(bucketName, prefix, keys) {
-        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
+    _onCreateFolder = () => {
+        const {form, props: {bucket, prefix, dispatch}} = this;
 
-        const onOk = async () => {
-            try {
-                await this.props.dispatch(deleteObject(bucketName, prefix, keys));
-                notification.success({message: '删除成功', description: `成功删除${toast}`});
-            } catch (ex) {
-                notification.error({message: '删除失败', description: ex.message});
+        form.validateFields(async (err, values) => {
+            if (err) {
+                return;
             }
 
-            this._onReresh();
-        };
+            try {
+                await dispatch(createFolder(bucket, prefix, values.name));
+                notification.success({message: '创建成功', description: `成功创建文件夹${values.name}`});
 
-        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
+                this.setState({newFolder: false});
+                this._onReresh();
+            } catch (ex) {
+                notification.error({message: '创建失败', description: ex.message});
+            }
+        });
     }
 
-    /**
-     * 分享文件
-     *
-     * @param {string} bucketName
-     * @param {string} objectKey
-     * @returns
-     *
-     * @memberOf Explorer
-     */
-    async _share(bucket, objectKey) {
-        try {
-            const client = await ClientFactory.fromBucket(bucket);
-            const url = await client.generatePresignedUrl(bucket, objectKey);
-
-            clipboard.writeText(url);
-
-            message.info('已复制到剪切板');
-        } catch (ex) {
-            message.error('分享链接错误');
-        }
+    _onCancelCreateFolder = () => {
+        this.setState({newFolder: false});
     }
 
     /**
@@ -244,30 +223,51 @@ export default class Explorer extends Component {
     }
 
     /**
-     * 创建文件夹
+     * 分享文件
+     *
+     * @param {string} bucketName
+     * @param {string} objectKey
+     * @returns
+     *
+     * @memberOf Explorer
      */
-    _onCreateFolder = () => {
-        const {form, props: {bucket, prefix, dispatch}} = this;
+    async _share(bucket, objectKey) {
+        try {
+            const client = await ClientFactory.fromBucket(bucket);
+            const url = await client.generatePresignedUrl(bucket, objectKey);
 
-        form.validateFields(async (err, values) => {
-            if (err) {
-                return;
-            }
+            clipboard.writeText(url);
 
-            try {
-                await dispatch(createFolder(bucket, prefix, values.name));
-                notification.success({message: '创建成功', description: `成功创建文件夹${values.name}`});
-
-                this.setState({newFolder: false});
-                this._onReresh();
-            } catch (ex) {
-                notification.error({message: '创建失败', description: ex.message});
-            }
-        });
+            message.info('已复制到剪切板');
+        } catch (ex) {
+            message.error('分享链接错误');
+        }
     }
 
-    _onCancelCreateFolder = () => {
-        this.setState({newFolder: false});
+    /**
+     * 统一处理删除行为
+     *
+     * @param {any} bucketName
+     * @param {any} prefix
+     * @param {any} keys
+     *
+     * @memberOf Explorer
+     */
+    _trash(bucketName, prefix, keys) {
+        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
+
+        const onOk = async () => {
+            try {
+                await this.props.dispatch(deleteObject(bucketName, prefix, keys));
+                notification.success({message: '删除成功', description: `成功删除${toast}`});
+            } catch (ex) {
+                notification.error({message: '删除失败', description: ex.message});
+            }
+
+            this._onReresh();
+        };
+
+        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
     }
 
     updateValue(evt) {
@@ -313,7 +313,8 @@ export default class Explorer extends Component {
                     ref={this.saveFormRef}
                     visible={newFolder}
                     onConfirm={this._onCreateFolder}
-                    onCancel={this._onCancelCreateFolder} />
+                    onCancel={this._onCancelCreateFolder}
+                />
             </div>
         );
     }

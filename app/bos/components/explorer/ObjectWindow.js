@@ -356,7 +356,7 @@ class Window extends Component {
                             ))
                         }
                     </Selection>
-                    <Processing></Processing>
+                    <Processing />
                     {this.renderMore()}
                     {this.renderError()}
                     {this.renderEmpty()}
