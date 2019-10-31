@@ -9,7 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import walk from 'fs-walk';
+import {walk, Settings} from '@nodelib/fs.walk';
 import {notification} from 'antd';
 
 import {getUuid} from '../../utils/helper';
@@ -96,6 +96,38 @@ function _invokeFolder(relativePath, options = {}, dispatch) {
     dispatch(uploadStart([uuid]));
 }
 
+function _invokeFileAfterWalk(path, bucket, prefix, dispatch) {
+    const keymap = {};
+    let totalSize = 0;
+
+    walk(
+        path,
+        new Settings({stats: true}),
+        (err, entries) => {
+            if (err) {
+                return notification.error({
+                    message: `上传 ${name} 错误`,
+                    description: err.message
+                });
+            }
+
+            entries.forEach(file => {
+                //  只上传文件就够了
+                if (!file.dirent.isDirectory()) {
+                    keymap[file.path] = {size: file.stats.size, finish: false};
+                    totalSize += file.stats.size;
+                }
+            });
+
+            _invokeFolder(
+                path,
+                {bucketName: bucket, prefix, totalSize, keymap},
+                dispatch
+            );
+        }
+    );
+}
+
 export function uploadByDropFile(dataTransferItem = [], {bucket, prefix}) {
     return dispatch => {
         // 支持拖拽多个文件，包括文件、文件夹
@@ -108,35 +140,8 @@ export function uploadByDropFile(dataTransferItem = [], {bucket, prefix}) {
                     file, {bucketName: bucket, prefix}, dispatch // eslint-disable-line no-loop-func
                 ));
             } else {
-                const keymap = {};
-                let totalSize = 0;
                 const _fileRelativePath = item.getAsFile().path;
-
-                walk.files(
-                    _fileRelativePath,
-                    (basedir, filename, stat, next) => { // eslint-disable-line no-loop-func
-                        const _localPath = path.join(basedir, filename);
-
-                        keymap[_localPath] = {size: stat.size, finish: false};
-                        totalSize += stat.size;
-
-                        next();
-                    },
-                    err => { // eslint-disable-line no-loop-func
-                        if (err) {
-                            return notification.error({
-                                message: `上传 ${entry.name} 错误`,
-                                description: err.message
-                            });
-                        }
-
-                        _invokeFolder(
-                            _fileRelativePath,
-                            {bucketName: bucket, prefix, totalSize, keymap},
-                            dispatch
-                        );
-                    }
-                );
+                _invokeFileAfterWalk(_fileRelativePath, bucket, prefix, dispatch);
                 // end walk
             }
         }
@@ -151,42 +156,15 @@ export function uploadBySelectPaths(selectedPaths = [], {bucket, prefix}) {
             const isDirectory = stat.isDirectory();
 
             if (isDirectory) {
-                let totalSize = 0;
-                const keymap = {};
-
-                walk.files(
-                    targetPath,
-                    (basedir, filename, {size}, next) => { // eslint-disable-line no-loop-func
-                        const _localPath = path.join(basedir, filename);
-
-                        keymap[_localPath] = {size, finish: false};
-                        totalSize += size;
-
-                        next();
-                    },
-                    err => { // eslint-disable-line no-loop-func
-                        if (err) {
-                            return notification.error({
-                                message: `上传 ${name} 错误`,
-                                description: err.message
-                            });
-                        }
-
-                        _invokeFolder(
-                            targetPath,
-                            {bucketName: bucket, prefix, totalSize, keymap},
-                            dispatch
-                        );
-                    }
-                );
-                return;
+                _invokeFileAfterWalk(targetPath, bucket, prefix, dispatch);
             }
-
-            _invokeFile(
-                {name, path: targetPath, size: stat.size},
-                {bucketName: bucket, prefix},
-                dispatch
-            );
+            else {
+                _invokeFile(
+                    {name, path: targetPath, size: stat.size},
+                    {bucketName: bucket, prefix},
+                    dispatch
+                );
+            }
         });
     };
 }
