@@ -1,7 +1,7 @@
 {
   "name": "bce-client",
   "productName": "百度云",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "build-fork": "cp ./node_modules/bce-service-bos-transport/dist/*.js ./static/",
     "build-dll": "cross-env NODE_ENV=development node --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.renderer.dev.dll.js --colors",
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.main.js --progress --profile --colors",
-    "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.renderer.prod.js --progress --profile --colors",
+    "build-renderer": "cross-env NODE_ENV=production NODE_OPTIONS='--max-old-space-size=8192' node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.renderer.prod.js --progress --profile --colors",
     "compile": "npm run build-main && npm run build-renderer && npm run build-fork",
     "preview": "cross-env NODE_ENV=production electron ./static/",
     "start": "cross-env HOT=1 NODE_ENV=development electron -r babel-register ./app/main",
@@ -120,6 +120,7 @@
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "fbjs-scripts": "^0.8.3",
     "file-loader": "^1.1.11",
+    "hard-source-webpack-plugin": "^0.13.1",
     "html-webpack-plugin": "^3.2.0",
     "js-yaml": "^3.12.2",
     "jsdom": "^11.12.0",
@@ -149,7 +150,7 @@
     "bce-service-bos-transport": "github:mudio/bce-service-bos-transport",
     "classnames": "^2.2.6",
     "configstore": "^4.0.0",
-    "electron-log": "^2.2.17",
+    "electron-log": "^3.0.9",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "humanize": "0.0.9",
@@ -166,7 +167,8 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "semver": "^5.6.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "watch": "^1.0.2"
   },
   "optionalDependencies": {
     "7zip-bin-mac": "^1.0.1",

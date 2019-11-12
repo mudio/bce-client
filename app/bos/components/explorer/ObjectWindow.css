@@ -103,7 +103,7 @@
 
 .head {
     display: flex;
-    padding-right: 10px;
+    padding: 0 10px;
     flex-shrink: 0;
     color: #8692B2;
     line-height: 30px;

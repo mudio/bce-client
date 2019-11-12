@@ -9,7 +9,7 @@ import {connect} from 'react-redux';
 import Explorer from '../components/explorer/Explorer';
 
 function mapStateToProps(state) {
-    return state.navigator;
+    return Object.assign({}, state.navigator, {syncdisk: state.syncdisk});
 }
 
 export default connect(mapStateToProps)(Explorer);

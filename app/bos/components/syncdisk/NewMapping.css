@@ -1,0 +1,40 @@
+
+.path {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    margin-left: 10px;
+    line-height: 1;
+}
+
+.tooltip {
+    max-width: initial;
+}
+
+.optionWrapper {
+    max-height: 250px;
+    padding-left: 0;
+    list-style: none;
+    overflow: auto;
+}
+
+.option {
+    position: relative;
+    display: block;
+    padding: 5px 12px;
+    overflow: hidden;
+    color: rgba(0,0,0,0.65);
+    font-weight: normal;
+    line-height: 22px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: background .3s ease;
+}
+
+.option:hover {
+    background-color: #e6f7ff;
+}

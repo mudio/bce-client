@@ -14,6 +14,8 @@ import navigator from './navigator';
 import downloads from './downloader';
 import uploads from './uploader';
 import processing from './processing';
+import syncdisk from './syncdisk';
+import action from './action';
 
 const rootReducer = combineReducers({
     uploads,
@@ -22,7 +24,9 @@ const rootReducer = combineReducers({
     navigator,
     downloads,
     updater,
-    processing
+    processing,
+    syncdisk,
+    action
 });
 
 export default rootReducer;

@@ -11,6 +11,9 @@ export const UploadCommandType = Symbol.for(_uploadType);
 export const _downloadType = 'DownloadCommand';
 export const DownloadCommandType = Symbol.for(_downloadType);
 
+export const _syncType = 'SyncCommand';
+export const SyncCommandType = Symbol.for(_syncType);
+
 export const UploadNotify = {
     New: 'upload_notify_new',
     Boot: 'upload_notify_boot',
@@ -39,4 +42,16 @@ export const DownloadNotify = {
     Pausing: 'download_notify_pausing',
     Paused: 'download_notify_paused',
     ClearFinish: 'download_notify_clear_finish'
+};
+
+export const SyncNotify = {
+    New: 'sync_notify_new',
+    Boot: 'sync_notify_boot',
+    Error: 'sync_notify_error',
+    Pausing: 'sync_notify_pausing',
+    Remove: 'sync_notify_remove',
+    Finish: 'sync_notify_finish',
+    FinishPart: 'sync_notify_finish_part',
+    Progress: 'sync_notify_progress',
+    ClearFinish: 'sync_notify_clear_finish'
 };

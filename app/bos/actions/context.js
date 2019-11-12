@@ -16,6 +16,9 @@ export const MENU_UPLOAD_COMMAND = Symbol('Upload');
 export const MENU_REFRESH_COMMAND = Symbol('Refresh');
 export const MENU_UPLOAD_DIRECTORY_COMMAND = Symbol('Directory');
 export const MENU_NEW_DIRECTORY_COMMAND = Symbol('Path');
+export const MENU_PAUSE_COMMAND = Symbol('Pause');
+export const MENU_START_COMMAND = Symbol('Start');
+export const MENU_NEW_MAPPING_COMMAND = Symbol('Mapping');
 
 export const commandMap = {
     [MENU_UPLOAD_COMMAND]: {name: '上传', icon: 'cloud-upload', command: MENU_UPLOAD_COMMAND},
@@ -28,5 +31,6 @@ export const commandMap = {
     [MENU_VIEW_COMMAND]: {name: '查看', icon: 'eye', command: MENU_VIEW_COMMAND},
     [MENU_RENAME_COMMAND]: {name: '重命名', icon: 'pencil', command: MENU_RENAME_COMMAND},
     [MENU_DOWNLOAD_COMMAND]: {name: '下载', icon: 'cloud-download', command: MENU_DOWNLOAD_COMMAND},
-    [MENU_NEW_DIRECTORY_COMMAND]: {name: '新建文件夹', icon: 'plus', command: MENU_NEW_DIRECTORY_COMMAND}
+    [MENU_NEW_DIRECTORY_COMMAND]: {name: '新建文件夹', icon: 'plus', command: MENU_NEW_DIRECTORY_COMMAND},
+    [MENU_NEW_MAPPING_COMMAND]: {name: '创建同步盘', icon: 'plus', command: MENU_NEW_MAPPING_COMMAND}
 };

@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import u from 'underscore';
 import path from 'path';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -19,8 +20,10 @@ import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
 import NewFolder from './NewFolder';
 import logger from '../../../utils/logger';
+import {getUuid} from '../../../utils/helper';
 import SystemBar from '../common/SystemBar';
 import Migration from './migration/Migration';
+import NewMapping from '../syncdisk/NewMapping';
 import {ClientFactory} from '../../api/client';
 import {createDownloadTask} from '../../actions/downloader';
 import {uploadByDropFile, uploadBySelectPaths} from '../../actions/uploader';
@@ -36,15 +39,27 @@ import {
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND,
     MENU_SHARE_COMMAND,
-    MENU_NEW_DIRECTORY_COMMAND
+    MENU_NEW_DIRECTORY_COMMAND,
+    MENU_NEW_MAPPING_COMMAND
 } from '../../actions/context';
+import {
+    SYNCDISK_NEW_MAPPING,
+    SYNCDISK_CHANGE_NEWMAPPING,
+    SYNCDISK_CHANGE_SIGNAL,
+    changeBosPath
+} from '../../actions/syncdisk';
 
 export default class Explorer extends Component {
     static propTypes = {
         region: PropTypes.string.isRequired,
         bucket: PropTypes.string,
         prefix: PropTypes.string,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+        syncdisk: PropTypes.shape({
+            localPath: PropTypes.string,
+            bosPath: PropTypes.string,
+            mappings: PropTypes.array.isRequired
+        })
     };
 
     state = {
@@ -59,6 +74,8 @@ export default class Explorer extends Component {
 
     _onCommand = (cmd, config) => {
         const {bucket, prefix = '', keys} = config;
+        const {dispatch} = this.props;
+        const bosPath = prefix ? `${bucket}/${prefix}` : `${bucket}/`;
 
         switch (cmd) {
         case MENU_UPLOAD_COMMAND:
@@ -86,6 +103,9 @@ export default class Explorer extends Component {
             return this._download(bucket, prefix, keys);
         case MENU_SHARE_COMMAND:
             return this._share(bucket, keys[0]);
+        case MENU_NEW_MAPPING_COMMAND:
+            dispatch(changeBosPath(bosPath));
+            return dispatch({type: SYNCDISK_NEW_MAPPING});
         default:
             logger.warn(`invalid context command ${cmd.toString()}`);
         }
@@ -245,6 +265,25 @@ export default class Explorer extends Component {
     }
 
     /**
+     * 确定操作
+     */
+    _onNewMapping() {
+        const {dispatch, syncdisk} = this.props;
+        const {localPath, bosPath, mappings} = syncdisk;
+        if (bosPath && localPath) {
+            if (u.find(mappings, item => item.localPath === localPath && item.bosPath === bosPath)) {
+                return notification.error({message: '创建失败：已存在相同映射关系'});
+            }
+            const mapping = {localPath, bosPath, status: 'running', uuid: getUuid()};
+            dispatch({type: SYNCDISK_CHANGE_NEWMAPPING, mapping});
+            dispatch({type: SYNCDISK_CHANGE_SIGNAL, mapping});
+            notification.success({message: '同步盘创建成功，可在左侧同步盘中管理任务'});
+            return;
+        }
+        notification.error({message: '创建失败：参数填写错误'});
+    }
+
+    /**
      * 统一处理删除行为
      *
      * @param {any} bucketName
@@ -315,6 +354,7 @@ export default class Explorer extends Component {
                     onConfirm={this._onCreateFolder}
                     onCancel={this._onCancelCreateFolder}
                 />
+                <NewMapping dispatch={dispatch} onConfirm={() => this._onNewMapping()} />
             </div>
         );
     }
