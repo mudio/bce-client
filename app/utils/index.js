@@ -46,8 +46,8 @@ export const isWin = process.platform === 'win32';
  * 日志文件前缀
  */
 export const getLogPath = name => {
-    const file = path.relative(homedir(), name).replace(/\//g, '_');
+    const file = path.relative(homedir(), name);
     return isOSX
-        ? `${homedir()}/Library/Logs/百度云/${file}.log`
-        : `${homedir()}\\AppData\\Roaming\\百度云\\${file}.log`;
+        ? `${homedir()}/Library/Logs/百度云/${file.replace(/\//g, '_')}.txt`
+        : `${homedir()}\\AppData\\Roaming\\百度云\\${file.replace(/\\/g, '_')}.txt`;
 };

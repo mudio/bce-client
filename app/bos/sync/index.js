@@ -26,6 +26,7 @@ async function _getMixinTask(task) {
 export const startSync = async uuid => {
     const {mappings} = window.globalStore.getState().syncdisk;
     const rawTask = u.find(mappings, item => item.uuid === uuid);
+    const taskIndex = u.findIndex(mappings, item => item.uuid === uuid);
     try {
         const task = await _getMixinTask(rawTask);
         const throttled = u.throttle(() => {
@@ -43,7 +44,7 @@ export const startSync = async uuid => {
         window.globalStore.dispatch({type: SYNCDISK_CHANGE_MAPPING, mapping});
 
         const logger = new SyncLogger(rawTask.localPath);
-        const message = `同步盘${rawTask.key}启动失败：${error.message || error}`;
+        const message = `同步盘${taskIndex}启动失败：${error.message || error}`;
         notification.error({message});
         logger.error(message);
     }

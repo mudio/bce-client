@@ -6,12 +6,15 @@
  */
 
 import {app, ipcMain} from 'electron';
+import log from 'electron-log';
 
 import {isDev} from './utils/helper';
 import AutoUpdater from './main/AutoUpdater';
 import MenuManager from './main/MenuManager';
 import Development from './main/Development';
 import WindowManager from './main/WindowManager';
+
+global.log = log;
 
 let _window = null;
 

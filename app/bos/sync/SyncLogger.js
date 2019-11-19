@@ -10,7 +10,7 @@ import {getLogPath} from '../../utils';
 
 export default class SyncLogger {
     constructor(name) {
-        this.log = remote.require('electron-log');
+        this.log = remote.getGlobal('log');
         this.log.transports.file.level = 'info';
         this.log.transports.console.level = 'debug';
         this.log.transports.file.maxSize = 100 * 1024 * 1024;
