@@ -48,6 +48,10 @@ export default class BceModule {
                 const {status, uuid} = action.mapping;
                 status === 'running' ? startSync(uuid) : stopSync(uuid);
             }
+
+            //  告诉主进程当前是否有同步任务
+            const paused = syncdisk.mappings.reduce((r, item) => r && item.status === 'paused', true);
+            ipcRenderer.send('sync', !paused);
         });
 
         ipcRenderer.on('notify', (event, type, message) => {

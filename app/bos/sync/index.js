@@ -44,9 +44,11 @@ export const startSync = async uuid => {
         window.globalStore.dispatch({type: SYNCDISK_CHANGE_MAPPING, mapping});
 
         const logger = new SyncLogger(rawTask.localPath);
-        const message = `同步盘${taskIndex}启动失败：${error.message || error}`;
-        notification.error({message});
-        logger.error(message);
+        const description = error
+            ? error.message || error
+            : '未知错误';
+        notification.error({message: `同步盘${taskIndex + 1}启动失败：`, description});
+        logger.error(description);
     }
 };
 
@@ -55,3 +57,9 @@ export const stopSync = uuid => {
         processers[uuid].kill();
     }
 };
+
+export const clearLog = uuid => {
+    if (processers[uuid]) {
+        processers[uuid].clearLog();
+    }
+}

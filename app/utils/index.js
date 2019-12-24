@@ -49,5 +49,5 @@ export const getLogPath = name => {
     const file = path.relative(homedir(), name);
     return isOSX
         ? `${homedir()}/Library/Logs/百度云/${file.replace(/\//g, '_')}.txt`
-        : `${homedir()}\\AppData\\Roaming\\百度云\\${file.replace(/\\/g, '_')}.txt`;
+        : `${homedir()}\\AppData\\Roaming\\百度云\\${file.replace(/:/g, '').replace(/\\/g, '_')}.txt`;
 };

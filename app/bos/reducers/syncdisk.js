@@ -14,6 +14,7 @@ import {
     SYNCDISK_CHANGE_MAPPING,
     SYNCDISK_CHANGE_DELETEMAPPING
 } from '../actions/syncdisk';
+import {clearLog, stopSync} from '../sync/index';
 
 const defaultState = {
     //  是否显示新建同步盘映射
@@ -50,9 +51,14 @@ export default function explorer(state = defaultState, action) {
 
     case SYNCDISK_CHANGE_DELETEMAPPING:
         return Object.assign({}, state, {
-            mappings: mappings.filter((value, i) => action.indexs.indexOf(i) === -1)
+            mappings: mappings.filter((value, i) => {
+                if (action.indexs.indexOf(i) === -1) {
+                    return true;
+                }
+                clearLog(value.uuid);
+                return false;
+            })
         });
-
     default:
         return state;
     }

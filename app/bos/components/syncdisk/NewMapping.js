@@ -144,7 +144,9 @@ class NewMapping extends Component {
                 return item;
             });
         } catch (error) {
-            notification.error({message: ErrorCode[error.code]});
+            ErrorCode[error.code]
+                ? notification.error({message: ErrorCode[error.code]})
+                : notification.error({message: error.code, description: error.message});
         }
         this.setState({objects, bucketName, loading: false});
         return objects;

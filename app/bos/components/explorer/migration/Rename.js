@@ -41,10 +41,10 @@ export default Form.create({
                     <FormItem label="重命名为：">
                         {
                             getFieldDecorator('name', {
-                                rules: [{
-                                    required: true,
-                                    message: '输入名称不能为空!'
-                                }]
+                                rules: [
+                                    {required: true, message: '输入名称不能为空!'},
+                                    {pattern: /^((?!\/).)*$/, message: '输入名称不能包含/'}
+                                ]
                             })(
                                 <Input placeholder="请输入新的名称"
                                     prefix={<Icon type="edit" style={{fontSize: 13}} />}

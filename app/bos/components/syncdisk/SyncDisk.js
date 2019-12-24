@@ -194,6 +194,7 @@ class SyncDisk extends Component {
                     return item.key - 1;
                 });
                 this.props.dispatch({type: SYNCDISK_CHANGE_DELETEMAPPING, indexs});
+                this.setState({selectedItems: []});
             }
         });
     }
@@ -255,6 +256,7 @@ class SyncDisk extends Component {
                     <Header
                         dispatch={dispatch}
                         dataSource={mappings}
+                        selectedItems={this.state.selectedItems}
                         onNewTask={() => this.onNewTask()}
                         onDelete={() => this.onDelete(this.state.selectedItems)}
                         // onRefresh={() => this.onRefresh()}

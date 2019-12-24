@@ -5,7 +5,9 @@
  * @author helianthuswhite(hyz19960229@gmail.com)
  */
 
+import fs from 'fs';
 import {remote} from 'electron';
+import {notification} from 'antd';
 import {getLogPath} from '../../utils';
 
 export default class SyncLogger {
@@ -28,5 +30,13 @@ export default class SyncLogger {
 
     getInstance() {
         return this.log;
+    }
+
+    clear() {
+        fs.unlink(this.log.transports.file.file, err => {
+            if (err) {
+                notification.error({message: '清除日志失败', description: err.message});
+            }
+        });
     }
 }

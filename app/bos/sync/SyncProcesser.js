@@ -8,11 +8,13 @@
 import u from 'underscore';
 import fs from 'fs';
 import path from 'path';
+import async from 'async';
 import watch from 'watch';
 import childProcess from 'child_process';
 import {walk, Settings} from '@nodelib/fs.walk';
 import {EventEmitter} from 'events';
 import {UploadCommand} from 'bce-service-bos-transport';
+import {notification} from 'antd';
 
 import SyncLogger from './SyncLogger';
 import {getUuid} from '../../utils/helper';
@@ -35,7 +37,8 @@ export default class SyncProcesser extends EventEmitter {
 
         walk(folder, new Settings({stats: true}), (err, entries) => {
             if (err) {
-                return this.logger.error(`读取 ${err.fileName} 错误：${err.message}`);
+                this.logger.error(`读取文件夹错误：${err.message}`);
+                return notification.error({message: '读取文件夹错误', description: err.message});
             }
 
             entries.forEach(file => {
@@ -58,7 +61,7 @@ export default class SyncProcesser extends EventEmitter {
 
             this._task.keymap = keymap;
 
-            Object.entries(keymap).forEach(item => {
+            async.eachLimit(Object.entries(keymap), 8, (item, callback) => {
                 const [localPath, option] = item;
                 const relativePath = path.relative(folder, localPath);
                 const objectKey = path.posix.join(prefix, ...relativePath.split(path.sep));
@@ -66,6 +69,8 @@ export default class SyncProcesser extends EventEmitter {
                 this.add({
                     uuid: option.uuid, bucketName, objectKey, localPath, uploadId: option.uploadId
                 });
+
+                setTimeout(callback, 30 * 1000);
             });
         });
     }
@@ -206,5 +211,9 @@ export default class SyncProcesser extends EventEmitter {
                 this._monitor.stop();
             }
         }
+    }
+
+    clearLog() {
+        this.logger.clear();
     }
 }
