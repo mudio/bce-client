@@ -44,23 +44,20 @@ app.on('ready', () => {
             _window = win;
 
             //  关闭确认
-            _window.on('close', async e => {
+            _window.on('close', e => {
                 if (sync) {
-                    dialog.showMessageBox({
+                    const index = dialog.showMessageBox({
                         type: 'warning',
                         title: '确认退出',
                         defaultId: 0,
                         message: '检测到您正在进行数据同步任务，关闭后任务将自动结束，是否继续退出？',
                         buttons: ['确认', '取消']
-                    },
-                    index => {
-                        e.preventDefault();
-                        if (index === 1) {
-                            return e.preventDefault();
-                        }
-                        _window = null;
-                        app.exit();
                     });
+                    if (index === 1) {
+                        return e.preventDefault();
+                    }
+                    _window = null;
+                    app.exit();
                 }
             });
 

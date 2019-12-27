@@ -92,11 +92,11 @@ export class Client extends BosClient {
 
                         resolve(body.location);
                     },
-                    () => {
+                    err => {
                         completedCount += 1;
 
                         if (completedCount >= kRegions.length) {
-                            reject();
+                            reject(err);
                         }
                     }
                 );
