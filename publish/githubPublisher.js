@@ -11,7 +11,7 @@ import fs from 'fs';
 import url from 'url';
 import path from 'path';
 import mime from 'mime';
-import walk from 'fs-walk';
+import {walk, Settings} from '@nodelib/fs.walk';
 import request from 'request';
 
 import buildPackage from '../package.json';
@@ -105,9 +105,14 @@ function publish() {
 
             const uploadUrl = draft.upload_url.substring(0, draft.upload_url.indexOf('{'));
 
-            walk.files(
-                distDir, // nsis 安装包在根目录下
-                (basedir, filename) => {
+            walk(distDir, new Settings({stats: true}), (err, entries) => {
+                if (err) {
+                    console.log(err.message);
+                    return;
+                }
+
+                entries.forEach(file => {
+                    const filename = path.relative(distDir, file.path);
                     const ext = path.extname(filename);
                     if (ext === '.exe') {
                         const assetName = `${name}-${version}-nsis.exe`;
@@ -118,9 +123,8 @@ function publish() {
                         const assetName = `${name}-${version}.dmg`;
                         prepareUpload(basedir, filename, uploadUrl, assetName, draft);
                     }
-                },
-                err => console.log(err.message)
-            );
+                });
+            });
         } catch (ex) {
             console.error(ex.message);
         }

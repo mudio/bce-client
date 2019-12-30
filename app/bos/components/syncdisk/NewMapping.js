@@ -39,9 +39,18 @@ class NewMapping extends Component {
 
     componentWillReceiveProps(nextProps) {
         // 获取buckets
-        if (nextProps.visible && !this.state.buckets.length) {
-            this._getBuckets();
+        if (nextProps.visible && !this.props.visible) {
+            this.initData();
         }
+    }
+
+    /**
+     * 初始化数据
+     */
+    initData() {
+        this._getBuckets();
+        this.props.dispatch(changeLocalPath(''));
+        this.props.dispatch(changeBosPath(''));
     }
 
     /**
