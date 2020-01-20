@@ -134,7 +134,7 @@ export default class Explorer extends Component {
                     description: `${sourceObject} => ${targetObject}`
                 }),
                 err => notification.error({
-                    message: '操作部分完成',
+                    message: '操作异常',
                     description: `${sourceObject} => ${targetObject}, 原因：${err.message}`
                 })
             );

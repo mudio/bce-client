@@ -73,22 +73,18 @@ export function deleteObject(bucketName, prefix, objects = []) {
             return Promise.resolve(key);
         });
 
-        try {
-            const removeKeys = await Promise.all(allTasks)
-                .then(res => _.flatten(res));
+        const removeKeys = await Promise.all(allTasks)
+            .then(res => _.flatten(res));
 
-            const deferred = await dispatch({
-                [API_TYPE]: {
-                    types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
-                    method: removeKeys.length === 1 ? 'deleteObject' : 'deleteAllObjects',
-                    args: [bucketName, removeKeys.length === 1 ? removeKeys[0] : removeKeys]
-                }
-            });
+        const deferred = await dispatch({
+            [API_TYPE]: {
+                types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
+                method: removeKeys.length === 1 ? 'deleteObject' : 'deleteAllObjects',
+                args: [bucketName, removeKeys.length === 1 ? removeKeys[0] : removeKeys]
+            }
+        });
 
-            return deferred;
-        } catch (error) {
-            dispatch({type: DELETE_OBJECT_FAILURE, error});
-        }
+        return deferred;
     };
 }
 
@@ -179,19 +175,11 @@ export const CREATE_FOLDER_SUCCESS = 'CREATE_FOLDER_SUCCESS';
 export const CREATE_FOLDER_FAILURE = 'CREATE_FOLDER_FAILURE';
 
 export function createFolder(bucketName, prefix = '', folderName) {
-    return async dispatch => {
-        try {
-            const deferred = await dispatch({
-                [API_TYPE]: {
-                    types: [CREATE_FOLDER_REQUEST, CREATE_FOLDER_SUCCESS, CREATE_FOLDER_FAILURE],
-                    method: 'putObject',
-                    args: [bucketName, `${prefix}${folderName}/`]
-                }
-            });
-
-            return deferred;
-        } catch (error) {
-            dispatch({type: CREATE_FOLDER_FAILURE, error});
+    return async dispatch => dispatch({
+        [API_TYPE]: {
+            types: [CREATE_FOLDER_REQUEST, CREATE_FOLDER_SUCCESS, CREATE_FOLDER_FAILURE],
+            method: 'putObject',
+            args: [bucketName, `${prefix}${folderName}/`]
         }
-    };
+    });
 }

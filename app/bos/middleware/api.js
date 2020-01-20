@@ -41,6 +41,7 @@ export default () => next => async action => {
 
         return next(actionWith({type: successType, response}));
     } catch (ex) {
-        return next(actionWith({type: failureType, error: ErrorCode[ex.code] || ex}));
+        next(actionWith({type: failureType, error: ErrorCode[ex.code] || ex}));
+        return Promise.reject(ex);
     }
 };
