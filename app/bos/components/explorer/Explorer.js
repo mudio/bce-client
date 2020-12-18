@@ -292,7 +292,6 @@ export default class Explorer extends Component {
      */
     _trash(bucketName, prefix, keys) {
         const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
-        console.log(this._objectWindow._selection);
 
         const onOk = async () => {
             try {
