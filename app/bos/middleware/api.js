@@ -34,13 +34,14 @@ export default () => next => async action => {
         delete finalAction[API_TYPE];
         return finalAction;
     }
-    next(actionWith({type: requestType}));
+    next(actionWith({type: requestType, args}));
 
     try {
         const response = await _client[method](...args);
 
         return next(actionWith({type: successType, response}));
     } catch (ex) {
-        return next(actionWith({type: failureType, error: ErrorCode[ex.code] || ex}));
+        next(actionWith({type: failureType, error: ErrorCode[ex.code] || ex}));
+        return Promise.reject(ex);
     }
 };

@@ -13,6 +13,7 @@ import UploadPage from './containers/UploadPage';
 import DownloadPage from './containers/DownloadPage';
 import CompletePage from './containers/CompletePage';
 import ExplorerPage from './containers/ExplorerPage';
+import SyncPage from './containers/SyncPage';
 
 export default () => (
     <App>
@@ -21,6 +22,7 @@ export default () => (
             <Route path="/upload" component={UploadPage} />
             <Route path="/download" component={DownloadPage} />
             <Route path="/complete" component={CompletePage} />
+            <Route path="/sync" component={SyncPage} />
             <Route path="/" component={ExplorerPage} />
         </Switch>
     </App>

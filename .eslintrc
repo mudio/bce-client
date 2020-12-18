@@ -39,7 +39,8 @@
     "jsx-a11y/click-events-have-key-events": "off",
     "object-property-newline": "warn",
     "object-curly-newline": "off",
-    "function-paren-newline": "off"
+		"function-paren-newline": "off",
+		"no-unused-expressions": ["error", { "allowTernary": true }]
   },
   "plugins": [
     "import",

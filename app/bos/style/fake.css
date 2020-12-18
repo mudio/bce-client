@@ -37,3 +37,28 @@ input[type=checkbox]:checked:before {
     border-left: solid 2px currentColor;
     border-bottom: solid 2px currentColor;
 }
+
+#main .ant-table-tbody > tr > td,
+#main .ant-table-thead > tr > th {
+    padding: 0;
+    height: 30px;
+    border: none;
+}
+
+#main .ant-table-thead > tr > th {
+    background: #F6F7FB;
+    color: #8692B2;
+    font-weight: normal;
+}
+
+#main .ant-table-tbody > tr > td > * {
+    vertical-align: middle;
+}
+
+.bce-form.ant-form-inline .ant-form-item {
+    margin-bottom: 10px;
+}
+
+.bce-form.ant-form-inline .ant-form-item-label {
+    margin-right: 10px;
+}

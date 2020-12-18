@@ -46,6 +46,14 @@
     background: #333b51;
 }
 
+.sync:before {
+    background-position: 0 center;
+}
+
+.sync.active:before {
+    background-position: -24px center;
+}
+
 .region:before {
     background-position: -171px center;
 }

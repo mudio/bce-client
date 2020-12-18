@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {Input, Modal, Icon, Form} from 'antd';
+import {Input, Modal, Icon, Form, Alert} from 'antd';
 
 const FormItem = Form.Item;
 
@@ -23,8 +23,11 @@ export default Form.create({
     }
 })(
     (props) => {
-        const {visible, onCancel, onCreate, form} = props;
+        const {visible, onCancel, onCreate, form, object} = props;
         const {getFieldDecorator} = form;
+        const message = '文件夹重命名操作时长与文件夹内文件数量有关，数量较多时耗时较长，重命名过程中请保持网络畅通，耐心等待';
+        const tip = object[object.length - 1] === '/'
+            ? <FormItem><Alert message={message} type="info" showIcon /></FormItem> : null;
 
         return (
             <Modal title="重命名"
@@ -34,13 +37,14 @@ export default Form.create({
                 onOk={onCreate}
             >
                 <Form layout="vertical">
+                    {tip}
                     <FormItem label="重命名为：">
                         {
                             getFieldDecorator('name', {
-                                rules: [{
-                                    required: true,
-                                    message: '输入名称不能为空!'
-                                }]
+                                rules: [
+                                    {required: true, message: '输入名称不能为空!'},
+                                    {pattern: /^((?!\/).)*$/, message: '输入名称不能包含/'}
+                                ]
                             })(
                                 <Input placeholder="请输入新的名称"
                                     prefix={<Icon type="edit" style={{fontSize: 13}} />}

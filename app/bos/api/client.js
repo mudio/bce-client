@@ -6,7 +6,6 @@
  */
 
 import url from 'url';
-import path from 'path';
 import {isString} from 'util';
 import {BosClient} from '@baiducloud/sdk';
 
@@ -93,11 +92,11 @@ export class Client extends BosClient {
 
                         resolve(body.location);
                     },
-                    () => {
+                    err => {
                         completedCount += 1;
 
                         if (completedCount >= kRegions.length) {
-                            reject();
+                            reject(err);
                         }
                     }
                 );
@@ -122,7 +121,6 @@ export class Client extends BosClient {
     }
 
     copyObject(sourceBucket, sourceKey, targetBucket, targetKey, options) {
-
         if (isString(sourceKey)) {
             return super.copyObject(sourceBucket, sourceKey, targetBucket, targetKey, options);
         }
@@ -140,7 +138,7 @@ export class Client extends BosClient {
                     const begin = ranges.length * MAX_COPY_PART_SIZE;
                     const end = length > MAX_COPY_PART_SIZE
                         ? ranges.length * MAX_COPY_PART_SIZE + MAX_COPY_PART_SIZE - 1
-                        : ranges.length * MAX_COPY_PART_SIZE + length - 1
+                        : ranges.length * MAX_COPY_PART_SIZE + length - 1;
 
                     ranges.push(`${begin}-${end}`);
                     length -= MAX_COPY_PART_SIZE;

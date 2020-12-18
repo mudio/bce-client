@@ -26,14 +26,6 @@ function normalize(key = '') {
 }
 
 export default class Folder extends Component {
-    static supportCommands = [
-        MENU_RENAME_COMMAND,
-        MENU_COPY_COMMAND,
-        // MENU_MOVE_COMMAND,
-        MENU_DOWNLOAD_COMMAND,
-        MENU_TRASH_COMMAND
-    ];
-
     static propTypes = {
         name: PropTypes.string.isRequired,
         layout: PropTypes.string.isRequired,
@@ -50,6 +42,14 @@ export default class Folder extends Component {
         const {name, onDoubleClick} = this.props;
         onDoubleClick(name);
     }
+
+    static supportCommands = [
+        MENU_RENAME_COMMAND,
+        MENU_COPY_COMMAND,
+        // MENU_MOVE_COMMAND,
+        MENU_DOWNLOAD_COMMAND,
+        MENU_TRASH_COMMAND
+    ];
 
     renderCommands() {
         const {name, onCommand} = this.props;

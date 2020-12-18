@@ -12,6 +12,7 @@ import {warn} from '../../utils/logger';
 import {uploadProcesser} from './bootstrap';
 import {UploadStatus} from '../utils/TransferStatus';
 import {UploadNotify, UploadCommandType} from '../utils/TransferNotify';
+import {listObjects} from '../actions/window';
 
 function bootTask(taskIds = []) {
     const tasks = window.globalStore.getState().uploads;
@@ -91,6 +92,10 @@ function finishTask({uuid, localPath}) {
             }
         }
     }
+
+    // 任务完成之后刷新列表
+    const {bucket, prefix} = window.globalStore.getState().navigator;
+    window.globalStore.dispatch(listObjects(bucket, prefix));
 }
 
 function pauseTask(taskIds = []) {

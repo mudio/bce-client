@@ -7,6 +7,8 @@
 
 import moment from 'moment';
 import humanize from 'humanize';
+import path from 'path';
+import {homedir} from 'os';
 
 /**
  * 格式化速率
@@ -39,3 +41,13 @@ export const isOSX = process.platform === 'darwin';
  * 判断是否是`Window`
  */
 export const isWin = process.platform === 'win32';
+
+/**
+ * 日志文件前缀
+ */
+export const getLogPath = name => {
+    const file = path.relative(homedir(), name);
+    return isOSX
+        ? `${homedir()}/Library/Logs/百度云/${file.replace(/\//g, '_')}.txt`
+        : `${homedir()}\\AppData\\Roaming\\百度云\\${file.replace(/:/g, '').replace(/\\/g, '_')}.txt`;
+};

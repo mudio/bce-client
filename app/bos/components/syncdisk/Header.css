@@ -1,0 +1,28 @@
+
+.container {
+    height: 50px;
+    display: flex;
+    flex-shrink: 0;
+    -webkit-app-region: drag;
+    border-bottom: 1px solid #f3f5f9;
+}
+
+.body {
+    display: flex;
+    flex: auto;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.layoutLeft {
+    flex: auto;
+}
+
+.layoutLeft :global(.ant-btn) + :global(.ant-btn) {
+    margin-left: 10px;
+}
+
+.tip {
+    color: #999;
+    margin-left: 10px;
+}

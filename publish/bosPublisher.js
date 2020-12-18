@@ -9,7 +9,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import walk from 'fs-walk';
+import {walk, Settings} from '@nodelib/fs.walk';
 import yaml from 'js-yaml';
 import {BosClient} from '@baiducloud/sdk';
 
@@ -56,59 +56,67 @@ function upload(dir, filename, object, buffer) {
 }
 
 function publish(distDir) {
-    walk.files(distDir, (basedir, filename) => {
-        const ext = path.extname(filename);
-        // osx dmg
-        if (ext === '.dmg') {
-            upload(basedir, filename, `${prefix}/${name}-${version}.dmg`);
-        }
-        // osx zip
-        if (ext === '.zip') {
-            upload(basedir, filename, `${prefix}/${name}-${version}-mac.zip`);
-        }
-        // nsis exe
-        if (ext === '.exe') {
-            upload(basedir, filename, `${prefix}/${name}-${version}-nsis.exe`);
+    walk(distDir, new Settings({stats: true}), (err, entries) => {
+
+        if (err) {
+            console.log(err.message);
+            return;
         }
 
-        // osx update json
-        if (filename === 'latest-mac.json') {
-            try {
-                const config = JSON.parse(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
-                config.url = `http://bce-bos-client.bj.bcebos.com/${prefix}/${name}-${version}-mac.zip`;
-
-                upload(basedir, filename, `${prefix}/${filename}`, JSON.stringify(config));
-            } catch (ex) {
-                console.error(ex.message);
+        entries.forEach(file => {
+            const filename = path.relative(distDir, file.path);
+            const ext = path.extname(filename);
+            // osx dmg
+            if (ext === '.dmg') {
+                upload(distDir, filename, `${prefix}/${name}-${version}.dmg`);
             }
-        }
-
-        // osx update yaml
-        if (filename === 'latest-mac.yml') {
-            try {
-                const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
-                config.path = `${name}-${version}-mac.zip`;
-
-                upload(basedir, filename, `${prefix}/${filename}`, yaml.dump(config));
-            } catch (ex) {
-                console.error(ex.message);
+            // osx zip
+            if (ext === '.zip') {
+                upload(distDir, filename, `${prefix}/${name}-${version}-mac.zip`);
             }
-        }
-
-        // nsis update yaml
-        if (filename === 'latest.yml') {
-            try {
-                const config = yaml.safeLoad(fs.readFileSync(`${basedir}/${filename}`, 'utf8'));
-                config.path = `${name}-${version}-nsis.exe`;
-                config.files[0].url = `${name}-${version}-nsis.exe`;
-
-                upload(basedir, filename, `${prefix}/${filename}`, yaml.dump(config));
-            } catch (ex) {
-                console.error(ex.message);
+            // nsis exe
+            if (ext === '.exe') {
+                upload(distDir, filename, `${prefix}/${name}-${version}-nsis.exe`);
             }
-        }
-    },
-    err => console.log(err.message));
+
+            // osx update json
+            if (filename === 'latest-mac.json') {
+                try {
+                    const config = JSON.parse(fs.readFileSync(`${distDir}/${filename}`, 'utf8'));
+                    config.url = `http://bce-bos-client.bj.bcebos.com/${prefix}/${name}-${version}-mac.zip`;
+
+                    upload(distDir, filename, `${prefix}/${filename}`, JSON.stringify(config));
+                } catch (ex) {
+                    console.error(ex.message);
+                }
+            }
+
+            // osx update yaml
+            if (filename === 'latest-mac.yml') {
+                try {
+                    const config = yaml.safeLoad(fs.readFileSync(`${distDir}/${filename}`, 'utf8'));
+                    config.path = `${name}-${version}-mac.zip`;
+
+                    upload(distDir, filename, `${prefix}/${filename}`, yaml.dump(config));
+                } catch (ex) {
+                    console.error(ex.message);
+                }
+            }
+
+            // nsis update yaml
+            if (filename === 'latest.yml') {
+                try {
+                    const config = yaml.safeLoad(fs.readFileSync(`${distDir}/${filename}`, 'utf8'));
+                    config.path = `${name}-${version}-nsis.exe`;
+                    config.files[0].url = `${name}-${version}-nsis.exe`;
+
+                    upload(distDir, filename, `${prefix}/${filename}`, yaml.dump(config));
+                } catch (ex) {
+                    console.error(ex.message);
+                }
+            }
+        });
+    });
 }
 
 if (BOS_AK && BOS_SK && BOS_ENDPOINT) {
@@ -116,7 +124,6 @@ if (BOS_AK && BOS_SK && BOS_ENDPOINT) {
     const distDir = path.join(__dirname, '..', outDir);
 
     publish(distDir);
-    publish(`${distDir}/github`);
 } else {
     console.log('终止发布操作，请配置环境变量BOS_AK、BOS_SK、BOS_ENDPOINT。');
 }

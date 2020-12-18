@@ -15,7 +15,13 @@ import {bindActionCreators} from 'redux';
 import styles from './ObjectMenu.css';
 import {isWin} from '../../../utils';
 import {syncLayout} from '../../actions/explorer';
-import {MENU_UPLOAD_COMMAND, MENU_REFRESH_COMMAND, MENU_UPLOAD_DIRECTORY_COMMAND} from '../../actions/context';
+import {
+    MENU_UPLOAD_COMMAND,
+    MENU_REFRESH_COMMAND,
+    MENU_NEW_MAPPING_COMMAND,
+    MENU_NEW_DIRECTORY_COMMAND,
+    MENU_UPLOAD_DIRECTORY_COMMAND
+} from '../../actions/context';
 
 class ObjectMenu extends Component {
     static propTypes = {
@@ -47,6 +53,24 @@ class ObjectMenu extends Component {
     }
 
     /**
+     * 派发一个新建文件夹消息
+     *
+     * @memberOf ObjectMenu
+     */
+    _onCreateFolder = () => {
+        this.props.onCommand(MENU_NEW_DIRECTORY_COMMAND);
+    }
+
+    /**
+     * 派发一个创建同步盘消息
+     *
+     * @memberOf ObjectMenu
+     */
+    _onNewMapping = () => {
+        this.props.onCommand(MENU_NEW_MAPPING_COMMAND);
+    }
+
+    /**
      * 派发一个刷新消息
      *
      * @memberOf ObjectMenu
@@ -71,20 +95,15 @@ class ObjectMenu extends Component {
          * a directory selector will be shown.
          */
         const fakeMenuBar = () => {
-            if (isWin) {
-                return (
-                    <div className={styles.layoutLeft}>
-                        <Button type="primary" size="small" icon="upload" onClick={this._onUpload}>上传</Button>
-                        <Button type="primary" size="small" icon="upload" onClick={this._onUploadDirectory}>
-                            上传目录
-                        </Button>
-                    </div>
-                );
-            }
-
+            const uploadDirectory = isWin
+                ? <Button type="primary" size="small" icon="upload" onClick={this._onUploadDirectory}>上传目录</Button>
+                : null;
             return (
                 <div className={styles.layoutLeft}>
                     <Button type="primary" size="small" icon="upload" onClick={this._onUpload}>上传</Button>
+                    {uploadDirectory}
+                    <Button size="small" onClick={this._onCreateFolder}>新建文件夹</Button>
+                    <Button size="small" onClick={this._onNewMapping}>创建同步盘</Button>
                 </div>
             );
         };

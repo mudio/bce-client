@@ -73,9 +73,15 @@ class SideBar extends Component {
                             completeCount > 0 ? <span className={styles.badge}>{completeCount}</span> : ''
                         }
                     </NavLink>
+                    <NavLink to="/sync"
+                        className={`${styles.item} ${styles.sync}`}
+                        activeClassName={styles.active}
+                    >
+                        同步盘
+                    </NavLink>
                 </div>
                 <div className={styles.tool}>
-                    <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/API.html">
+                    <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/s/Ok1rk605h">
                         开发者文档
                     </BrowserLink>
                     <BrowserLink linkTo="https://github.com/leeight/bce-bos-uploader/">

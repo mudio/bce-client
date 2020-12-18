@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import u from 'underscore';
 import path from 'path';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
@@ -17,13 +18,16 @@ import SideBar from '../app/SideBar';
 import {isOSX} from '../../../utils';
 import ObjectWindow from './ObjectWindow';
 import BucketWindow from './BucketWindow';
+import NewFolder from './NewFolder';
 import logger from '../../../utils/logger';
+import {getUuid} from '../../../utils/helper';
 import SystemBar from '../common/SystemBar';
 import Migration from './migration/Migration';
+import NewMapping from '../syncdisk/NewMapping';
 import {ClientFactory} from '../../api/client';
 import {createDownloadTask} from '../../actions/downloader';
 import {uploadByDropFile, uploadBySelectPaths} from '../../actions/uploader';
-import {listObjects, deleteObject, migrationObject} from '../../actions/window';
+import {listObjects, deleteObject, migrationObject, createFolder} from '../../actions/window';
 
 import {
     MENU_UPLOAD_COMMAND,
@@ -34,30 +38,55 @@ import {
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND,
-    MENU_SHARE_COMMAND
+    MENU_SHARE_COMMAND,
+    MENU_NEW_DIRECTORY_COMMAND,
+    MENU_NEW_MAPPING_COMMAND
 } from '../../actions/context';
+import {
+    SYNCDISK_NEW_MAPPING,
+    SYNCDISK_CHANGE_NEWMAPPING,
+    SYNCDISK_CHANGE_SIGNAL,
+    changeBosPath
+} from '../../actions/syncdisk';
 
 export default class Explorer extends Component {
     static propTypes = {
         region: PropTypes.string.isRequired,
         bucket: PropTypes.string,
         prefix: PropTypes.string,
-        dispatch: PropTypes.func.isRequired
+        dispatch: PropTypes.func.isRequired,
+        syncdisk: PropTypes.shape({
+            localPath: PropTypes.string,
+            bosPath: PropTypes.string,
+            mappings: PropTypes.array.isRequired
+        })
     };
 
     state = {
         visible: false,
+        newFolder: false,
         option: {}
+    }
+
+    saveFormRef = form => {
+        this.form = form;
     }
 
     _onCommand = (cmd, config) => {
         const {bucket, prefix = '', keys} = config;
+        const {dispatch} = this.props;
+        const bosPath = prefix ? `${bucket}/${prefix}` : `${bucket}/`;
 
         switch (cmd) {
         case MENU_UPLOAD_COMMAND:
             return this._onUploadFile(config);
         case MENU_UPLOAD_DIRECTORY_COMMAND:
             return this._onUploadFile(config, 'openDirectory');
+        case MENU_NEW_DIRECTORY_COMMAND:
+            return this.setState({
+                newFolder: true,
+                option: {bucket, command: cmd}
+            });
         case MENU_REFRESH_COMMAND:
             return this._onReresh();
         case MENU_MOVE_COMMAND:
@@ -74,6 +103,9 @@ export default class Explorer extends Component {
             return this._download(bucket, prefix, keys);
         case MENU_SHARE_COMMAND:
             return this._share(bucket, keys[0]);
+        case MENU_NEW_MAPPING_COMMAND:
+            dispatch(changeBosPath(bosPath));
+            return dispatch({type: SYNCDISK_NEW_MAPPING});
         default:
             logger.warn(`invalid context command ${cmd.toString()}`);
         }
@@ -102,7 +134,7 @@ export default class Explorer extends Component {
                     description: `${sourceObject} => ${targetObject}`
                 }),
                 err => notification.error({
-                    message: '操作部分完成',
+                    message: '操作异常',
                     description: `${sourceObject} => ${targetObject}, 原因：${err.message}`
                 })
             );
@@ -114,51 +146,30 @@ export default class Explorer extends Component {
     }
 
     /**
-     * 统一处理删除行为
-     *
-     * @param {any} bucketName
-     * @param {any} prefix
-     * @param {any} keys
-     *
-     * @memberOf Explorer
+     * 创建文件夹
      */
-    _trash(bucketName, prefix, keys) {
-        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
+    _onCreateFolder = () => {
+        const {form, props: {bucket, prefix, dispatch}} = this;
 
-        const onOk = async () => {
-            try {
-                await this.props.dispatch(deleteObject(bucketName, prefix, keys));
-                notification.success({message: '删除成功', description: `成功删除${toast}`});
-            } catch (ex) {
-                notification.error({message: '删除失败', description: ex.message});
+        form.validateFields(async (err, values) => {
+            if (err) {
+                return;
             }
 
-            this._onReresh();
-        };
+            try {
+                await dispatch(createFolder(bucket, prefix, values.name));
+                notification.success({message: '创建成功', description: `成功创建文件夹${values.name}`});
 
-        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
+                this.setState({newFolder: false});
+                this._onReresh();
+            } catch (ex) {
+                notification.error({message: '创建失败', description: ex.message});
+            }
+        });
     }
 
-    /**
-     * 分享文件
-     *
-     * @param {string} bucketName
-     * @param {string} objectKey
-     * @returns
-     *
-     * @memberOf Explorer
-     */
-    async _share(bucket, objectKey) {
-        try {
-            const client = await ClientFactory.fromBucket(bucket);
-            const url = await client.generatePresignedUrl(bucket, objectKey);
-
-            clipboard.writeText(url);
-
-            message.info('已复制到剪切板');
-        } catch (ex) {
-            message.error('分享链接错误');
-        }
+    _onCancelCreateFolder = () => {
+        this.setState({newFolder: false});
     }
 
     /**
@@ -231,6 +242,73 @@ export default class Explorer extends Component {
         dispatch(uploadBySelectPaths(selectPaths, {bucket, prefix}));
     }
 
+    /**
+     * 分享文件
+     *
+     * @param {string} bucketName
+     * @param {string} objectKey
+     * @returns
+     *
+     * @memberOf Explorer
+     */
+    async _share(bucket, objectKey) {
+        try {
+            const client = await ClientFactory.fromBucket(bucket);
+            const url = await client.generatePresignedUrl(bucket, objectKey);
+
+            clipboard.writeText(url);
+
+            message.info('已复制到剪切板');
+        } catch (ex) {
+            message.error('分享链接错误');
+        }
+    }
+
+    /**
+     * 确定操作
+     */
+    _onNewMapping() {
+        const {dispatch, syncdisk} = this.props;
+        const {localPath, bosPath, mappings} = syncdisk;
+        if (bosPath && localPath) {
+            if (u.find(mappings, item => item.localPath === localPath && item.bosPath === bosPath)) {
+                return notification.error({message: '创建失败：已存在相同映射关系'});
+            }
+            const mapping = {localPath, bosPath, status: 'running', uuid: getUuid()};
+            dispatch({type: SYNCDISK_CHANGE_NEWMAPPING, mapping});
+            dispatch({type: SYNCDISK_CHANGE_SIGNAL, mapping});
+            notification.success({message: '同步盘创建成功，可在左侧同步盘中管理任务'});
+            return;
+        }
+        notification.error({message: '创建失败：参数填写错误'});
+    }
+
+    /**
+     * 统一处理删除行为
+     *
+     * @param {any} bucketName
+     * @param {any} prefix
+     * @param {any} keys
+     *
+     * @memberOf Explorer
+     */
+    _trash(bucketName, prefix, keys) {
+        const toast = keys.length > 1 ? ` ${keys.length} 个文件` : keys[0];
+
+        const onOk = async () => {
+            try {
+                await this.props.dispatch(deleteObject(bucketName, prefix, keys));
+                notification.success({message: '删除成功', description: `成功删除${toast}`});
+            } catch (ex) {
+                notification.error({message: '删除失败', description: ex.message});
+            }
+
+            this._onReresh();
+        };
+
+        Modal.confirm({title: '删除提示', content: `您确定删除${toast}?`, onOk});
+    }
+
     updateValue(evt) {
         const target = evt.target.value;
         const {option} = this.state;
@@ -241,7 +319,7 @@ export default class Explorer extends Component {
     }
 
     renderWindow() {
-        const {visible, option} = this.state;
+        const {visible, option, newFolder} = this.state;
         const {region, bucket, prefix, dispatch} = this.props;
 
         if (!bucket) {
@@ -270,6 +348,13 @@ export default class Explorer extends Component {
                     onMigration={this._onMigration}
                     onCancel={this._onCancel}
                 />
+                <NewFolder
+                    ref={this.saveFormRef}
+                    visible={newFolder}
+                    onConfirm={this._onCreateFolder}
+                    onCancel={this._onCancelCreateFolder}
+                />
+                <NewMapping dispatch={dispatch} onConfirm={() => this._onNewMapping()} />
             </div>
         );
     }

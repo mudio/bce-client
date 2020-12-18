@@ -6,6 +6,8 @@ import {AppContainer} from 'react-hot-loader';
 import Root from './containers/Root';
 import {configureStore, history} from './store/configureStore';
 import {DownloadStatus, UploadStatus} from './utils/TransferStatus';
+import {SYNCDISK_CHANGE_SIGNAL} from './actions/syncdisk';
+import {startSync, stopSync} from './sync';
 
 import './style/mixin.global.css';
 
@@ -38,8 +40,18 @@ export default class BceModule {
         const store = configureStore(cache);
 
         store.subscribe(() => {
-            const {uploads, downloads} = store.getState();
-            localStorage.setItem('bos', JSON.stringify({uploads, downloads}));
+            const {uploads, downloads, syncdisk, action} = store.getState();
+            localStorage.setItem('bos', JSON.stringify({uploads, downloads, syncdisk}));
+
+            //  处理同步事件
+            if (action.type === SYNCDISK_CHANGE_SIGNAL) {
+                const {status, uuid} = action.mapping;
+                status === 'running' ? startSync(uuid) : stopSync(uuid);
+            }
+
+            //  告诉主进程当前是否有同步任务
+            const paused = syncdisk.mappings.reduce((r, item) => r && item.status === 'paused', true);
+            ipcRenderer.send('sync', !paused);
         });
 
         ipcRenderer.on('notify', (event, type, message) => {
@@ -49,6 +61,11 @@ export default class BceModule {
         });
 
         window.globalStore = store;
+
+        //  必须得放在最后才处理
+        if (cache.syncdisk && Array.isArray(cache.syncdisk.mappings)) {
+            cache.syncdisk.mappings.forEach(item => item.status === 'running' && startSync(item.uuid));
+        }
 
         render(
             <AppContainer>

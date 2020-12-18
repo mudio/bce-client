@@ -6,6 +6,7 @@
  */
 
 import _ from 'lodash';
+import throttle from 'p-throttle';
 
 import {API_TYPE} from '../middleware/api';
 import {ClientFactory} from '../api/client';
@@ -72,22 +73,18 @@ export function deleteObject(bucketName, prefix, objects = []) {
             return Promise.resolve(key);
         });
 
-        try {
-            const removeKeys = await Promise.all(allTasks)
-                .then(res => _.flatten(res));
+        const removeKeys = await Promise.all(allTasks)
+            .then(res => _.flatten(res));
 
-            const deferred = await dispatch({
-                [API_TYPE]: {
-                    types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
-                    method: 'deleteAllObjects',
-                    args: [bucketName, removeKeys]
-                }
-            });
+        const deferred = await dispatch({
+            [API_TYPE]: {
+                types: [DELETE_OBJECT_REQUEST, DELETE_OBJECT_SUCCESS, DELETE_OBJECT_FAILURE],
+                method: removeKeys.length === 1 ? 'deleteObject' : 'deleteAllObjects',
+                args: [bucketName, removeKeys.length === 1 ? removeKeys[0] : removeKeys]
+            }
+        });
 
-            return deferred;
-        } catch (error) {
-            dispatch({type: DELETE_OBJECT_FAILURE, error});
-        }
+        return deferred;
     };
 }
 
@@ -127,23 +124,25 @@ export function migrationObject(config, removeSource = false) {
         const client = await ClientFactory.fromBucket(sourceBucket);
         // 查询所有内容，先复制
         const objects = await client.listAllObjects(sourceBucket, sourceObject);
+        // 控制一下copy速率，250ms最多执行5次
+        const throttledTask = throttle((item, targetKey) => dispatch(
+            copyObject(sourceBucket, item, targetBucket, targetKey)
+        ).then(res => {
+            const {error, response} = res;
+
+            if (error) {
+                return Promise.reject(error);
+            }
+
+            // 如有etag就认为成功了
+            if (response.body.eTag) {
+                return item.key;
+            }
+        }), 5, 250);
+
         const copyTasks = objects.map(item => {
             const targetKey = item.key.replace(sourceObject, targetObject);
-
-            return dispatch(
-                copyObject(sourceBucket, item, targetBucket, targetKey)
-            ).then(res => {
-                const {error, response} = res;
-
-                if (error) {
-                    return Promise.reject(error);
-                }
-
-                // 如有etag就认为成功了
-                if (response.body.eTag) {
-                    return item.key;
-                }
-            });
+            return throttledTask(item, targetKey);
         });
 
         try {
@@ -169,4 +168,18 @@ export function migrationObject(config, removeSource = false) {
             return Promise.reject(ex);
         }
     };
+}
+
+export const CREATE_FOLDER_REQUEST = 'CREATE_FOLDER_REQUEST';
+export const CREATE_FOLDER_SUCCESS = 'CREATE_FOLDER_SUCCESS';
+export const CREATE_FOLDER_FAILURE = 'CREATE_FOLDER_FAILURE';
+
+export function createFolder(bucketName, prefix = '', folderName) {
+    return async dispatch => dispatch({
+        [API_TYPE]: {
+            types: [CREATE_FOLDER_REQUEST, CREATE_FOLDER_SUCCESS, CREATE_FOLDER_FAILURE],
+            method: 'putObject',
+            args: [bucketName, `${prefix}${folderName}/`]
+        }
+    });
 }

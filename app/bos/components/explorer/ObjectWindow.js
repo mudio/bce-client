@@ -19,6 +19,7 @@ import ObjectMenu from './ObjectMenu';
 import styles from './ObjectWindow.css';
 import Selection from '../common/Selection';
 import ContextMenu from '../common/ContextMenu';
+import Processing from '../common/Processing';
 import * as WindowActions from '../../actions/window';
 import {UploadStatus} from '../../utils/TransferStatus';
 import {redirect} from '../../actions/navigator';
@@ -31,7 +32,9 @@ import {
     MENU_TRASH_COMMAND,
     MENU_RENAME_COMMAND,
     MENU_DOWNLOAD_COMMAND,
-    MENU_SHARE_COMMAND
+    MENU_SHARE_COMMAND,
+    MENU_NEW_DIRECTORY_COMMAND,
+    MENU_NEW_MAPPING_COMMAND
 } from '../../actions/context';
 
 class Window extends Component {
@@ -83,6 +86,10 @@ class Window extends Component {
             || folderIntersectionLen !== uploadTask.folders.length) {
             listObjects(bucket, prefix);
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState);
     }
 
     /**
@@ -167,17 +174,6 @@ class Window extends Component {
         const {bucket, dispatch} = this.props;
 
         dispatch(redirect({bucket, prefix}));
-    }
-
-    renderLoading() {
-        if (this.props.isFetching) {
-            return (
-                <span className={styles.loading}>
-                    <i className="fa fa-spinner fa-pulse" />
-                    数据加载中...
-                </span>
-            );
-        }
     }
 
     renderError() {
@@ -298,13 +294,17 @@ class Window extends Component {
             } else if (isOSX) {
                 commands = [
                     {type: MENU_UPLOAD_COMMAND},
-                    {type: MENU_REFRESH_COMMAND}
+                    {type: MENU_REFRESH_COMMAND},
+                    {type: MENU_NEW_DIRECTORY_COMMAND},
+                    {type: MENU_NEW_MAPPING_COMMAND}
                 ];
             } else {
                 commands = [
                     {type: MENU_UPLOAD_COMMAND},
                     {type: MENU_UPLOAD_DIRECTORY_COMMAND},
-                    {type: MENU_REFRESH_COMMAND}
+                    {type: MENU_REFRESH_COMMAND},
+                    {type: MENU_NEW_DIRECTORY_COMMAND},
+                    {type: MENU_NEW_MAPPING_COMMAND}
                 ];
             }
 
@@ -359,8 +359,8 @@ class Window extends Component {
                             ))
                         }
                     </Selection>
+                    <Processing />
                     {this.renderMore()}
-                    {this.renderLoading()}
                     {this.renderError()}
                     {this.renderEmpty()}
                     {this.renderContextMenu()}

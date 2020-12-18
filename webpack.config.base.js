@@ -4,6 +4,7 @@
 
 import path from 'path';
 import webpack from 'webpack';
+import HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
 import {dependencies as externals} from './static/package.json';
 
 export default {
@@ -43,6 +44,7 @@ export default {
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
         }),
         new webpack.NamedModulesPlugin(),
+        new HardSourceWebpackPlugin()
     ],
 
     /**

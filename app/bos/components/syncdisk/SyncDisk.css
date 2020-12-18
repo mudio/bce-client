@@ -1,0 +1,69 @@
+
+.container {
+    flex: auto;
+    display: flex;
+}
+
+.body {
+    flex: auto;
+    display: flex;
+    flex-flow: column nowrap;
+    width: calc(100% - 150px);
+}
+
+.content {
+    display: flex;
+    flex: auto;
+    overflow-y: auto;
+    flex-direction: column;
+}
+
+.nocontent {
+    position: absolute;
+    color: #ddd;
+    display: flex;
+    height: 120px;
+    align-self: center;
+    flex-flow: column nowrap;
+    top: calc(50% - 100px);
+    left: calc(50% - 100px);
+}
+
+.nocontent::before {
+    font-size: 6em;
+    text-align: center;
+}
+
+.content {
+    flex: auto;
+    display: flex;
+    position: relative;
+    flex-flow: column nowrap;
+    align-content: flex-start;
+}
+
+input[type=checkbox] {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.text {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    color: #108cee;
+    cursor: pointer;
+}
+
+.cmd {
+    color: #444C63;
+    font-size: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
