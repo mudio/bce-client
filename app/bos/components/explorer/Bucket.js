@@ -7,6 +7,7 @@
 
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {Tooltip} from 'antd';
 
 import styles from './Bucket.css';
 
@@ -31,7 +32,9 @@ export default class Bucket extends Component {
         return (
             <div className={styles.container} onClick={this._triggerClick}>
                 <i className={`${styles.bucketicon} asset-bucket`} />
-                <span className={styles.text} alt={item.creationDate}>{item.name}</span>
+                <Tooltip placement="bottom" title={item.name}>
+                    <span className={styles.text} alt={item.creationDate}>{item.name}</span>
+                </Tooltip>
             </div>
         );
     }

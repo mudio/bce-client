@@ -12,8 +12,8 @@
     left: 0;
     border-radius: 3px;
     position: absolute;
-    background: rgba(68, 76, 99, 0.1);
-    border: 1px solid rgba(68, 76, 99, 0.2);
+    background: rgba(68, 76, 99, .1);
+    border: 1px solid rgba(68, 76, 99, .2);
 }
 
 :global .selectionItem {
@@ -37,6 +37,7 @@
     color: #3b8cff;
     visibility: hidden;
     position: absolute;
+    font-size: 16px;
 }
 
 :global .selectionItem:hover .checkbox {

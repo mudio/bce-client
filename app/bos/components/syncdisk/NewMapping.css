@@ -7,7 +7,12 @@
     white-space: nowrap;
     vertical-align: middle;
     margin-left: 10px;
-    line-height: 1;
+    line-height: 22px;
+}
+
+.adaptor {
+    padding: 5px 0;
+    line-height: 30px;
 }
 
 .tooltip {
@@ -26,7 +31,7 @@
     display: block;
     padding: 5px 12px;
     overflow: hidden;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, .65);
     font-weight: normal;
     line-height: 22px;
     white-space: nowrap;

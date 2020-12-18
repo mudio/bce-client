@@ -36,7 +36,7 @@ export default {
         modules: [
             path.join(__dirname, 'static'),
             'node_modules',
-        ],
+        ]
     },
 
     plugins: [

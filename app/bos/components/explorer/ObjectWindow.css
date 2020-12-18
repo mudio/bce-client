@@ -98,12 +98,12 @@
 }
 
 .listLayout :global .checkbox {
-    margin: 0 5px;
+    margin: 0 9px;
 }
 
 .head {
     display: flex;
-    padding: 0 10px;
+    padding: 0 20px 0 10px;
     flex-shrink: 0;
     color: #8692B2;
     line-height: 30px;
@@ -114,14 +114,33 @@
     flex: auto;
     align-items: center;
     display: inline-flex;
+    width: calc(100% - 300px);
+}
+
+.textCol .checkAll {
+    position: static;
+    width: 14px;
+    height: 14px;
+}
+
+.textCol .checkAll::before {
+    top: 11px !important;
 }
 
 .textCol input {
     margin: 0 5px;
 }
 
+.storage {
+    width: 100px;
+}
+
 .extraCol {
     width: 80px;
+}
+
+.time {
+    width: 150px;
 }
 
 .extraCol:last-child {

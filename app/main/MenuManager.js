@@ -95,12 +95,6 @@ export default class MenuManager {
                             click() {
                                 shell.openExternal('https://github.com/baidubce/bce-sdk-js');
                             }
-                        },
-                        {
-                            label: 'Web Uploader',
-                            click() {
-                                shell.openExternal('https://github.com/leeight/bce-bos-uploader/');
-                            }
                         }
                     ]
                 }

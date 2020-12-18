@@ -91,9 +91,9 @@ export default class Folder extends Component {
                     <span className={styles.commands}>
                         {this.renderCommands()}
                     </span>
-                    <span className={styles.extra}>-</span>
-                    <span className={styles.extra}>-</span>
-                    <span className={styles.time}>-</span>
+                    <span className={styles.storage}>--</span>
+                    <span className={styles.extra}>--</span>
+                    <span className={styles.time}>--</span>
                 </div>
             );
         }

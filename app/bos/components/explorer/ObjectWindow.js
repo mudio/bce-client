@@ -74,7 +74,8 @@ class Window extends Component {
 
     state = {
         selectedItems: [],
-        contextMenuPosition: null
+        contextMenuPosition: null,
+        prevScrollTop: 0
     }
 
     componentWillReceiveProps(nextProps) {
@@ -86,6 +87,9 @@ class Window extends Component {
             || folderIntersectionLen !== uploadTask.folders.length) {
             listObjects(bucket, prefix);
         }
+
+        // 进入/退出文件夹清空当前选择项
+        this.clearSelection();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -112,15 +116,22 @@ class Window extends Component {
         return false;
     }
 
-    _onScroll = (evt) => {
+    _onScroll = _.throttle((evt) => {
         const {scrollTop, scrollHeight, clientHeight} = evt.target;
+        const {prevScrollTop} = this.state;
         const {bucket, prefix, nextMarker, isFetching, isTruncated, listMore} = this.props;
-        const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
+        // const allowListMore = scrollHeight - scrollTop - clientHeight <= clientHeight / 3;
 
-        if (!isFetching && isTruncated && bucket && allowListMore) {
-            listMore(bucket, prefix, nextMarker);
+        if (prevScrollTop <= scrollTop) {
+            this.setState({ prevScrollTop: scrollTop });
+
+            const allowListMore = scrollHeight - scrollTop - clientHeight > 0;
+
+            if (!isFetching && isTruncated && bucket && allowListMore) {
+                listMore(bucket, prefix, nextMarker);
+            }
         }
-    }
+    }, 5000);
 
     _onCommand = (cmd, config) => {
         const {selectedItems} = this.state;
@@ -170,6 +181,11 @@ class Window extends Component {
         }
     }
 
+    // 清空selection
+    clearSelection() {
+        this._selection.clearSelection();
+    }
+
     redirect = (prefix = '') => {
         const {bucket, dispatch} = this.props;
 
@@ -195,7 +211,8 @@ class Window extends Component {
         if (!isFetching
             && !hasError
             && folders.length === 0
-            && objects.length === 0) {
+            && objects.length === 0
+        ) {
             return (
                 <span className={`fa fa-cloud-upload ${styles.nocontent}`}>
                     文件夹为空，拖拽文件上传
@@ -253,12 +270,16 @@ class Window extends Component {
             return (
                 <div className={styles.head}>
                     <span className={styles.textCol}>
-                        <input type="checkbox" checked={isSelectedAll} onChange={this._onSelectAll} />
-                        名称 (已选{selectedItems.length}项)
+                        <input
+                            className={styles.checkAll}
+                            type="checkbox" checked={isSelectedAll}
+                            onChange={this._onSelectAll}
+                        />
+                        <span>名称 (已选{selectedItems.length}项)</span>
                     </span>
-                    <span className={styles.extraCol}>存储类型</span>
+                    <span className={styles.storage}>存储类型</span>
                     <span className={styles.extraCol}>大小</span>
-                    <span className={styles.extraCol}>修改时间</span>
+                    <span className={styles.time}>修改时间</span>
                 </div>
             );
         }
@@ -287,7 +308,7 @@ class Window extends Component {
                     // 重命名，只能操作一个文件
                     {type: MENU_RENAME_COMMAND, disable: selectedItems.length !== 1},
                     // 分享，只能分享文件
-                    {type: MENU_SHARE_COMMAND, disable: selectedItems.some(item => item.endsWith('/'))},
+                    {type: MENU_SHARE_COMMAND, disable: selectedItems.length !== 1 || selectedItems.some(item => /\/$/.test(item))},
                     {type: MENU_DOWNLOAD_COMMAND},
                     {type: MENU_TRASH_COMMAND}
                 ];
@@ -334,7 +355,8 @@ class Window extends Component {
                     onContextMenu={this._onContextMenu}
                 >
                     {this.renderListHead()}
-                    <Selection ref={_selection => this._selection = _selection} // eslint-disable-line
+                    <Selection
+                        ref={_selection => this._selection = _selection} // eslint-disable-line
                         className={styleName}
                         onSelectionChange={this._onSelectionChange}
                     >

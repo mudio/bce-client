@@ -7,6 +7,7 @@
 
 import React, {Component} from 'react';
 import {LocaleProvider} from 'antd';
+import {BrowserRouter} from 'react-router-dom';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
 
 export default class App extends Component {

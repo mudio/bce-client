@@ -1,6 +1,6 @@
 
 .container {
-    height: 25px;
+    min-height: 24px;
     display: flex;
     justify-content: flex-end;
     -webkit-app-region: drag;
@@ -12,8 +12,9 @@
     display: flex;
     cursor: pointer;
     line-height: 24px;
+    min-height: 24px;
     justify-content: center;
-    transition: 0.3s ease-in,color 0.3s ease-in;
+    transition: .3s ease-in,color .3s ease-in;
 }
 
 .title {

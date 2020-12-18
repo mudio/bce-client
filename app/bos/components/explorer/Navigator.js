@@ -15,13 +15,17 @@ import React, {Component} from 'react';
 
 import styles from './Navigator.css';
 import {redirect, query} from '../../actions/navigator';
-
+import {ClientFactory} from '../../api/client';
 class Navigator extends Component {
     static propTypes = {
         bucket: PropTypes.string,
         prefix: PropTypes.string,
         dispatch: PropTypes.func.isRequired,
     };
+
+    state = {
+        buckets: []
+    }
 
     constructor(props, ...args) {
         super(props, ...args);
@@ -36,6 +40,21 @@ class Navigator extends Component {
     componentDidMount() {
         const {dispatch, bucket, prefix} = this.props;
         dispatch(query({bucket, prefix}));
+
+        const client = ClientFactory.getDefault();
+        // 获取buckets
+        client.listBuckets().then(res => {
+            const buckets = res.buckets.map(
+                bucket => ({
+                    label: bucket.name,
+                    value: bucket.name,
+                    isLeaf: false,
+                    enableMultiAz: bucket.enableMultiAz
+                })
+            );
+
+            this.setState({buckets});
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -52,10 +71,15 @@ class Navigator extends Component {
 
     _onKeyDown = (event) => {
         const {key, target} = event;
+        const {buckets} = this.state;
         const {bucket} = this.props;
         const inputBucket = target.value.trim();
+        // 当前输入的bucket名称是否合法, bucket值为空代表全部文件目录下，否则不做bucket校验
+        const isValidBucket = !bucket
+            ? Array.isArray(buckets) && buckets.some(item => item.value === inputBucket)
+            : true;
 
-        if (key === 'Enter' && !bucket && inputBucket) {
+        if (key === 'Enter' && !bucket && inputBucket && isValidBucket) {
             event.preventDefault();
 
             this._redirect(inputBucket);
