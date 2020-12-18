@@ -29,7 +29,7 @@
     align-items: center;
     padding-left: 40px;
     text-decoration: blink;
-    transition: background 0.3s ease-in,color 0.3s ease-in;
+    transition: background .3s ease-in, color .3s ease-in;
 }
 
 .item:before {
@@ -99,7 +99,7 @@
 }
 
 .active .badge {
-    background: rgba(10, 84, 183, 0.5);
+    background: rgba(10, 84, 183, .5);
     color: #fff;
 }
 
@@ -108,7 +108,7 @@
     flex-flow: column nowrap;
 }
 
-.tool>span {
+.tool > span {
     cursor: pointer;
     font-size: 12px;
     color: #8692b2;
@@ -116,6 +116,6 @@
     line-height: 24px;
 }
 
-.tool>span:hover {
+.tool > span:hover {
     color: #2eacfc;
 }

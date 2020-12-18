@@ -13,7 +13,7 @@ const FormItem = Form.Item;
 export default Form.create({})(
     (props) => {
         const {visible, onCancel, onConfirm, form} = props;
-        const {getFieldDecorator} = form;
+        const {getFieldDecorator, resetFields} = form;
 
         return (
             <Modal title="新建文件夹"

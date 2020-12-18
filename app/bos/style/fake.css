@@ -38,7 +38,7 @@ input[type=checkbox]:checked:before {
     border-bottom: solid 2px currentColor;
 }
 
-#main .ant-table-tbody > tr > td,
+/* #main .ant-table-tbody > tr > td,
 #main .ant-table-thead > tr > th {
     padding: 0;
     height: 30px;
@@ -53,7 +53,7 @@ input[type=checkbox]:checked:before {
 
 #main .ant-table-tbody > tr > td > * {
     vertical-align: middle;
-}
+} */
 
 .bce-form.ant-form-inline .ant-form-item {
     margin-bottom: 10px;

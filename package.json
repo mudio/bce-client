@@ -1,7 +1,7 @@
 {
   "name": "bce-client",
   "productName": "百度云",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
@@ -65,9 +65,7 @@
     "url": "git+https://github.com/mudio/bce-client"
   },
   "author": {
-    "name": "木休大人",
-    "email": "job.zhanghao@gmail.com",
-    "url": "https://github.com/mudio"
+    "name": "BAIDU"
   },
   "license": "MIT",
   "bugs": {
@@ -143,7 +141,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "@baiducloud/sdk": "^1.0.0-rc.6",
+    "@baiducloud/sdk": "^1.0.0-rc.25",
     "@nodelib/fs.walk": "^1.2.4",
     "antd": "^3.14.1",
     "async": "^2.6.2",

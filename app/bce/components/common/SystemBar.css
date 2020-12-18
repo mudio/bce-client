@@ -7,11 +7,12 @@
 .container div {
     color: #ccc;
     width: 35px;
+    height: 100%;
     display: flex;
     cursor: pointer;
     line-height: 24px;
     justify-content: center;
-    transition: 0.3s ease-in,color 0.3s ease-in;
+    transition: .3s ease-in, color .3s ease-in;
 }
 
 .container .exit,
@@ -22,7 +23,7 @@
 
 .container .exit:hover {
     color: #fff;
-    background-color: #f06a6a;
+    background-color: #ff4d4f;
 }
 
 .container .min:hover,

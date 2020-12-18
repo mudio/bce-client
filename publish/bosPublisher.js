@@ -18,7 +18,6 @@ import appPackage from '../static/package.json';
 
 const {version, name} = appPackage;
 const {BOS_AK, BOS_SK, BOS_ENDPOINT} = process.env;
-
 const bucket = 'bce-bos-client';
 const prefix = `releases/v${appPackage.version}`;
 

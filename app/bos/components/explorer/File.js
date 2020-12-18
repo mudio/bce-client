@@ -95,7 +95,9 @@ export default class File extends Component {
             const {icon} = commandMap[command];
 
             return (
-                <span key={command.toString()}
+                <span
+                    id={`${command.toString()}`}
+                    key={command.toString()}
                     className={`fa fa-${icon}`}
                     onClick={() => onCommand(command, {keys: [name]})}
                 />
@@ -117,7 +119,7 @@ export default class File extends Component {
                     <Tooltip placement="bottom" title={fileName}>
                         <span className={styles.text}>
                             {fileName}
-                        </span>
+                    </span>
                     </Tooltip>
                 </div>
             );
@@ -131,7 +133,7 @@ export default class File extends Component {
                     <span className={styles.commands}>
                         {this.renderCommands()}
                     </span>
-                    <span className={styles.extra}>{BosCategory[storageClass]}</span>
+                    <span className={styles.storage}>{BosCategory[storageClass] || '-'}</span>
                     <span className={styles.extra}>{humanSize(size)}</span>
                     <span className={styles.time}>{utcToLocalTime(lastModified)}</span>
                 </div>

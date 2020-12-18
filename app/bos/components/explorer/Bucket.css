@@ -2,7 +2,7 @@
 .container {
     display: flex;
     width: 90px;
-    min-height: 80px;
+    height: 90px;
     color: #666;
     cursor: pointer;
     margin: 5px 0 0 5px;
@@ -10,7 +10,7 @@
     flex-flow: column wrap;
     align-self: flex-start;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     user-select: none;
 }
 
@@ -19,15 +19,16 @@
 }
 
 .text {
-    display: inline-flex;
-    flex: auto;
-    width: 90%;
+    width: 95%;
     font-size: 12px;
-    overflow: hidden;
     text-align: center;
-    align-items: center;
+    overflow: hidden;
+    display: -webkit-box;
+    word-wrap: break-word;
     word-break: break-all;
-    justify-content: center;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
 }
 
 .bucketicon {

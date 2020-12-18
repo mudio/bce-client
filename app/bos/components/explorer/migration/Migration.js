@@ -41,7 +41,8 @@ export default class Migration extends Component {
                     bucket => ({
                         label: bucket.name,
                         value: bucket.name,
-                        isLeaf: false
+                        isLeaf: false,
+                        enableMultiAz: bucket.enableMultiAz
                     })
                 );
 

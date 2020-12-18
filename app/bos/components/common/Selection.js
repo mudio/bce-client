@@ -11,6 +11,13 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import React, {Component} from 'react';
 
+import {
+    MENU_RENAME_COMMAND,
+    MENU_COPY_COMMAND,
+    MENU_SHARE_COMMAND,
+    MENU_DOWNLOAD_COMMAND,
+    MENU_TRASH_COMMAND
+} from '../../actions/context';
 import styles from './Selection.css';
 
 export default class Selection extends Component {
@@ -87,6 +94,19 @@ export default class Selection extends Component {
         evt.preventDefault();
         evt.stopPropagation();
 
+        const supportCommands = [
+            MENU_RENAME_COMMAND,
+            MENU_COPY_COMMAND,
+            MENU_SHARE_COMMAND,
+            MENU_DOWNLOAD_COMMAND,
+            MENU_TRASH_COMMAND
+        ].map(item => item.toString());
+
+        // 如果点击文件命令，则不选中当前文件
+        if (supportCommands.includes(_.get(evt, 'target.id'))) {
+            return;
+        }
+
         const {enabled} = this.props;
         const {ctrlKey, shiftKey} = evt;
         const keys = Object.keys(this.__selectedCache);
@@ -112,9 +132,9 @@ export default class Selection extends Component {
     }
 
     _onKeyDown = (evt) => {
-        const {keyCode, ctrlKey, metaKey} = evt;
+        const {key, ctrlKey, metaKey} = evt;
 
-        if (keyCode === 65 && (ctrlKey || metaKey)) {
+        if (key === 'a' && (ctrlKey || metaKey)) {
             evt.preventDefault();
             this.selectAll();
         }
@@ -249,7 +269,8 @@ export default class Selection extends Component {
             );
 
             return (
-                <div key={child.key}
+                <div
+                    key={child.key}
                     className={styleName}
                     onClick={evt => this._onSelectItem(evt, child.key)}
                     onContextMenu={evt => this._onContextMenu(evt, child.key)}

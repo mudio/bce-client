@@ -166,8 +166,8 @@ export default class UploadItem extends Component {
 
     render() {
         const {bucketName, prefix, name, keymap, totalSize, offsetSize = 0} = this.props;
-
-        const extname = path.extname(name);
+        // remove `.`
+        const extname = path.extname(name).slice(1);;
         const keys = Object.keys(keymap);
         const style = classnames(styles.fileicon, {
             'asset-folder': keys.length > 1,

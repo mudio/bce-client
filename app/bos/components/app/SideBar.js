@@ -43,6 +43,13 @@ class SideBar extends Component {
                     <NavLink to="/region"
                         className={`${styles.item} ${styles.region}`}
                         activeClassName={styles.active}
+                        isActive={(match, location) => {
+                            if (!location || !location.pathname || !['/upload', '/download', '/complete', '/sync'].includes(location.pathname)) {
+                                return true;
+                            }
+
+                            return false;
+                        }}
                     >
                         全部文件
                     </NavLink>
@@ -83,9 +90,6 @@ class SideBar extends Component {
                 <div className={styles.tool}>
                     <BrowserLink linkTo="https://cloud.baidu.com/doc/BOS/s/Ok1rk605h">
                         开发者文档
-                    </BrowserLink>
-                    <BrowserLink linkTo="https://github.com/leeight/bce-bos-uploader/">
-                        Web Uploader
                     </BrowserLink>
                     <BrowserLink linkTo="https://github.com/baidubce/bce-sdk-js">
                         JavaScript SDK
