@@ -54,11 +54,11 @@ export default class Folder extends Component {
     renderCommands() {
         const {name, onCommand} = this.props;
 
-        return Folder.supportCommands.map(command => {
+        return Folder.supportCommands.map((command, index) => {
             const {icon, title} = commandMap[command];
 
             return (
-                <Tooltip placement="bottom" title={title}>
+                <Tooltip placement="bottom" title={title} key={index}>
                     <span key={command.toString()}
                         className={`fa fa-${icon}`}
                         onClick={() => onCommand(command, {keys: [name]})}

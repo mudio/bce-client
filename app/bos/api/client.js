@@ -23,6 +23,18 @@ export class Client extends BosClient {
         this.credentials = credentials;
     }
 
+    createBucket(bucketName, options) {
+        return super.createBucket(bucketName, options);
+    }
+
+    putBucketStorageclass(bucketName, storageClass, options) {
+        return super.putBucketStorageclass(bucketName, storageClass, options);
+    }
+
+    putBucketAcl(bucketName, acl, options) {
+        return super.putBucketAcl(bucketName, acl, options);
+    }
+
     listBuckets(config = {}) {
         const {forceUpdate, search} = config;
 

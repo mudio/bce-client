@@ -12,16 +12,23 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classnames from 'classnames';
 import React, {Component} from 'react';
+import { Lifecycle } from 'react-router'
+import {Button} from 'antd';
 
+import {listBuckets} from '../../actions/window';
 import styles from './Navigator.css';
 import {redirect, query} from '../../actions/navigator';
 import {ClientFactory} from '../../api/client';
+import BucketCreate from './BucketCreate';
+
 class Navigator extends Component {
     static propTypes = {
         bucket: PropTypes.string,
         prefix: PropTypes.string,
         dispatch: PropTypes.func.isRequired,
     };
+
+    mixins = [Lifecycle]
 
     state = {
         buckets: []
@@ -57,11 +64,20 @@ class Navigator extends Component {
         });
     }
 
+    bucketCreated = () => {
+        const {dispatch} = this.props;
+        dispatch(listBuckets({forceUpdate: true}));
+    }
+
     componentWillReceiveProps(nextProps) {
         const {bucket, prefix} = nextProps;
         if (bucket !== this.props.bucket || prefix !== this.props.prefix) {
             this.setState({value: '', focus: false});
         }
+    }
+
+    saveFormRef = form => {
+        this.form = form;
     }
 
     _onChange = evt => {
@@ -251,6 +267,14 @@ class Navigator extends Component {
                         <i className="fa fa-chevron-right fa-lg" />
                     </span>
                 </div>
+                {
+                    !bucket &&
+                    (
+                        <div className={styles.createBtn}>
+                            <BucketCreate onSuccess={this.bucketCreated}/>
+                        </div>
+                    )
+                }
                 <div className={styles.url}>
                     {this.renderSearch()}
                 </div>

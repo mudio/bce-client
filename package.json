@@ -102,7 +102,7 @@
     "del": "^3.0.0",
     "devtron": "^1.4.0",
     "electron": "^2.0.17",
-    "electron-builder": "^20.38.5",
+    "electron-builder": "^22.9.1",
     "electron-debug": "^2.1.0",
     "electron-devtools-installer": "^2.2.4",
     "electron-updater": "^3.2.3",
@@ -141,7 +141,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "@baiducloud/sdk": "^1.0.0-rc.25",
+    "@baiducloud/sdk": "^1.0.0-rc.26",
     "@nodelib/fs.walk": "^1.2.4",
     "antd": "^3.14.1",
     "async": "^2.6.2",

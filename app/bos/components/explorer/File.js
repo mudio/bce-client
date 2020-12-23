@@ -91,10 +91,10 @@ export default class File extends Component {
     renderCommands() {
         const {name, onCommand} = this.props;
 
-        return File.supportCommands.map(command => {
+        return File.supportCommands.map((command, index) => {
             const {icon, title} = commandMap[command];
             return (
-                <Tooltip placement="bottom" title={title}>
+                <Tooltip placement="bottom" title={title} key={index}>
                     <span
                         id={`${command.toString()}`}
                         key={command.toString()}
