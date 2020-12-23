@@ -36,3 +36,4 @@ script
 static
 !static/package.json
 .eslintcache
+.history

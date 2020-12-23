@@ -55,11 +55,12 @@ export default class Folder extends Component {
         const {name, onCommand} = this.props;
 
         return Folder.supportCommands.map(command => {
-            const {icon} = commandMap[command];
+            const {icon, title} = commandMap[command];
 
             return (
                 <span key={command.toString()}
                     className={`fa fa-${icon}`}
+                    title={`${title}`}
                     onClick={() => onCommand(command, {keys: [name]})}
                 />
             );
