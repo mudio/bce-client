@@ -58,11 +58,12 @@ export default class Folder extends Component {
             const {icon, title} = commandMap[command];
 
             return (
-                <span key={command.toString()}
-                    className={`fa fa-${icon}`}
-                    title={`${title}`}
-                    onClick={() => onCommand(command, {keys: [name]})}
-                />
+                <Tooltip placement="bottom" title={title}>
+                    <span key={command.toString()}
+                        className={`fa fa-${icon}`}
+                        onClick={() => onCommand(command, {keys: [name]})}
+                    />
+                </Tooltip>
             );
         });
     }
