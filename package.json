@@ -18,8 +18,8 @@
     "start": "cross-env HOT=1 NODE_ENV=development electron -r babel-register ./app/main",
     "server": "cross-env NODE_ENV=development node -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.renderer.dev.js",
     "dev": "cross-env START_HOT=1 npm run server",
-    "dist:win": "npm run compile && build --win --ia32 --publish never",
-    "dist:osx": "npm run compile && build --mac --publish never",
+    "dist:win": "npm run compile && npx electron-builder --win --ia32 --publish never",
+    "dist:osx": "npm run compile && npx electron-builder --mac --publish never",
     "publish:bos": "node -r babel-register ./publish/bosPublisher.js",
     "publish:github": "node -r babel-register ./publish/githubPublisher.js"
   },

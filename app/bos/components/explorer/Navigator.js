@@ -268,8 +268,7 @@ class Navigator extends Component {
                     </span>
                 </div>
                 {
-                    !bucket &&
-                    (
+                    !bucket && (
                         <div className={styles.createBtn}>
                             <BucketCreate onSuccess={this.bucketCreated}/>
                         </div>

@@ -22,7 +22,10 @@ import BrowserLink from '../common/BrowserLink';
 import {ClientFactory} from '../../api/client';
 import styles from './BucketCreate.css';
 
-const {Option} = Select;
+const FormItem = Form.Item;
+const SelectOption = Select.Option;
+const RadioGroup = Radio.Group;
+const RadioButton = Radio.Button;
 
 const layout = {
     labelCol: {span: 4},
@@ -103,8 +106,7 @@ class BucketCreate extends React.Component {
                 description: state.bucketName
             });
             this.props.onSuccess();
-        }
-        catch(error) {
+        } catch (error) {
             ErrorCode[error.code]
                 ? notification.error({message: ErrorCode[error.code]})
                 : notification.error({message: error.code, description: error.message});
@@ -132,7 +134,7 @@ class BucketCreate extends React.Component {
                     onCancel={this.cancelHandle}
                 >
                     <Form {...layout} ref={this.saveFormRef}>
-                        <Form.Item
+                        <FormItem
                             label="Bucket名称"
                             name="bucketName"
                             help="只能包含小写字母、数字和“-”，开头结尾为小写字母和数字，长度在3-63之间"
@@ -151,49 +153,49 @@ class BucketCreate extends React.Component {
                                     />
                                 )
                             }
-                        </Form.Item>
+                        </FormItem>
 
-                        <Form.Item label="所属地域" name="region">
+                        <FormItem label="所属地域" name="region">
                             <Select name="region" value={region} onChange={this.handleSelectChange}>
                                 {
                                     kRegions.map(region => {
                                         const regionText = getLocalText(region);
-                                        return (<Option value={region} key={region}>{regionText}</Option>);
+                                        return (<SelectOption value={region} key={region}>{regionText}</SelectOption>);
                                     })
                                 }
                             </Select>
-                        </Form.Item>
+                        </FormItem>
 
-                        <Form.Item label="默认存储类型" name="storage" help={storageHelp}>
-                            <Radio.Group name="storage" value={storage} onChange={this.handleInputChange}>
+                        <FormItem label="默认存储类型" name="storage" help={storageHelp}>
+                            <RadioGroup name="storage" value={storage} onChange={this.handleInputChange}>
                                 {baseStorages.map(storage => {
                                     return (
-                                        <Radio.Button value={storage} key={storage}>
+                                        <RadioButton value={storage} key={storage}>
                                             {storageTextMap[storage]}
-                                        </Radio.Button>
+                                        </RadioButton>
                                     );
                                 })}
-                            </Radio.Group>
-                        </Form.Item>
+                            </RadioGroup>
+                        </FormItem>
 
-                        <Form.Item label="读写权限" name="access" help={accessHelp[access]}>
-                            <Radio.Group name="access" value={access} defaultValue="private" onChange={this.handleInputChange}>
+                        <FormItem label="读写权限" name="access" help={accessHelp[access]}>
+                            <RadioGroup name="access" value={access} defaultValue="private" onChange={this.handleInputChange}>
                                 {
                                     accessDatasource.map(item => {
                                         return (
-                                            <Radio.Button
+                                            <RadioButton
                                                 value={item.value}
                                                 key={item.value}
                                             >
                                                 {item.text}
-                                            </Radio.Button>
+                                            </RadioButton>
                                         );
                                     })
                                 }
 
-                            </Radio.Group>
-                        </Form.Item>
-                        <Form.Item label="计费方式" name="payType">
+                            </RadioGroup>
+                        </FormItem>
+                        <FormItem label="计费方式" name="payType">
                             <div className="form-text">
                                 <span>按用量收费</span>
                                 <span className="tip margin-left-10">免费创建，使用阶段按照用量收费。</span>
@@ -201,7 +203,7 @@ class BucketCreate extends React.Component {
                                     了解计费详情
                                 </BrowserLink>
                             </div>
-                        </Form.Item>
+                        </FormItem>
 
                     </Form>
                 </Modal>
