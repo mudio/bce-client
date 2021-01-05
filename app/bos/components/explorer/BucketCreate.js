@@ -16,7 +16,8 @@ import {
     STANDARD,
     ARCHIVE,
     accessDatasource,
-    accessHelp
+    accessHelp,
+    storageRegionMap
 } from '../../../utils/enums';
 import BrowserLink from '../common/BrowserLink';
 import {ClientFactory} from '../../api/client';
@@ -72,8 +73,10 @@ class BucketCreate extends React.Component {
     }
 
     handleSelectChange = region => {
+        const {storage} = this.state;
         this.setState({
-            region
+            region,
+            storage: storageRegionMap[region].includes(storage) ? storage : STANDARD
         });
     }
 
@@ -94,7 +97,7 @@ class BucketCreate extends React.Component {
         const state = this.state;
         await form.validateFields();
         try {
-            const client = new ClientFactory.fromRegion(state.region);
+            const client = ClientFactory.fromRegion(state.region);
             await client.createBucket(state.bucketName, {...state});
             await client.putBucketStorageclass(state.bucketName, state.storage);
             await client.putBucketAcl(state.bucketName, state.access);
@@ -105,6 +108,7 @@ class BucketCreate extends React.Component {
                 message: '创建成功',
                 description: state.bucketName
             });
+            this.cancelHandle();
             this.props.onSuccess();
         } catch (error) {
             ErrorCode[error.code]
@@ -119,8 +123,8 @@ class BucketCreate extends React.Component {
 
     render() {
         const priceDoc = 'https://cloud.baidu.com/doc/BOS/s/Ok1rmtaow';
-        const {visible, region, storage, access, bucketName} = this.state;
-        const baseStorages = storages;
+        const {visible, region, storage, access} = this.state;
+        const baseStorages = storageRegionMap[region];
         const storageHelp = this.getStorageHelp();
         const {getFieldDecorator} = this.props.form;
 

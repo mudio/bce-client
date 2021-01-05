@@ -5,6 +5,7 @@
  * @author Vito(hanxiao_do@126.com)
  */
 
+import {REGION_BJ, REGION_BD, REGION_GZ, REGION_SU, REGION_FSH, REGION_FWH, REGION_HKG, REGION_SIN} from './region.js';
 
 export const STANDARD = 'STANDARD';
 export const STANDARD_IA = 'STANDARD_IA';
@@ -20,6 +21,17 @@ export const storageTextMap = {
     MAZ_STANDARD: '标准存储-多AZ',
     MAZ_STANDARD_IA: '低频存储-多AZ',
     ARCHIVE: '归档存储'
+};
+
+export const storageRegionMap = {
+    [REGION_BJ]: [STANDARD, STANDARD_IA, COLD, ARCHIVE],
+    [REGION_SU]: [STANDARD, STANDARD_IA, COLD, ARCHIVE],
+    [REGION_GZ]: [STANDARD, STANDARD_IA, COLD, ARCHIVE],
+    [REGION_FWH]: [STANDARD, STANDARD_IA, COLD],
+    [REGION_BD]: [STANDARD, STANDARD_IA, COLD],
+    [REGION_SIN]: [STANDARD, STANDARD_IA, COLD],
+    [REGION_FSH]: [STANDARD],
+    [REGION_HKG]: [STANDARD, STANDARD_IA]
 };
 
 export const storages = [STANDARD, STANDARD_IA, COLD, ARCHIVE];
