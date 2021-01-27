@@ -21,7 +21,8 @@
     "dist:win": "npm run compile && npx electron-builder --win --ia32 --publish never",
     "dist:osx": "npm run compile && npx electron-builder --mac --publish never",
     "publish:bos": "node -r babel-register ./publish/bosPublisher.js",
-    "publish:github": "node -r babel-register ./publish/githubPublisher.js"
+    "publish:github": "node -r babel-register ./publish/githubPublisher.js",
+    "publish:version": "node -r babel-register ./publish/versionPublisher.js"
   },
   "build": {
     "appId": "com.baidu.bce",
