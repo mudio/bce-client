@@ -20,6 +20,7 @@ const {version, name} = appPackage;
 const {BOS_AK, BOS_SK, BOS_ENDPOINT} = process.env;
 const bucket = 'bce-bos-client';
 const prefix = `releases/v${appPackage.version}`;
+const latestVersion = 'releases/latest.json';
 
 const client = new BosClient({
     credentials: {
@@ -115,6 +116,15 @@ function publish(distDir) {
                 }
             }
         });
+
+
+        // 上传最新版本文件
+        const config = {version, strategies: [{semver: '*', latest: version}]};
+        client.putObjectFromString(bucket, latestVersion, JSON.stringify(config))
+            .then(
+                () => console.log(`上传完毕 => ${latestVersion}`),
+                ex => console.error(ex)
+            );
     });
 }
 

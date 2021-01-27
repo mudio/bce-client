@@ -50,7 +50,7 @@ export default class AutoUpdater {
     checkForUpdates() {
         const api = feedURL.startsWith('https') ? https : http;
 
-        api.get(`${feedURL}/lastest.json`, res => {
+        api.get(`${feedURL}/latest.json`, res => {
             const {statusCode} = res;
             let rawData = '';
 
@@ -61,7 +61,7 @@ export default class AutoUpdater {
                         const {strategies} = JSON.parse(rawData);
                         const strategy = strategies.find(item => semver.satisfies(app.getVersion(), item.semver));
 
-                        autoUpdater.setFeedURL(`${feedURL}/v${strategy.lastest}`);
+                        autoUpdater.setFeedURL(`${feedURL}/v${strategy.latest}`);
                         autoUpdater.checkForUpdates();
                     } catch (err) {
                         log.error(err.message);
