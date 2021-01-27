@@ -3,9 +3,9 @@
     display: flex;
     width: 90px;
     color: #666;
-    min-height: 80px;
+    height: 90px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-flow: column nowrap;
     user-select: none;
 }
@@ -14,7 +14,7 @@
     width: 95%;
     font-size: 12px;
     text-align: center;
-    overflow : hidden;
+    overflow: hidden;
     display: -webkit-box;
     word-wrap: break-word;
     word-break: break-all;
@@ -39,6 +39,7 @@
     line-height: 30px;
     user-select: none;
     padding-right: 10px;
+    margin-left: 10px;
 }
 
 .listLayout .icon {
@@ -49,14 +50,26 @@
 }
 
 .listLayout .text {
-    width: 0;
+    width: 310px;
     flex: auto;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.listLayout .storage {
+    width: 100px;
 }
 
 .listLayout .extra {
-    width: 80px;
+    width: 120px;
+}
+.listLayout .time {
+    width: 126px;
+}
+
+.listLayout .time {
+    width: 150px;
 }
 
 .listLayout:hover .commands span {

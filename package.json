@@ -1,7 +1,7 @@
 {
   "name": "bce-client",
   "productName": "百度云",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "百度云-客户端",
   "main": "main.js",
   "scripts": {
@@ -18,10 +18,11 @@
     "start": "cross-env HOT=1 NODE_ENV=development electron -r babel-register ./app/main",
     "server": "cross-env NODE_ENV=development node -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.renderer.dev.js",
     "dev": "cross-env START_HOT=1 npm run server",
-    "dist:win": "npm run compile && build --win --ia32 --publish never",
-    "dist:osx": "npm run compile && build --mac --publish never",
+    "dist:win": "npm run compile && npx electron-builder --win --ia32 --publish never",
+    "dist:osx": "npm run compile && npx electron-builder --mac --publish never",
     "publish:bos": "node -r babel-register ./publish/bosPublisher.js",
-    "publish:github": "node -r babel-register ./publish/githubPublisher.js"
+    "publish:github": "node -r babel-register ./publish/githubPublisher.js",
+    "publish:version": "node -r babel-register ./publish/versionPublisher.js"
   },
   "build": {
     "appId": "com.baidu.bce",
@@ -65,9 +66,7 @@
     "url": "git+https://github.com/mudio/bce-client"
   },
   "author": {
-    "name": "木休大人",
-    "email": "job.zhanghao@gmail.com",
-    "url": "https://github.com/mudio"
+    "name": "BAIDU"
   },
   "license": "MIT",
   "bugs": {
@@ -143,7 +142,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
-    "@baiducloud/sdk": "^1.0.0-rc.6",
+    "@baiducloud/sdk": "^1.0.0-rc.26",
     "@nodelib/fs.walk": "^1.2.4",
     "antd": "^3.14.1",
     "async": "^2.6.2",

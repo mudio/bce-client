@@ -13,7 +13,14 @@ export default class WindowManager {
     constructor(width = 960, height = 680, option = {}) {
         this._window = new BrowserWindow(
             Object.assign(
-                {show: false, frame: false, titleBarStyle: 'hidden', backgroundColor: '#444c63'},
+                {
+                    show: false,
+                    frame: false,
+                    titleBarStyle: 'hidden',
+                    backgroundColor: '#444c63',
+                    minWidth: 700,
+                    minHeight: 500,
+                },
                 option,
                 {width, height}
             )

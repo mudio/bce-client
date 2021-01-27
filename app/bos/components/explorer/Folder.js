@@ -54,14 +54,16 @@ export default class Folder extends Component {
     renderCommands() {
         const {name, onCommand} = this.props;
 
-        return Folder.supportCommands.map(command => {
-            const {icon} = commandMap[command];
+        return Folder.supportCommands.map((command, index) => {
+            const {icon, title} = commandMap[command];
 
             return (
-                <span key={command.toString()}
-                    className={`fa fa-${icon}`}
-                    onClick={() => onCommand(command, {keys: [name]})}
-                />
+                <Tooltip placement="bottom" title={title} key={index}>
+                    <span key={command.toString()}
+                        className={`fa fa-${icon}`}
+                        onClick={() => onCommand(command, {keys: [name]})}
+                    />
+                </Tooltip>
             );
         });
     }
@@ -91,9 +93,9 @@ export default class Folder extends Component {
                     <span className={styles.commands}>
                         {this.renderCommands()}
                     </span>
-                    <span className={styles.extra}>-</span>
-                    <span className={styles.extra}>-</span>
-                    <span className={styles.time}>-</span>
+                    <span className={styles.storage}>--</span>
+                    <span className={styles.extra}>--</span>
+                    <span className={styles.time}>--</span>
                 </div>
             );
         }

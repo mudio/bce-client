@@ -5,6 +5,7 @@
  * @author mudio(job.mudio@gmail.com)
  */
 
+import _ from 'lodash';
 import url from 'url';
 import {isString} from 'util';
 import {BosClient} from '@baiducloud/sdk';
@@ -20,6 +21,18 @@ export class Client extends BosClient {
         });
         this.region = region;
         this.credentials = credentials;
+    }
+
+    createBucket(bucketName, options) {
+        return super.createBucket(bucketName, options);
+    }
+
+    putBucketStorageclass(bucketName, storageClass, options) {
+        return super.putBucketStorageclass(bucketName, storageClass, options);
+    }
+
+    putBucketAcl(bucketName, acl, options) {
+        return super.putBucketAcl(bucketName, acl, options);
     }
 
     listBuckets(config = {}) {
@@ -42,9 +55,15 @@ export class Client extends BosClient {
 
         return super.listBuckets().then(res => {
             const {buckets, owner} = res.body;
+            const response = _.cloneDeep(res.body);
+            // hanle multi-az property
+            response.buckets = response.buckets.map(bucket => ({
+                ...bucket,
+                enableMultiAz: !!bucket.enableMultiAz
+            }));
 
             try {
-                sessionStorage.setItem('buckets', JSON.stringify(res.body));
+                sessionStorage.setItem('buckets', JSON.stringify(response));
             } catch (ex) {} // eslint-disable-line
 
             if (search) {
@@ -54,7 +73,10 @@ export class Client extends BosClient {
                 };
             }
 
-            return {owner, buckets};
+            return {
+                owner,
+                buckets
+            };
         });
     }
 

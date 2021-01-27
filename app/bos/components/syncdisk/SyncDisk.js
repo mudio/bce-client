@@ -30,14 +30,15 @@ import {getLogPath} from '../../../utils';
 
 class SyncDisk extends Component {
     state = {
-        selectedItems: []
+        selectedRowKeys: [],
+        selectedRows: [],
     };
 
     columns = [
         {
             title: '序号',
             dataIndex: 'key',
-            width: 50
+            width: 60
         },
         {
             title: '本地路径',
@@ -70,7 +71,7 @@ class SyncDisk extends Component {
         {
             title: '操作',
             dataIndex: 'op',
-            width: 120,
+            width: 150,
             render: (value, item) => {
                 let tmpHtml = (
                     <button type="button" className={styles.cmd} onClick={() => this.onStartSync([item])}>
@@ -98,10 +99,6 @@ class SyncDisk extends Component {
             }
         },
     ];
-
-    rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => this.setState({selectedItems: selectedRows})
-    };
 
     static propTypes = {
         localPath: PropTypes.string,
@@ -183,7 +180,7 @@ class SyncDisk extends Component {
             title: '删除提示',
             content: (
                 <div>
-                    <p>删除同步映射不会删除BOS中已经同步的资源，如需删除已同步资源请至BOS进行操作。</p>
+                    <p>删除同步映射不会删除BOS中已经同步的资源，如需删除已同步资源请至对应Bucket中进行操作。</p>
                     <p>请确认是否删除该同步映射？</p>
                 </div>
             ),
@@ -194,7 +191,8 @@ class SyncDisk extends Component {
                     return item.key - 1;
                 });
                 this.props.dispatch({type: SYNCDISK_CHANGE_DELETEMAPPING, indexs});
-                this.setState({selectedItems: []});
+
+                this.setState({selectedRowKeys: [], selectedRows: []});
             }
         });
     }
@@ -223,15 +221,22 @@ class SyncDisk extends Component {
      */
     renderList() {
         const {mappings} = this.props;
+        const {selectedRowKeys} = this.state;
         const dataSource = mappings.map((item, key) => ({
             ...item,
             key: key + 1
         }));
+        const rowSelection = {
+            selectedRowKeys,
+            onChange: (selectedRowKeys, selectedRows) => {
+                this.setState({selectedRowKeys, selectedRows})
+            }
+        };
 
         if (mappings.length) {
             return (
                 <Table
-                    rowSelection={this.rowSelection}
+                    rowSelection={rowSelection}
                     columns={this.columns}
                     dataSource={dataSource}
                     ellipsis
@@ -256,9 +261,9 @@ class SyncDisk extends Component {
                     <Header
                         dispatch={dispatch}
                         dataSource={mappings}
-                        selectedItems={this.state.selectedItems}
+                        selectedItems={this.state.selectedRowKeys}
                         onNewTask={() => this.onNewTask()}
-                        onDelete={() => this.onDelete(this.state.selectedItems)}
+                        onDelete={() => this.onDelete(this.state.selectedRows)}
                         // onRefresh={() => this.onRefresh()}
                     />
                     <div className={styles.content}>

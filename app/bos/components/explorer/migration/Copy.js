@@ -11,8 +11,10 @@ import {Modal, Cascader, Form} from 'antd';
 const FormItem = Form.Item;
 
 export default Form.create()(props => {
-    const {visible, onCancel, onCopy, loadData, buckets, form} = props;
+    const {visible, onCancel, onCopy, loadData, buckets, form, bucket} = props;
     const {getFieldDecorator} = form;
+    const isMultiAzEnabled = !!(Array.isArray(buckets) && buckets.find(item => item.value === bucket && item.enableMultiAz));
+    const filteredBucketList = buckets.filter(item => item.enableMultiAz === isMultiAzEnabled);
 
     return (
         <Modal title="复制到"
@@ -30,7 +32,7 @@ export default Form.create()(props => {
                                 message: '输入名称不能为空!'
                             }]
                         })(
-                            <Cascader options={buckets} loadData={loadData} changeOnSelect />
+                            <Cascader options={filteredBucketList} loadData={loadData} changeOnSelect />
                         )
                     }
                 </FormItem>

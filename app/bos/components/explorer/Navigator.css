@@ -2,6 +2,7 @@
 .container {
     display: flex;
     height: 50px;
+    align-items: center;
     flex-shrink: 0;
     user-select: none;
     -webkit-app-region: drag;
@@ -43,6 +44,10 @@
 .navGroup .navBtn.disable {
     color: #ccc;
     cursor: not-allowed;
+}
+
+.createBtn {
+    margin-right: 10px;
 }
 
 .url {

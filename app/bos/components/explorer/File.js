@@ -91,14 +91,17 @@ export default class File extends Component {
     renderCommands() {
         const {name, onCommand} = this.props;
 
-        return File.supportCommands.map(command => {
-            const {icon} = commandMap[command];
-
+        return File.supportCommands.map((command, index) => {
+            const {icon, title} = commandMap[command];
             return (
-                <span key={command.toString()}
-                    className={`fa fa-${icon}`}
-                    onClick={() => onCommand(command, {keys: [name]})}
-                />
+                <Tooltip placement="bottom" title={title} key={index}>
+                    <span
+                        id={`${command.toString()}`}
+                        key={command.toString()}
+                        className={`fa fa-${icon}`}
+                        onClick={() => onCommand(command, {keys: [name]})}
+                    />
+                </Tooltip>
             );
         });
     }
@@ -117,7 +120,7 @@ export default class File extends Component {
                     <Tooltip placement="bottom" title={fileName}>
                         <span className={styles.text}>
                             {fileName}
-                        </span>
+                    </span>
                     </Tooltip>
                 </div>
             );
@@ -131,7 +134,7 @@ export default class File extends Component {
                     <span className={styles.commands}>
                         {this.renderCommands()}
                     </span>
-                    <span className={styles.extra}>{BosCategory[storageClass]}</span>
+                    <span className={styles.storage}>{BosCategory[storageClass] || '-'}</span>
                     <span className={styles.extra}>{humanSize(size)}</span>
                     <span className={styles.time}>{utcToLocalTime(lastModified)}</span>
                 </div>

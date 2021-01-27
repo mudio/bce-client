@@ -16,6 +16,7 @@ import styles from './NewMapping.css';
 import {ClientFactory} from '../../api/client';
 import {toggleNewMapping, changeLocalPath, changeBosPath} from '../../actions/syncdisk';
 import ErrorCode from '../../utils/ErrorCode';
+import {isWin} from '../../../utils';
 
 const FormItem = Form.Item;
 
@@ -200,6 +201,7 @@ class NewMapping extends Component {
         const {visible, localPath, bosPath, onConfirm} = this.props;
         const {loading, open} = this.state;
         const message = '同步映射建立完成后将自动开始数据同步，您可以在列表中使用操作来暂停自动同步';
+        const pathStyle = `${styles.path} ${(isWin ? styles.adaptor : styles.adaptor)}`;
 
         return (
             <Modal title="新建同步映射关系"
@@ -216,7 +218,7 @@ class NewMapping extends Component {
                     <FormItem label="本地文件目录" required>
                         <Button type="primary" onClick={() => this._onChooseLocal()}>选择本地文件目录</Button>
                         <Tooltip placement="top" title={localPath} overlayClassName={styles.tooltip}>
-                            <span className={styles.path}>{localPath}</span>
+                            <span className={pathStyle}>{localPath}</span>
                         </Tooltip>
                     </FormItem>
                     <FormItem label="BOS文件目录" required>

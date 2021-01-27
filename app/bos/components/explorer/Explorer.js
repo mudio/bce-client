@@ -118,10 +118,7 @@ export default class Explorer extends Component {
      * @memberOf Explorer
      */
     _onMigration = (config = {}, removeSource = false) => {
-        const {
-            sourceBucket, sourceObject,
-            targetBucket, targetObject
-        } = config;
+        const {sourceBucket, sourceObject, targetBucket, targetObject} = config;
 
         this.setState({visible: false});
 
@@ -161,6 +158,7 @@ export default class Explorer extends Component {
                 notification.success({message: '创建成功', description: `成功创建文件夹${values.name}`});
 
                 this.setState({newFolder: false});
+                form.resetFields();
                 this._onReresh();
             } catch (ex) {
                 notification.error({message: '创建失败', description: ex.message});
@@ -337,6 +335,7 @@ export default class Explorer extends Component {
                 <SystemBar resize />
                 <Navigator />
                 <ObjectWindow
+                    ref={_objectWindow => this._objectWindow = _objectWindow}
                     region={region}
                     bucket={bucket}
                     prefix={prefix}

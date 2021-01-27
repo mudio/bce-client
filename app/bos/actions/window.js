@@ -51,7 +51,7 @@ export function listMoreObjects(bucketName, prefix = '', marker = '') {
         [API_TYPE]: {
             types: [LIST_MORE_REQUEST, LIST_MORE_SUCCESS, LIST_MORE_FAILURE],
             method: 'listObjects',
-            args: [bucketName, {delimiter: '/', prefix, marker, maxKeys: 200}]
+            args: [bucketName, {delimiter: '/', prefix, marker, maxKeys: 1000}]
         }
     };
 }
@@ -126,7 +126,13 @@ export function migrationObject(config, removeSource = false) {
         const objects = await client.listAllObjects(sourceBucket, sourceObject);
         // 控制一下copy速率，250ms最多执行5次
         const throttledTask = throttle((item, targetKey) => dispatch(
-            copyObject(sourceBucket, item, targetBucket, targetKey)
+            copyObject(
+                sourceBucket,
+                item,
+                targetBucket,
+                targetKey,
+                {'x-bce-storage-class': item.storageClass}
+            )
         ).then(res => {
             const {error, response} = res;
 

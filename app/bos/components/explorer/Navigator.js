@@ -12,9 +12,14 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classnames from 'classnames';
 import React, {Component} from 'react';
+import { Lifecycle } from 'react-router'
+import {Button} from 'antd';
 
+import {listBuckets} from '../../actions/window';
 import styles from './Navigator.css';
 import {redirect, query} from '../../actions/navigator';
+import {ClientFactory} from '../../api/client';
+import BucketCreate from './BucketCreate';
 
 class Navigator extends Component {
     static propTypes = {
@@ -22,6 +27,12 @@ class Navigator extends Component {
         prefix: PropTypes.string,
         dispatch: PropTypes.func.isRequired,
     };
+
+    mixins = [Lifecycle]
+
+    state = {
+        buckets: []
+    }
 
     constructor(props, ...args) {
         super(props, ...args);
@@ -36,6 +47,26 @@ class Navigator extends Component {
     componentDidMount() {
         const {dispatch, bucket, prefix} = this.props;
         dispatch(query({bucket, prefix}));
+
+        const client = ClientFactory.getDefault();
+        // 获取buckets
+        client.listBuckets().then(res => {
+            const buckets = res.buckets.map(
+                bucket => ({
+                    label: bucket.name,
+                    value: bucket.name,
+                    isLeaf: false,
+                    enableMultiAz: bucket.enableMultiAz
+                })
+            );
+
+            this.setState({buckets});
+        });
+    }
+
+    bucketCreated = () => {
+        const {dispatch} = this.props;
+        dispatch(listBuckets({forceUpdate: true}));
     }
 
     componentWillReceiveProps(nextProps) {
@@ -45,6 +76,10 @@ class Navigator extends Component {
         }
     }
 
+    saveFormRef = form => {
+        this.form = form;
+    }
+
     _onChange = evt => {
         this.setState({value: evt.target.value});
         this.invokeQuery();
@@ -52,10 +87,15 @@ class Navigator extends Component {
 
     _onKeyDown = (event) => {
         const {key, target} = event;
+        const {buckets} = this.state;
         const {bucket} = this.props;
         const inputBucket = target.value.trim();
+        // 当前输入的bucket名称是否合法, bucket值为空代表全部文件目录下，否则不做bucket校验
+        const isValidBucket = !bucket
+            ? Array.isArray(buckets) && buckets.some(item => item.value === inputBucket)
+            : true;
 
-        if (key === 'Enter' && !bucket && inputBucket) {
+        if (key === 'Enter' && !bucket && inputBucket && isValidBucket) {
             event.preventDefault();
 
             this._redirect(inputBucket);
@@ -227,6 +267,13 @@ class Navigator extends Component {
                         <i className="fa fa-chevron-right fa-lg" />
                     </span>
                 </div>
+                {
+                    !bucket && (
+                        <div className={styles.createBtn}>
+                            <BucketCreate onSuccess={this.bucketCreated}/>
+                        </div>
+                    )
+                }
                 <div className={styles.url}>
                     {this.renderSearch()}
                 </div>

@@ -1,7 +1,7 @@
 {
   "name": "bce-client",
   "productName": "百度云",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "百度云-客户端",
   "main": "main.js",
   "repository": {
@@ -9,9 +9,7 @@
     "url": "git+https://github.com/mudio/bce-client"
   },
   "author": {
-    "name": "木休大人",
-    "email": "job.zhanghao@gmail.com",
-    "url": "https://github.com/mudio"
+    "name": "BAIDU"
   },
   "license": "MIT",
   "bugs": {

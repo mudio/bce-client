@@ -62,7 +62,7 @@ app.on('ready', () => {
             });
 
             // 初始化自动更新
-            AutoUpdater.from(win);
+            !isDev && AutoUpdater.from(win);
         } else if (type === 'logout') {
             const win = WindowManager.fromLogin(`file://${__dirname}/app.html?login`);
             _window.close();
