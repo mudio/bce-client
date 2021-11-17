@@ -1,4 +1,9 @@
-# 百度云-对象存储BOS-客户端
+
+# !!! 不再维护，请转移到：https://github.com/baidubce/bce-client/issues
+
+---
+
+## 百度云-对象存储BOS-客户端
 
 [![Build Status][travis-image]][travis-url]
 [![Build Status][appveyor-image]][appveyor-url]
